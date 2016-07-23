@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  'selector': 'graffiti-map',
-  'templateUrl':'public/app/locator/graffiti-map.component.html'
+  selector: 'graffiti-map',
+  moduleId: module.id,
+  templateUrl:'graffiti-map.component.html'
 })
 
 export class GraffitiMapComponent
