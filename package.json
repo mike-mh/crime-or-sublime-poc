@@ -37,7 +37,8 @@
     "typings": "^1.0.4"
   },
   "scripts": {
-    "start": "tsc --outDir ./public/compiled_app && concurrently \"npm run tsc:w\" \"npm run-server\" && \"npm run uglify\"",
+    "start": "tsc --outDir ./public/compiled_app && npm run uglify && node index.js 8080",
+    "grunt": "grunt",
     "lite": "lite-server",
     "postinstall": "typings install",
     "run-server": "node index.js",
