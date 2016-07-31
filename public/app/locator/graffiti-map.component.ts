@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
   selector: 'graffiti-map',
   moduleId: module.id,
   directives: [GraffitiMapGallery],
-  templateUrl:'graffiti-map.component.html'
+  templateUrl:'graffiti-map.component.html',
+  styleUrls: ['graffiti-map.component.css']
 })
 
 export class GraffitiMapComponent

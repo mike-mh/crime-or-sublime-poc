@@ -8,7 +8,7 @@ module.exports = function (grunt) {
           }
         },
         files: [{
-          cwd: 'public/app/',
+          cwd: 'public/',
           src: '**/*.pug',
           dest: 'public/compiled_app',
           expand: true,
@@ -19,19 +19,30 @@ module.exports = function (grunt) {
     sass: {
       dist: {
         options: {
-	},
-	files: [{
-	  cwd: 'public/app',
-	  src: '**/*.sass',
+        },
+        files: [{
+          cwd: 'public/app',
+          src: '**/*.sass',
           dest: 'public/compiled_app',
-	  expand: true,
-	  ext: '.component.css'
-	}]
+          expand: true,
+          ext: '.component.css'
+        }]
+      }
+    },
+    uglify: {
+      build: {
+        files: [{
+          expand: true,
+          cwd: 'public/compiled_app',
+          src: '**/*.js',
+          dest: 'public/compiled_app'
+        }]
       }
     }
   });
   grunt.loadNpmTasks('grunt-contrib-pug');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.registerTask('default', ['pug', 'sass']);
+
+  grunt.registerTask('default', ['pug', 'sass', 'uglify']);
 }

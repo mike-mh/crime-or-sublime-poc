@@ -37,12 +37,14 @@
     "typings": "^1.0.4"
   },
   "scripts": {
-    "start": "tsc --outDir ./public/compiled_app && concurrently \"npm run tsc:w\" \"npm run lite\" ",
+    "start": "tsc --outDir ./public/compiled_app && concurrently \"npm run tsc:w\" \"npm run-server\" && \"npm run uglify\"",
     "lite": "lite-server",
     "postinstall": "typings install",
+    "run-server": "node index.js",
     "tsc": "tsc --outDir ./public/compiled_app",
     "tsc:w": "tsc -w --outDir ./public/compiled_app",
     "typings": "typings",
+    "uglify": "grunt uglify",
     "test": "cos-test"
   },
   "repository": {

@@ -1,4 +1,7 @@
 nav
-  a.class(href="/profile", title="profile") Profile
-  a.class(href="/rate", title="rate") Rate
-  a.class(href="/map", title="map") Map
+  // Should only show the profile and rate tabs after user has logged in
+  a.class([routerLink]="['/profile']", title="profile" routerLinkActive="active") Profile
+  a.class([routerLink]="['/rate']", title="rate" routerLinkActive="active") Rate
+  a.class([routerLink]="['/map']", title="map" routerLinkActive="active") Map
+  // Should only show this if the user has not logged in
+  a.class([routerLink]="['/login']", title="login" routerLink="active") Login
