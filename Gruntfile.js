@@ -8,10 +8,17 @@ module.exports = function (grunt) {
           }
         },
         files: [{
-          cwd: 'public/',
-          src: '**/*.pug',
-          dest: 'public/compiled_app',
+          cwd: 'public',
+          src: 'index.pug',
+          dest: 'public',
           expand: true,
+          ext: '.html'
+        },
+        {
+          cwd: 'public/app',
+          src: '**/*.component.pug',
+          dest: 'public/compiled_app',
+	  expand: true,
           ext: '.component.html'
         }]
       }
