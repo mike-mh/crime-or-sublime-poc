@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#
+# Upload the app to Heroku. Runs the compile script in package.json which
+# should compile typescript, pug and sass files then minimize the output. A
+# temporary branch is created which contains only the compiled html, css and
+# javascript files along with the node server before uploading them to Heroku.
+
+###############################################################################
+#                               CONSTANTS                                     #
+###############################################################################
+EXIT_OK=0
+ERROR=1
+
+CURRENT_DATE=$(date)
+
+ORIGINAL_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+DEPLOY_BRANCH="heroku_deploy"
+
+UNCOMPILED_COS_PATH="./public/app/"
+COMPILED_COS_PATH="./public/compiled_app"
+MAIN_PAGE_PATH="./public/index.html"
+
+# Should remove f later. Could be dangerous...
+HEROKU_DEPLOY_COS="git push -f heroku $DEPLOY_BRANCH:master"
+
+GIT_DEPLOY_COMMIT_MESSAGE="'Deployed CoS app created on: $CURRENT_DATE'"
+GIT_CHECKOUT_ORIGINAL_BRANCH="git checkout $ORIGINAL_BRANCH"
+GIT_CREATE_AND_CHECKOUT_DEPLOY_BRANCH="git checkout -b $DEPLOY_BRANCH"
+GIT_DELETE_DEPLOY_BRANCH="git branch -D $DEPLOY_BRANCH"
+GIT_REMOVE_UNCOMPILED_FILES="git rm -r --cached $UNCOMPILED_COS_PATH"
+GIT_ADD_COMPILED_FILES="git add -f $MAIN_PAGE_PATH $COMPILED_COS_PATH"
+GIT_COMMIT_COMPILED_APP="git commit -m 'test'"
+
+COMPILE_COS="npm run compile"
+
+###############################################################################
+#                                FUNCTIONS                                    #
+###############################################################################
+
+run_command ()
+{
+  if [ -z "$2" ]; then
+    printf "\nError: Both a command and error message are required for the\
+ run_command function.\n\n"
+    exit $ERROR
+  fi
+
+  $1
+
+  return_code=$?
+
+  if [ $return_code -ne 0 ]; then
+    printf $2
+    exit $ERROR
+  fi
+}
+
+
+###############################################################################
+#                               MAIN SEQUENCE                                 #
+###############################################################################
+
+if [ "$ORIGINAL_BRANCH" = "$DEPLOY_BRANCH" ]; then
+  printf "\nYou are current on the $DEPLOY_BRANCH which is supposed to be \
+temporary.\n\nLeave this branch and delete it.\n\n"
+   exit $ERROR
+fi
+
+#$COMPILE_COS
+run_command "$COMPILE_COS" "A TEST\n"
+
+run_command "$GIT_CREATE_AND_CHECKOUT_DEPLOY_BRANCH"  "\nError occured \
+creating temporary git branch.\n\n"
+
+run_command "$GIT_ADD_COMPILED_FILES" "\nCould not add compiled app to \
+repo.\n\n"
+
+run_command "$GIT_REMOVE_UNCOMPILED_FILES" "\nCould not remove uncompiled \
+files from repo.\n\n"
+
+run_command "$GIT_COMMIT_COMPILED_APP" "\nCould not commit compiled app to \
+the repo.\n\n"
+
+run_command "$HEROKU_DEPLOY_COS" "\nCould not deploy app to Heroku.\n\n"
+
+
+# Should consider changing this
+rm -rf ./public/app
+
+run_command "$GIT_CHECKOUT_ORIGINAL_BRANCH" "\nCould not checkout branch \
+script was called from.\n\n"
+
+run_command "$GIT_DELETE_DEPLOY_BRANCH" "\nError deleting $DEPLOY_BRANCH \
+branch. Be sure to resolve.\n\n"
