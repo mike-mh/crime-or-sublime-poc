@@ -1,1 +1,1 @@
-web: npm run tsc && grunt && node index.js $PORT 
+web: node index.js $PORT 
