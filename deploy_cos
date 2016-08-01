@@ -20,6 +20,8 @@ UNCOMPILED_COS_PATH="./public/app/"
 COMPILED_COS_PATH="./public/compiled_app"
 MAIN_PAGE_PATH="./public/index.html"
 
+REMOVE_UNCOMPILED_FILES="rm -rf $UNCOMPILED_COS_PATH"
+
 # Should remove f later. Could be dangerous...
 HEROKU_DEPLOY_COS="git push -f heroku $DEPLOY_BRANCH:master"
 
@@ -30,6 +32,7 @@ GIT_DELETE_DEPLOY_BRANCH="git branch -D $DEPLOY_BRANCH"
 GIT_REMOVE_UNCOMPILED_FILES="git rm -r --cached $UNCOMPILED_COS_PATH"
 GIT_ADD_COMPILED_FILES="git add -f $MAIN_PAGE_PATH $COMPILED_COS_PATH"
 GIT_COMMIT_COMPILED_APP="git commit -m 'test'"
+GIT_RESTORE_BRANCH_FILES "git checkout ."
 
 COMPILE_COS="npm run compile"
 
@@ -66,8 +69,7 @@ temporary.\n\nLeave this branch and delete it.\n\n"
    exit $ERROR
 fi
 
-#$COMPILE_COS
-run_command "$COMPILE_COS" "A TEST\n"
+run_command "$COMPILE_COS" "\nCould not compile CoS application.\n\n"
 
 run_command "$GIT_CREATE_AND_CHECKOUT_DEPLOY_BRANCH"  "\nError occured \
 creating temporary git branch.\n\n"
@@ -78,17 +80,19 @@ repo.\n\n"
 run_command "$GIT_REMOVE_UNCOMPILED_FILES" "\nCould not remove uncompiled \
 files from repo.\n\n"
 
+run_command "$REMOVE_UNCOMPILED_FILES" "\nError occured deleting uncompiled \
+files from this deploy repo."
+
 run_command "$GIT_COMMIT_COMPILED_APP" "\nCould not commit compiled app to \
 the repo.\n\n"
 
 run_command "$HEROKU_DEPLOY_COS" "\nCould not deploy app to Heroku.\n\n"
 
-
-# Should consider changing this
-rm -rf ./public/app
-
 run_command "$GIT_CHECKOUT_ORIGINAL_BRANCH" "\nCould not checkout branch \
 script was called from.\n\n"
+
+run_command "$GIT_RESTORE_BRANCH_FILES" "\nError restoring original files in \
+this branch."
 
 run_command "$GIT_DELETE_DEPLOY_BRANCH" "\nError deleting $DEPLOY_BRANCH \
 branch. Be sure to resolve.\n\n"
