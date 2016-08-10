@@ -28,6 +28,6 @@ const routes: RouterConfig = [
   }
 ];
 
-export const appRouteProviders = [
+export const cosRouteProviders = [
   provideRouter(routes)
 ];
