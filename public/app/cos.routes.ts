@@ -2,7 +2,7 @@ import { provideRouter, RouterConfig } from '@angular/router';
 import { GraffitiMapComponent } from './locator/graffiti-map.component'
 import { ProfileComponent } from './profile/profile.component';
 import { RateComponent } from './rate/rate.component';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './user-management/login/login.component';
 
 const routes: RouterConfig = [
   {
