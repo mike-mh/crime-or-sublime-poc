@@ -4,6 +4,18 @@
 # should compile typescript, pug and sass files then minimize the output. A
 # temporary branch is created which contains only the compiled html, css and
 # javascript files along with the node server before uploading them to Heroku.
+#
+# TO-DO:
+#
+#   - Check to ensure the developer has all of the proper prerequisites for
+#     Heroku installed. 
+#       * Ruby
+#       * SASS
+#       * Heroku Toolbelt
+#   - Check to ensure user is logged into Heroku and crime-or-sublime app is
+#     added.
+
+
 
 ###############################################################################
 #                               CONSTANTS                                     #

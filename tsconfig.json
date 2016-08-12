@@ -8,5 +8,10 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": true
-  }
+  },
+  "exclude": [
+    "public/libs/@angular",
+    "public/libs/rxjs",
+    "node_modules"
+  ]
 }

@@ -11,9 +11,8 @@ var configureRouter = require('./routes/routes');
 var router = express.Router();
 
 mongoose.connect('mongodb://localhost/cos');
-
 app.use(express.static('public'));
-app.use(express.static('.'));
+//app.use(express.static('.'));
 configureRouter(router);
 /*app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/public/index.html'));

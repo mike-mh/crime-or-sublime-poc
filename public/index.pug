@@ -11,16 +11,21 @@ html(lang="en")
     // Include google maps API
     script(src="http://maps.googleapis.com/maps/api/js")
     // Include node modules
-    script(src="node_modules/core-js/client/shim.min.js")
-    script(src="node_modules/zone.js/dist/zone.js")
-    script(src="node_modules/reflect-metadata/Reflect.js")
-    script(src="node_modules/systemjs/dist/system.src.js")
+    //script(src="node_modules/core-js/client/shim.min.js")
+    //script(src="node_modules/zone.js/dist/zone.js")
+    //script(src="node_modules/reflect-metadata/Reflect.js")
+    //script(src="node_modules/systemjs/dist/system.src.js")
+    script(src="libs/shim/shim.min.js")
+    script(src="libs/zone/zone.min.js")
+    script(src="libs/reflect-metadata/Reflect.js")
+    script(src="libs/systemjs/system.src.js")
     // Include typescript configurations
+    //script(src="systemjs.config.js")
     script(src="systemjs.config.js")
     // Import Angular project
     script
       | System
-      |   .import('public/compiled_app')
+      |   .import('compiled_app')
       |   .catch((err) => console.error(err));
   body
     cos
