@@ -12,6 +12,7 @@ const REGISTRATION_PAGE_URL = '/registration-page';
 
 function registerUserCallback(req, res) {
   let params = req.body.params;
+  console.log(req.body);
 
   if (params === undefined) {
     res.json({ error: { code: -500, message: 'No data received', id: 'id' } });
@@ -45,71 +46,11 @@ function registerUserCallback(req, res) {
 
   registrationPromise
     .then(() => res.json({message: 'success'}))
-    .catch((err) => res.send('AN ERROR: ' + err + '\n'))
-    //.error((err) => res.send('A special error: ' + err))
-
-
-/*  User.find({ $or: [{ email: email }, { userName: username }] }, (err, user) => {
-    if (err) {
-      res.json({ error: { code: -500, message: 'Could not check email was unique', id: 'id' } });
-    }
-
-    if (user.length) {
-      res.json({ error: { code: -500, message: 'That email or username is taken', id: 'id' } });
-    }
-    else {
-      let saltPromise = authenticationCtrl.generateSalt(password);
-      saltPromise
-        .then((salt) => {
-          //ok
-          let encryptPasswordPromise = authenticationCtrl.hashPassword(password, salt);
-          encryptPasswordPromise
-            .then((hashedPassword) => {
-              var newUser = new User({
-                userName: username,
-                email: email,
-                password: hashedPassword,
-                salt: salt
-              })
-              newUser.save((err, user) => {
-                if (err) {
-                  res.json({ error: { code: -500, message: 'Error saving user..', id: 'id' } });
-                  console.log(err);
-                }
-
-                else {
-                  res.json({ message: 'success' });
-                }
-              })
-            })
-            .catch((err) => { res.json({ error: { code: -500, message: 'Error saving user.', id: 'id' } });
-            console.log(err)});
-
-          //ok
-        })
-        .catch((err) => { res.json({ error: { code: -500, message: 'Failed to save user.', id: 'id' } }); });
-    }
-  });*/
-
-  //  let test = new User({ userName: username, email: email, });
-
-  //  test.save((err) => { if (err) { console.log(err); } });
-
-  //  console.log(test);
-
-  /*  User.find({}, (err, users) => {
-      if (err) {
-        console.log('Error: ' + err);
-        res.send(err);
-      }
-  
-      console.log(users);
-      res.send(users);
-    });*/
+    .catch((err) => res.send('AN ERROR: ' + err + '\n'));
 }
 
 function getRegistrationPageCallback(req, res) {
-
+  res.sendFile(path.join(__dirname + '/../../public/compiled_app/user-management/register-user/register-user.component.html'));
 }
 
 module.exports = function (router) {

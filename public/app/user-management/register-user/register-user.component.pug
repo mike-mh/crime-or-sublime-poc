@@ -1,0 +1,18 @@
+div(class="container")
+  // Should probably get rid of this
+  h
+    | Register Here:
+  form((ngSubmit)="onSubmit()")
+    div(class="form-group")
+      label(for="email")
+      input(type="text", class="form-control", id="name", [(ngModel)]="userEmail", name="test", required)
+    div(class="form-group")
+      label(for="username")
+        | Password
+      input(type="text", class="form-control", id="password", [(ngModel)]="userUsername", name="test2", required)
+    div(class="form-group")
+      label(for="password")
+        | Password
+      input(type="password", class="form-control", id="password", [(ngModel)]="userPassword", name="test2", required)
+    button(class="btn btn-default")
+      | Submit

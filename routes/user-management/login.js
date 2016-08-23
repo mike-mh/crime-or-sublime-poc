@@ -10,11 +10,7 @@ const LOGIN_SUBMISSION_URL = '/submit-credentials';
 
 function getLoginPageCallback(req, res)
 {
-  res.sendFile(path.join(__dirname + '/../../public/compiled_app/login/login.component.html'));
-  res.cookie('THIS_COOKIE', signature, { httpOnly: true, maxAge: (1000 * 60 * 5).toString() });
-  console.log('HI FRIEND!');
-  
-  models.User.find({userName: 'test'}, function(err, item) {console.log(JSON.stringify(item))});
+  res.sendFile(path.join(__dirname + '/../../public/compiled_app/user-management/login/login.component.html'));
 }
 
 function submitLoginCredentials(req, res)
