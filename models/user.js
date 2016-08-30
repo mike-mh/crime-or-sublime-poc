@@ -3,7 +3,7 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 let ObjectId = Schema.Types.ObjectId;
-let authenticationCtrl = require('../controllers/authentication');
+let authentication = require('../libs/authentication/authentication');
 
 let userSchema = new Schema(
   {
@@ -86,7 +86,7 @@ function checkUserExists(email)
       })
       .catch((err) => {
         reject('Error occured looking through usernames and emails.')});
-  });  
+  });
 }
 
 /**
@@ -129,7 +129,7 @@ function confirmPasswordsMatch(email, password)
   return new Promise((resolve, reject) => {
     this.getUserSalt(email)
       .then((salt) => {
-        return authenticationCtrl.hashPassword(password, salt)
+        return authentication.hashPassword(password, salt)
       })
       .then((hashedPassword) => {
         return this.find({ email: email }, {password: 1})
@@ -157,18 +157,17 @@ function confirmPasswordsMatch(email, password)
  *   resolves to an error.
  */
 function registerUser(username, email, password) {
-  // When a promise is undefined, the function ends.
 
   let generatedSalt = '';
 
   let chainedRegistrationPromise =
     this.emailAndUsernameAreUnique(username, email)
       .then(() => {
-        return authenticationCtrl.generateSalt(password);
+        return authentication.generateSalt(password);
       })
       .then((salt) => {
         generatedSalt = salt;
-        return authenticationCtrl.hashPassword(password, salt);
+        return authentication.hashPassword(password, salt);
       })
       .then((hashedPassword) => {
         let newUser = new User({

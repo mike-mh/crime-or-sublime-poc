@@ -11,6 +11,7 @@ const LOGIN_SUBMISSION_URL = '/submit-credentials';
 function getLoginPageCallback(req, res)
 {
   res.sendFile(path.join(__dirname + '/../../public/compiled_app/user-management/login/login.component.html'));
+  console.log(req.session);
 }
 
 function submitLoginCredentials(req, res)
@@ -41,6 +42,7 @@ function submitLoginCredentials(req, res)
   let verificationPromise =
     User.authenticate(email, password)
       .then((messsage) => {
+        req.session.email = email;
         res.json({message: 'success'});
       })
       .catch((err) => {res.send('AN ERROR: ' + err + '\n')});

@@ -6,6 +6,7 @@ let app = express();
 let path = require('path');
 let jws = require('jws');
 let mongoose = require('mongoose');
+let sessionConfiguration = require('./libs/session/session');
 
 mongoose.Promise = global.Promise;  
 
@@ -19,6 +20,7 @@ let bodyParser = require('body-parser');
 mongoose.connect('mongodb://localhost/cos');
 
 app.use(express.static('public'));
+app.use(sessionConfiguration);
 
 configureRouter(router);
 

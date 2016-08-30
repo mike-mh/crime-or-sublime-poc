@@ -1,0 +1,1 @@
+const FB_REDIRECT_PATH = 'fb_redirect';

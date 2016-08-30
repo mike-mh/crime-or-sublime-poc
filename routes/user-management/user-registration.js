@@ -1,16 +1,20 @@
 'use strict';
 
+let validator = require('validator');
 let path = require('path');
 let bodyParser = require('body-parser');
 let jsonParser = bodyParser.json();
 
 let User = require('../../models/user');
-let authenticationCtrl = require('../../controllers/authentication');
+let authenticationCtrl = require('../../libs/authentication/authentication');
 
 const REGISTER_USER_URL = '/register-user';
 const REGISTRATION_PAGE_URL = '/registration-page';
 
 function registerUserCallback(req, res) {
+  let mxResponse;
+  let mxError;
+
   let params = req.body.params;
   console.log(req.body);
 
@@ -38,7 +42,13 @@ function registerUserCallback(req, res) {
     return;
   }
 
-  // TO-DO: Email validation goes here.
+  console.log(email)
+
+  // Verify email address
+  if (!validator.isEmail(email)) {
+    res.json({error: {message: 'AN ERROR: Invalid email address'}});
+    return;
+  }
 
   // Ensure username and email doesn't exist then register. A bit smelly and
   // could probably refactor
@@ -46,7 +56,7 @@ function registerUserCallback(req, res) {
 
   registrationPromise
     .then(() => res.json({message: 'success'}))
-    .catch((err) => res.send('AN ERROR: ' + err + '\n'));
+    .catch((err) => res.json({error: {message: 'AN ERROR: ' + err}}));
 }
 
 function getRegistrationPageCallback(req, res) {

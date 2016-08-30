@@ -1,8 +1,10 @@
-var path = require('path');
+'use strict';
+
+let path = require('path');
 //var router = require('express').Router();
-var addGraffitiRoutes = require('./graffiti/index');
-var addSocialMediaRoutes = require('./social-media/index');
-var addUserManagementRoutes = require('./user-management/index');
+let addGraffitiRoutes = require('./graffiti/index');
+let addSocialMediaRoutes = require('./social-media/index');
+let addUserManagementRoutes = require('./user-management/index');
 
 const DEFAULT_URL = '/';
 

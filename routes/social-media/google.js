@@ -1,0 +1,1 @@
+const GOOGLE_REDIRECT_PATH = 'google_redirect';
