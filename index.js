@@ -17,8 +17,11 @@ let configureRouter = require('./routes/routes');
 let router = express.Router();
 let bodyParser = require('body-parser');
 
-mongoose.connect('mongodb://localhost/cos');
-
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI);
+} else {
+  mongoose.connect('mongodb://localhost/cos');
+}
 app.use(express.static('public'));
 app.use(sessionConfiguration);
 
