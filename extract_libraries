@@ -1,0 +1,73 @@
+#!/bin/bash
+EXIT_OK=0
+ERROR=1
+
+NODE_MODULES_PATH="./node_modules"
+COS_PUBLIC_LIBRARIES_PATH="./public/libs"
+
+ANGULAR_2_PATH="$NODE_MODULES_PATH/@angular/"
+SHIM_PATH="$NODE_MODULES_PATH/core-js/client/shim.min.js"
+ZONE_PATH="$NODE_MODULES_PATH/zone.js/dist/zone.min.js"
+REFLECT_METADATA_PATH="$NODE_MODULES_PATH/reflect-metadata/Reflect.js"
+SYSTEMJS_PATH="$NODE_MODULES_PATH/systemjs/dist/system.src.js"
+RXJS_PATH="$NODE_MODULES_PATH/rxjs/"
+
+make_library_directory ()
+{
+  if [ -z "$1" ]; then
+    printf "The name of the directory to place library files in is required.\n"
+    exit $ERROR
+  fi
+
+  mkdir $COS_PUBLIC_LIBRARIES_PATH/$1
+
+  return_code=$?
+
+  if [ $return_code -ne 0 ]; then
+    exit $ERROR
+  fi
+}
+
+extract_library ()
+{
+  if [ -z "$2" ]; then
+    printf "Both a library directory name and path to the library in the \
+'node_modules' directory must be given to extract the files\n\n"
+  fi
+
+  # Just use recursion, even when it isn't necessarry.
+  cp -R $1 $COS_PUBLIC_LIBRARIES_PATH/$2
+
+  return_code=$?
+
+  if [ $return_code -ne 0 ]; then
+    exit $ERROR
+  fi
+}
+
+# Ensure libraries directory exists
+if [ -d ./public/libs ]; then
+  rm -rf ./public/libs
+fi
+
+mkdir ./public/libs
+
+# Extract all needed libraries from node_modules and place in public directory
+make_library_directory "shim"
+extract_library $SHIM_PATH "shim/shim.min.js"
+
+make_library_directory "reflect-metadata"
+extract_library $REFLECT_METADATA_PATH "reflect-metadata/Reflect.js"
+
+make_library_directory "zone"
+extract_library $ZONE_PATH "zone/zone.min.js"
+
+make_library_directory "systemjs"
+extract_library $SYSTEMJS_PATH "systemjs/system.src.js"
+
+make_library_directory "@angular"
+extract_library $ANGULAR_2_PATH "/"
+
+make_library_directory "rxjs"
+extract_library $RXJS_PATH "/"
+

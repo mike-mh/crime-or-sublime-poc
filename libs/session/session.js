@@ -10,5 +10,5 @@ module.exports = session({
   cookie: { maxAge: 2628000000 },
   resave: false,
   saveUninitialized: false,
-  store: new MongoStore({url: 'mongodb://localhost/cos'})
+  store: new MongoStore({url: process.env.MONGODB_URI || 'mongodb://localhost/cos'})
 });
