@@ -44,7 +44,7 @@ GIT_DELETE_DEPLOY_BRANCH="git branch -D $DEPLOY_BRANCH"
 GIT_REMOVE_UNCOMPILED_FILES="git rm -r --cached $UNCOMPILED_COS_PATH"
 GIT_ADD_COMPILED_FILES="git add -f $MAIN_PAGE_PATH $COMPILED_COS_PATH"
 GIT_COMMIT_COMPILED_APP="git commit -m 'test'"
-GIT_RESTORE_BRANCH_FILES "git checkout ."
+#GIT_RESTORE_BRANCH_FILES="git checkout ."
 
 COMPILE_COS="npm run compile"
 
@@ -103,8 +103,8 @@ run_command "$HEROKU_DEPLOY_COS" "\nCould not deploy app to Heroku.\n\n"
 run_command "$GIT_CHECKOUT_ORIGINAL_BRANCH" "\nCould not checkout branch \
 script was called from.\n\n"
 
-run_command "$GIT_RESTORE_BRANCH_FILES" "\nError restoring original files in \
-this branch."
+#run_command "$GIT_RESTORE_BRANCH_FILES" "\nError restoring original files in \
+#this branch."
 
 run_command "$GIT_DELETE_DEPLOY_BRANCH" "\nError deleting $DEPLOY_BRANCH \
 branch. Be sure to resolve.\n\n"
