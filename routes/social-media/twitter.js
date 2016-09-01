@@ -31,7 +31,7 @@ function generateOAuthClient() {
 
 function tieAccessTokenToSession(req, res) {
 	// TO-DO. Verify that the attributed email is correct.
-	req.session.twitterOAuthToken = req.query.oauth_token;
+	//req.session.twitterOAuthToken = req.query.oauth_token;
 	//req.session.twitterOAuthVerifier = req.query.oauth_verifier;
 	generateOAuthClient().getOAuthAccessToken(
 		req.session.twitterOAuthRequestToken,
@@ -39,7 +39,7 @@ function tieAccessTokenToSession(req, res) {
 		req.query.oauth_verifier,
 		(error, oauthAccessToken, oauthAccessTokenSecret, results) => {
 			if (error) {
-				res.send("Error getting OAuth access token : ");
+				res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier);
 			} else {
 				req.session.twitterOAuthAccessToken = oauthAccessToken;
 				req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
@@ -67,7 +67,6 @@ function tieAccessTokenToSession(req, res) {
 module.exports = function (router) {
 	router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
 }
-
 
 /*
 let express = require('express');
