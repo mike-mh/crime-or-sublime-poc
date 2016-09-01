@@ -20,10 +20,8 @@ function tieAccessTokenToSession(req, res) {
   // TO-DO. Verify that the attributed email is correct.
   req.session.twitterOAuthToken = req.query.oauth_token;
   req.session.twitterOAuthVerifier = req.query.oauth_verifier;
-  console.log(req.session);
-  res.send(req.session);
 
-//  res.redirect('/');
+  res.redirect('/');
 }
 
 module.exports = function(router)
