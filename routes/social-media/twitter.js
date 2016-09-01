@@ -93,9 +93,10 @@ module.exports = function (router) {
         console.log(JSON.stringify(req.session));
       }
     });
-
-    router.get('do-it', postATweetDemo);
   });
+
+  router.get('do-it', postATweetDemo);
+
 }
 
 /*
