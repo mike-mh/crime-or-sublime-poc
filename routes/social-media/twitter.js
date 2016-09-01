@@ -14,14 +14,16 @@ const OAUTH_VERSION = '1.0';
 const REDIRECT_URL = 'https://crime-or-sublime.herokuapp.com' + GET_OAUTH_PARAMS_URL;
 const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
 
-
+//const TWITTER_POST_TEST
 
 function tieAccessTokenToSession(req, res) {
   // TO-DO. Verify that the attributed email is correct.
   req.session.twitterOAuthToken = req.query.oauth_token;
   req.session.twitterOAuthVerifier = req.query.oauth_verifier;
+  console.log(req.session);
+  res.send(JSON.parse(req.session));
 
-  res.redirect('/');
+//  res.redirect('/');
 }
 
 module.exports = function(router)
