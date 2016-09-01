@@ -53,7 +53,7 @@ function tieAccessTokenToSession(req, res) {
 							res.send("Error getting twitter screen name : " + JSON.stringify(data) + " " + JSON.stringify(req.session));
 						} else {
 							req.session.twitterScreenName = data["screen_name"];
-							res.send('You are signed in: ' + req.session.twitterScreenName)
+							res.send('You are signed in: ' + JSON.stringify(data))
 						}
 					}
 				);
