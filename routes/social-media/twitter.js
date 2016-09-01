@@ -21,7 +21,7 @@ function tieAccessTokenToSession(req, res) {
   req.session.twitterOAuthToken = req.query.oauth_token;
   req.session.twitterOAuthVerifier = req.query.oauth_verifier;
   console.log(req.session);
-  res.send(JSON.parse(req.session));
+  res.send(req.session);
 
 //  res.redirect('/');
 }
