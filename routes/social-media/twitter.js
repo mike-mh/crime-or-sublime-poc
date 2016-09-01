@@ -70,10 +70,11 @@ function postATweetDemo(req, res) {
   oauthClient.post(
     "https://api.twitter.com/1.1/statuses/update.json",
     req.session.twitterOAuthAccessToken,
-    req.session.twitterOAuthAccessToken,
-    { 'status': 'It\s Alive!!!!' }, function (error, data) {
+    req.session.twitterOAuthAccessTokenSecret,
+    { 'status': 'It\s Alive!!!!' },
+    (error, data) => {
       if (error) {
-        res.send('nope');
+        res.send('nope' + ' ' + JSON.stringify(data));
       }
       else res.send('check it');
     }
