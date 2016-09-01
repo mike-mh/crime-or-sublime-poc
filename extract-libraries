@@ -23,7 +23,9 @@ make_library_directory ()
     exit $ERROR
   fi
 
-  mkdir $COS_PUBLIC_LIBRARIES_PATH/$1
+  # In case library needs parent directories, keep -p
+  # TO-DO: Work better architecture here.
+  mkdir -p $COS_PUBLIC_LIBRARIES_PATH/$1
 
   return_code=$?
 
@@ -64,8 +66,8 @@ if [ $return_code -ne $EXIT_OK ]; then
   exit $ERROR
 fi
 
-make_library_directory "bootstrap"
-extract_library $MIN_BOOTSTRAP_PATH "bootstrap/bootstrap.min.css"
+make_library_directory "css/bootstrap"
+extract_library $MIN_BOOTSTRAP_PATH "css/bootstrap/bootstrap.min.css"
 
 # Only need this file for compilation. Don't include with client
 wget $GOOGLE_MAPS_TS
