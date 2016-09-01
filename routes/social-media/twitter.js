@@ -60,32 +60,36 @@ function tieAccessTokenToSession(req, res) {
 
 				//    res.redirect('/');
 			}
+		}
+	);
+}
 
-			module.exports = function (router) {
-				router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
-			}
+module.exports = function (router) {
+	router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
+}
 
 
 /*
 
-
-let app = require('express');
+let express = require('express');
+let app = express()
 
 app.listen(3000, function () {
-  console.log('Server running on port ' + port.toString());
+	console.log('Server running on port 3000');
 });
 
 app.get('/', (req, res) => {
-  consumer().getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results){
-    if (error) {
-      res.send("Error getting OAuth request token : " + sys.inspect(error), 500);
-    } else {  
-      req.session.twitterOAuthRequestToken = oauthToken;
-      req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
-      res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.twitterOAuthRequestToken);      
-    }
-  });
+	consumer().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
+		if (error) {
+						res.send("Error getting OAuth request token : " + sys.inspect(error), 500);
+		} else {
+						req.session.twitterOAuthRequestToken = oauthToken;
+						req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
+						res.redirect("https://twitter.com/oauth/authorize?oauth_token=" + req.session.twitterOAuthRequestToken);
+		}
+	});
 });
+
 let oa2 = new OAuth(
     TWITTER_REQUEST_TOKEN_URL,
     TWITTER_ACCESS_TOKEN_URL,
