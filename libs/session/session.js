@@ -11,4 +11,5 @@ module.exports = session({
   resave: false,
   saveUninitialized: false,
   store: new MongoStore({url: process.env.MONGODB_URI || 'mongodb://localhost/cos'})
+//  store: new MongoStore({url: 'mongodb://0x4d464d48:theVictory12345!@ds145245.mlab.com:45245/cos_alpha'})
 });

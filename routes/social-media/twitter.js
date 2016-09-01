@@ -39,7 +39,7 @@ function tieAccessTokenToSession(req, res) {
 		req.query.oauth_verifier,
 		(error, oauthAccessToken, oauthAccessTokenSecret, results) => {
 			if (error) {
-				res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier);
+				res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier + " " + JSON.stringify(reqsession));
 			} else {
 				req.session.twitterOAuthAccessToken = oauthAccessToken;
 				req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
