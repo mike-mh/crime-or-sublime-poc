@@ -66,9 +66,22 @@ function tieAccessTokenToSession(req, res) {
 
 module.exports = function (router) {
 	router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
+	router.get('/test', (req, res) => {
+		generateOAuthClient().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
+			if (error) {
+				res.send("Error getting OAuth request token : ");
+			} else {
+				req.session.twitterOAuthRequestToken = oauthToken;
+				req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
+				res.redirect("https://twitter.com/oauth/authorize?oauth_token=" + req.session.twitterOAuthRequestToken);
+				console.log(JSON.stringify(req.session));
+			}
+		});
+	});
 }
 
 /*
+
 let express = require('express');
 let app = express()
 let sessionConfiguration = require('../../libs/session/session');
@@ -78,17 +91,6 @@ app.listen(3000, function () {
 	console.log('Server running on port 3000');
 });
 
-app.get('/', (req, res) => {
-	generateOAuthClient().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
-		if (error) {
-						res.send("Error getting OAuth request token : ");
-		} else {
-						req.session.twitterOAuthRequestToken = oauthToken;
-						req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
-						res.redirect("https://twitter.com/oauth/authorize?oauth_token=" + req.session.twitterOAuthRequestToken);
-		}
-	});
-});
 /*
 
 let oa2 = new OAuth(
