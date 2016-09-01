@@ -26,58 +26,74 @@ function generateOAuthClient() {
     OAUTH_VERSION,
     REDIRECT_URL,
     ENCRYPTION_ALGORITHIM
-	);
+  );
 }
 
 function tieAccessTokenToSession(req, res) {
-	// TO-DO. Verify that the attributed email is correct.
-	//req.session.twitterOAuthToken = req.query.oauth_token;
-	//req.session.twitterOAuthVerifier = req.query.oauth_verifier;
-	generateOAuthClient().getOAuthAccessToken(
-		req.session.twitterOAuthRequestToken,
-		req.session.twitterOAuthRequestTokenSecret,
-		req.query.oauth_verifier,
-		(error, oauthAccessToken, oauthAccessTokenSecret, results) => {
-			if (error) {
-				res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier + " " + JSON.stringify(req.session));
-			} else {
-				req.session.twitterOAuthAccessToken = oauthAccessToken;
-				req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
-				// Right here is where we would write out some nice user stuff
-				generateOAuthClient().get(
-					"https://api.twitter.com/1.1/account/verify_credentials.json",
-					req.session.twitterOAuthAccessToken,
-					req.session.twitterOAuthAccessTokenSecret,
-					(error, data, response) => {
-						if (error) {
-							res.send("Error getting twitter screen name : " + JSON.stringify(data) + " " + JSON.stringify(req.session));
-						} else {
-							req.session.twitterScreenName = data["screen_name"];
-							res.send('You are signed in: ' + JSON.stringify(data))
-						}
-					}
-				);
+  // TO-DO. Verify that the attributed email is correct.
+  //req.session.twitterOAuthToken = req.query.oauth_token;
+  //req.session.twitterOAuthVerifier = req.query.oauth_verifier;
+  generateOAuthClient().getOAuthAccessToken(
+    req.session.twitterOAuthRequestToken,
+    req.session.twitterOAuthRequestTokenSecret,
+    req.query.oauth_verifier,
+    (error, oauthAccessToken, oauthAccessTokenSecret, results) => {
+      if (error) {
+        res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier + " " + JSON.stringify(req.session));
+      } else {
+        req.session.twitterOAuthAccessToken = oauthAccessToken;
+        req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
+        // Right here is where we would write out some nice user stuff
+        generateOAuthClient().get(
+          "https://api.twitter.com/1.1/account/verify_credentials.json",
+          req.session.twitterOAuthAccessToken,
+          req.session.twitterOAuthAccessTokenSecret,
+          (error, data, response) => {
+            if (error) {
+              res.send("Error getting twitter screen name : " + JSON.stringify(data) + " " + JSON.stringify(req.session));
+            } else {
+              req.session.twitterScreenName = data["screen_name"];
+              res.send('You are signed in: ' + JSON.stringify(data))
+            }
+          }
+        );
 
-				//    res.redirect('/');
-			}
-		}
-	);
+        //    res.redirect('/');
+      }
+    }
+  );
+}
+
+function postATweetDemo(req, res) {
+  let oauthClient = generateOAuthClient();
+
+  oauthClient.post(
+    "https://api.twitter.com/1.1/statuses/update.json",
+    req.session.twitterOAuthAccessToken,
+    req.session.twitterOAuthAccessToken,
+    { 'status': 'It\s Alive!!!!' }, function (error, data) {
+      if (error) {
+        res.send('nope');
+      }
+      else res.send('check it');
+    }
+  );
 }
 
 module.exports = function (router) {
-	router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
-	router.get('/test', (req, res) => {
-		generateOAuthClient().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
-			if (error) {
-				res.send("Error getting OAuth request token : ");
-			} else {
-				req.session.twitterOAuthRequestToken = oauthToken;
-				req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
-				res.redirect("https://twitter.com/oauth/authorize?oauth_token=" + req.session.twitterOAuthRequestToken);
-				console.log(JSON.stringify(req.session));
-			}
-		});
-	});
+  router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
+  router.get('/test', (req, res) => {
+    generateOAuthClient().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
+      if (error) {
+        res.send("Error getting OAuth request token : ");
+      } else {
+        req.session.twitterOAuthRequestToken = oauthToken;
+        req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
+        res.redirect("https://twitter.com/oauth/authorize?oauth_token=" + req.session.twitterOAuthRequestToken);
+        console.log(JSON.stringify(req.session));
+      }
+    });
+  });
 }
 
 /*
