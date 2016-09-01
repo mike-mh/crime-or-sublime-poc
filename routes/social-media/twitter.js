@@ -17,46 +17,75 @@ const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
 
 //const TWITTER_POST_TEST
 
+function generateOAuthClient() {
+  return new OAuth(
+    TWITTER_REQUEST_TOKEN_URL,
+    TWITTER_ACCESS_TOKEN_URL,
+    process.env.TWITTER_ID,
+    process.env.TWITTER_SECRET,
+    OAUTH_VERSION,
+    REDIRECT_URL,
+    ENCRYPTION_ALGORITHIM
+	);
+}
+
 function tieAccessTokenToSession(req, res) {
-    // TO-DO. Verify that the attributed email is correct.
-    req.session.twitterOAuthToken = req.query.oauth_token;
-    req.session.twitterOAuthVerifier = req.query.oauth_verifier;
-    let oa = new OAuth(
-        TWITTER_REQUEST_TOKEN_URL,
-        TWITTER_ACCESS_TOKEN_URL,
-        process.env.TWITTER_ID,
-        process.env.TWITTER_SECRET,
-        OAUTH_VERSION,
-        REDIRECT_URL,
-        ENCRYPTION_ALGORITHIM
-    );
+	// TO-DO. Verify that the attributed email is correct.
+	req.session.twitterOAuthToken = req.query.oauth_token;
+	//req.session.twitterOAuthVerifier = req.query.oauth_verifier;
+	generateOAuthClient().getOAuthAccessToken(
+		req.session.twitterOAuthRequestToken,
+		req.session.twitterOAuthRequestTokenSecret,
+		req.query.oauth_verifier,
+		(error, oauthAccessToken, oauthAccessTokenSecret, results) => {
+			if (error) {
+				res.send("Error getting OAuth access token : ");
+			} else {
+				req.session.twitterOAuthAccessToken = oauthAccessToken;
+				req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
+				// Right here is where we would write out some nice user stuff
+				generateOAuthClient().get(
+					"http://twitter.com/account/verify_credentials.json",
+					req.session.twitterOAuthAccessToken,
+					req.session.twitterOAuthAccessTokenSecret,
+					(error, data, response) => {
+						if (error) {
+							res.send("Error getting twitter screen name : ");
+						} else {
+							req.session.twitterScreenName = data["screen_name"];
+							res.send('You are signed in: ' + req.session.twitterScreenName)
+						}
+					}
+				);
 
-    oa.get('https://api.twitter.com/1.1/account/verify_credentials.json',
-        req.query.oauth_token,
-        req.query.oauth_verifier,
-        function (error, twitterResponseData, result) {
-            if (error) {
-                console.log(error)
-                res.end(JSON.stringify(error));
-                return;
-            }
-            try {
-                console.log(JSON.parse(twitterResponseData));
-            } catch (parseError) {
-                console.log(parseError);
-            }
-            console.log(twitterResponseData);
-            response.end(twitterResponseData);
-        });
+				//    res.redirect('/');
+			}
 
-    //    res.redirect('/');
+			module.exports = function (router) {
+				router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
+			}
 
-}
 
-module.exports = function (router) {
-    router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
-}
+/*
 
+
+let app = require('express');
+
+app.listen(3000, function () {
+  console.log('Server running on port ' + port.toString());
+});
+
+app.get('/', (req, res) => {
+  consumer().getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results){
+    if (error) {
+      res.send("Error getting OAuth request token : " + sys.inspect(error), 500);
+    } else {  
+      req.session.twitterOAuthRequestToken = oauthToken;
+      req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
+      res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.twitterOAuthRequestToken);      
+    }
+  });
+});
 let oa2 = new OAuth(
     TWITTER_REQUEST_TOKEN_URL,
     TWITTER_ACCESS_TOKEN_URL,
@@ -67,7 +96,17 @@ let oa2 = new OAuth(
     ENCRYPTION_ALGORITHIM
 );
 
-/*
+oa2.getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results){
+    if (error) {
+      res.send("Error getting OAuth request token : " + sys.inspect(error), 500);
+    } else {  
+      req.session.oauthRequestToken = oauthToken;
+      req.session.oauthRequestTokenSecret = oauthTokenSecret;
+      res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.oauthRequestToken);      
+    }
+
+});
+
 http.createServer(function (request, response) {
     oa2.getOAuthRequestToken(function (error, oAuthToken, oAuthTokenSecret, results) {
         var urlObj = url.parse(request.url, true);
