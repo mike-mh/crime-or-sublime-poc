@@ -70,18 +70,19 @@ module.exports = function (router) {
 
 
 /*
-
 let express = require('express');
 let app = express()
+let sessionConfiguration = require('../../libs/session/session');
+app.use(sessionConfiguration);
 
 app.listen(3000, function () {
 	console.log('Server running on port 3000');
 });
 
 app.get('/', (req, res) => {
-	consumer().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
+	generateOAuthClient().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
 		if (error) {
-						res.send("Error getting OAuth request token : " + sys.inspect(error), 500);
+						res.send("Error getting OAuth request token : ");
 		} else {
 						req.session.twitterOAuthRequestToken = oauthToken;
 						req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
@@ -89,6 +90,7 @@ app.get('/', (req, res) => {
 		}
 	});
 });
+/*
 
 let oa2 = new OAuth(
     TWITTER_REQUEST_TOKEN_URL,
