@@ -45,7 +45,7 @@ function tieAccessTokenToSession(req, res) {
 				req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
 				// Right here is where we would write out some nice user stuff
 				generateOAuthClient().get(
-					"https://api.twitter.com/account/verify_credentials.json",
+					"https://api.twitter.com/1.1/account/verify_credentials.json",
 					req.session.twitterOAuthAccessToken,
 					req.session.twitterOAuthAccessTokenSecret,
 					(error, data, response) => {
