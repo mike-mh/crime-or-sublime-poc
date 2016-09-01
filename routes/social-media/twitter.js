@@ -1,10 +1,11 @@
 'use strict';
 
 let http = require('http');
+let https = require('https');
 let OAuth = require('oauth').OAuth;
 let url = require('url');
-let bodyParser = require('body-parser');
 let jsonParser = bodyParser.json();
+let bodyParser = require('body-parser');
 
 const GET_OAUTH_PARAMS_URL = '/retrieve_twitter_token';
 
@@ -17,16 +18,34 @@ const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
 //const TWITTER_POST_TEST
 
 function tieAccessTokenToSession(req, res) {
-  // TO-DO. Verify that the attributed email is correct.
-  req.session.twitterOAuthToken = req.query.oauth_token;
-  req.session.twitterOAuthVerifier = req.query.oauth_verifier;
+    // TO-DO. Verify that the attributed email is correct.
+    req.session.twitterOAuthToken = req.query.oauth_token;
+    req.session.twitterOAuthVerifier = req.query.oauth_verifier;
 
-  res.redirect('/');
+    oa.get('https://api.twitter.com/1.1/account/verify_credentials.json',
+        req.query.oauth_token,
+        req.query.oauth_verifier,
+        function (error, twitterResponseData, result) {
+            if (error) {
+                console.log(error)
+                res.end(JSON.stringify(error));
+                return;
+            }
+            try {
+                console.log(JSON.parse(twitterResponseData));
+            } catch (parseError) {
+                console.log(parseError);
+            }
+            console.log(twitterResponseData);
+            response.end(twitterResponseData);
+        });
+
+//    res.redirect('/');
+
 }
 
-module.exports = function(router)
-{
-  router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
+module.exports = function (router) {
+    router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
 }
 
 /*
