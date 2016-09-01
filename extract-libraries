@@ -12,6 +12,10 @@ REFLECT_METADATA_PATH="$NODE_MODULES_PATH/reflect-metadata/Reflect.js"
 SYSTEMJS_PATH="$NODE_MODULES_PATH/systemjs/dist/system.src.js"
 RXJS_PATH="$NODE_MODULES_PATH/rxjs/"
 
+MIN_BOOTSTRAP_URL="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+MIN_BOOTSTRAP_PATH="./bootstrap.min.css"
+GOOGLE_MAPS_TS="https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/googlemaps/google.maps.d.ts"
+
 make_library_directory ()
 {
   if [ -z "$1" ]; then
@@ -23,7 +27,7 @@ make_library_directory ()
 
   return_code=$?
 
-  if [ $return_code -ne 0 ]; then
+  if [ $return_code -ne $EXIT_OK ]; then
     exit $ERROR
   fi
 }
@@ -40,7 +44,7 @@ extract_library ()
 
   return_code=$?
 
-  if [ $return_code -ne 0 ]; then
+  if [ $return_code -ne $EXIT_OK ]; then
     exit $ERROR
   fi
 }
@@ -51,6 +55,26 @@ if [ -d ./public/libs ]; then
 fi
 
 mkdir ./public/libs
+
+# Get all libraries from URLs, e.g. bootstrap
+wget $MIN_BOOTSTRAP_URL
+return_code=$?
+
+if [ $return_code -ne $EXIT_OK ]; then
+  exit $ERROR
+fi
+
+make_library_directory "bootstrap"
+extract_library $MIN_BOOTSTRAP_PATH "bootstrap/bootstrap.min.css"
+
+# Only need this file for compilation. Don't include with client
+wget $GOOGLE_MAPS_TS
+return_code=$?
+
+if [ $return_code -ne $EXIT_OK ]; then
+  exit $ERROR
+fi
+
 
 # Extract all needed libraries from node_modules and place in public directory
 make_library_directory "shim"

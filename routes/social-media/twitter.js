@@ -11,7 +11,7 @@ const GET_OAUTH_PARAMS_URL = '/retrieve_twitter_token';
 const TWITTER_REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token';
 const TWITTER_ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token';
 const OAUTH_VERSION = '1.0';
-const REDIRECT_URL = 'https://crime-or-sublime.herokuapp.com';
+const REDIRECT_URL = 'https://crime-or-sublime.herokuapp.com' + GET_OAUTH_PARAMS_URL;
 const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
 
 
