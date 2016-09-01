@@ -41,8 +41,8 @@ function tieAccessTokenToSession(req, res) {
 			if (error) {
 				res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier + " " + JSON.stringify(req.session));
 			} else {
-			//	req.session.twitterOAuthAccessToken = oauthAccessToken;
-			//	req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
+				req.session.twitterOAuthAccessToken = oauthAccessToken;
+				req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
 				// Right here is where we would write out some nice user stuff
 				generateOAuthClient().get(
 					"http://twitter.com/account/verify_credentials.json",
@@ -50,7 +50,7 @@ function tieAccessTokenToSession(req, res) {
 					req.session.twitterOAuthAccessTokenSecret,
 					(error, data, response) => {
 						if (error) {
-							res.send("Error getting twitter screen name : ");
+							res.send("Error getting twitter screen name : " + JSON.stringify(req.session));
 						} else {
 							req.session.twitterScreenName = data["screen_name"];
 							res.send('You are signed in: ' + req.session.twitterScreenName)
