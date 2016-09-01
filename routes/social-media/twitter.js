@@ -95,7 +95,7 @@ module.exports = function (router) {
     });
   });
 
-  router.get('do-it', postATweetDemo);
+  router.get('/do-it', postATweetDemo);
 
 }
 
