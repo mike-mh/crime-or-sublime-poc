@@ -50,7 +50,7 @@ function tieAccessTokenToSession(req, res) {
 					req.session.twitterOAuthAccessTokenSecret,
 					(error, data, response) => {
 						if (error) {
-							res.send("Error getting twitter screen name : " + JSON.stringify(req.session));
+							res.send("Error getting twitter screen name : " + JSON.stringify(data) + " " + JSON.stringify(req.session));
 						} else {
 							req.session.twitterScreenName = data["screen_name"];
 							res.send('You are signed in: ' + req.session.twitterScreenName)
