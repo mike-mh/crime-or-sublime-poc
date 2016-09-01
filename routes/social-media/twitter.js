@@ -4,8 +4,7 @@ let http = require('http');
 let https = require('https');
 let OAuth = require('oauth').OAuth;
 let url = require('url');
-let bodyParser = require('body-parser');
-
+let bodyParser = require('body-parser')
 let jsonParser = bodyParser.json();
 
 const GET_OAUTH_PARAMS_URL = '/retrieve_twitter_token';
@@ -22,6 +21,15 @@ function tieAccessTokenToSession(req, res) {
     // TO-DO. Verify that the attributed email is correct.
     req.session.twitterOAuthToken = req.query.oauth_token;
     req.session.twitterOAuthVerifier = req.query.oauth_verifier;
+    let oa = new OAuth(
+        TWITTER_REQUEST_TOKEN_URL,
+        TWITTER_ACCESS_TOKEN_URL,
+        process.env.TWITTER_ID,
+        process.env.TWITTER_SECRET,
+        OAUTH_VERSION,
+        REDIRECT_URL,
+        ENCRYPTION_ALGORITHIM
+    );
 
     oa.get('https://api.twitter.com/1.1/account/verify_credentials.json',
         req.query.oauth_token,
@@ -41,7 +49,7 @@ function tieAccessTokenToSession(req, res) {
             response.end(twitterResponseData);
         });
 
-//    res.redirect('/');
+    //    res.redirect('/');
 
 }
 
@@ -49,8 +57,7 @@ module.exports = function (router) {
     router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
 }
 
-/*
-let oa = new OAuth(
+let oa2 = new OAuth(
     TWITTER_REQUEST_TOKEN_URL,
     TWITTER_ACCESS_TOKEN_URL,
     process.env.TWITTER_ID,
@@ -60,8 +67,9 @@ let oa = new OAuth(
     ENCRYPTION_ALGORITHIM
 );
 
+/*
 http.createServer(function (request, response) {
-    oa.getOAuthRequestToken(function (error, oAuthToken, oAuthTokenSecret, results) {
+    oa2.getOAuthRequestToken(function (error, oAuthToken, oAuthTokenSecret, results) {
         var urlObj = url.parse(request.url, true);
         var authURL = 'https://twitter.com/' +
             'oauth/authenticate?oauth_token=' + oAuthToken;
