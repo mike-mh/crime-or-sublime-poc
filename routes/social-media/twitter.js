@@ -4,8 +4,9 @@ let http = require('http');
 let https = require('https');
 let OAuth = require('oauth').OAuth;
 let url = require('url');
-let jsonParser = bodyParser.json();
 let bodyParser = require('body-parser');
+
+let jsonParser = bodyParser.json();
 
 const GET_OAUTH_PARAMS_URL = '/retrieve_twitter_token';
 
