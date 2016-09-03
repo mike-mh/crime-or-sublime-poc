@@ -293,5 +293,7 @@ function makeTweetWithImage(tweetText, imageUrl, session) {
 }
 
 twitterClient.makeTweetWithImage = makeTweetWithImage;
+twitterClient.associateRequestTokensWithSession = associateRequestTokensWithSession;
+twitterClient.associateAccessTokensWithSession = associateAccessTokensWithSession;
 
 module.exports = twitterClient;
