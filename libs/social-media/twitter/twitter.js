@@ -60,8 +60,8 @@ function associateRequestTokensWithSession(session) {
       if (error) {
         reject(error);
       } else {
-        session.twitterOAuthAccessToken = oauthToken;
-        session.twitterOAuthAccessTokenSecret = oauthTokenSecret;
+        session.twitterOAuthRequestToken = oauthToken;
+        session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
         resolve(1);
       }
     });
