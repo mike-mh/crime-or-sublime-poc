@@ -56,18 +56,15 @@ function associateRequestTokensWithSession(session) {
   let client = generateTwitterOAuthClient();
 
   let getRequestTokensPromise = new Promise((resolve, reject) => {
-    client.getOAuthRequestToken(
-      session.twitterOAuthRequestToken,
-      session.twitterOAuthRequestTokenSecret,
-      (error, oauthAccessToken, oauthAccessTokenSecret, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          req.session.twitterOAuthAccessToken = oauthAccessToken;
-          req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
-          resolve(1);
-        }
-      });
+    client.getOAuthRequestToken((error, oauthToken, oauthTokenSecret, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        req.session.twitterOAuthAccessToken = oauthAccessToken;
+        req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
+        resolve(1);
+      }
+    });
   });
 
   return getRequestTokensPromise;
@@ -90,7 +87,7 @@ function associateAccessTokensWithSession(oAuthVerifier, session) {
       session.twitterOAuthRequestToken,
       session.twitterOAuthRequestTokenSecret,
       oAuthVerifier,
-      (error, oauthAccessToken, oauthAccessTokenSecret, results) => { 
+      (error, oauthAccessToken, oauthAccessTokenSecret, results) => {
         if (error) {
           reject(error);
         }
@@ -102,7 +99,7 @@ function associateAccessTokensWithSession(oAuthVerifier, session) {
 
         validationPromise
           .then(() => { resolve(1); })
-          .catch((error) => {reject(error)});
+          .catch((error) => { reject(error) });
       });
   });
 }
@@ -119,17 +116,17 @@ function validateCredentials(oAuthVerifier, session) {
   let client = generateTwitterOAuthClient();
 
   let validationPromise = new Promise((resolve, reject) => {
-  client.get(
-    TWITTER_VERIFY_CREDENTIALS_URL,
-    session.twitterOAuthAccessToken,
-    session.twitterOAuthAccessTokenSecret,
-    (error, data, response) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve(1);
-      }
-    });
+    client.get(
+      TWITTER_VERIFY_CREDENTIALS_URL,
+      session.twitterOAuthAccessToken,
+      session.twitterOAuthAccessTokenSecret,
+      (error, data, response) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve(1);
+        }
+      });
   });
 }
 
