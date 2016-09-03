@@ -102,6 +102,8 @@ function associateAccessTokensWithSession(oAuthVerifier, session) {
           .catch((error) => { reject(error) });
       });
   });
+
+  return getAccessTokensPromise;
 }
 
 /**
