@@ -128,6 +128,8 @@ function validateCredentials(oAuthVerifier, session) {
         }
       });
   });
+
+  return validationPromise;
 }
 
 /**
