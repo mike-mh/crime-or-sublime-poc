@@ -15,7 +15,7 @@ const TWEET_IMAGE_PATH = '/tweet-image';
 
 function twitterLogin(req, res) {
   twitterClient
-    .associateRequestTokenWithSession(req.session)
+    .associateRequestTokensWithSession(req.session)
       .then(() => {
         res.redirect(
           TWITTER_VALIDATION_URL + req.session.twitterOAuthRequestToken);
