@@ -20,7 +20,6 @@ function tweetImage(req, res) {
 
 
 module.exports = function (router) {
-  router.get(GET_OAUTH_PARAMS_PATH, tieAccessTokenToSession);
   router.get(TWEET_IMAGE_PATH, tweetImage);
 }
 
