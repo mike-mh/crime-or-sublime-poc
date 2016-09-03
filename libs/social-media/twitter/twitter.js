@@ -19,9 +19,9 @@ const TWITTER_UPDATE_URL =
 
 
 const COS_URL = 'https://crime-or-sublime.herokuapp.com';
-const GET_OAUTH_PARAMS_PATH = '/retrieve_twitter_token';
+const OAUTH_REDIRECT_PATH = '/twitter-redirect';
 const OAUTH_VERSION = '1.0';
-const REDIRECT_URL = COS_URL + GET_OAUTH_PARAMS_PATH;
+const REDIRECT_URL = COS_URL + OAUTH_REDIRECT_PATH;
 const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
 
 
