@@ -1,152 +1,26 @@
 'use strict';
 
-let http = require('http');
-let https = require('https');
-let OAuth = require('oauth').OAuth;
-let url = require('url');
+let twitterClient = require('../../libs/social-media/twitter/twitter');
+
 let bodyParser = require('body-parser')
 let jsonParser = bodyParser.json();
 
-const GET_OAUTH_PARAMS_URL = '/retrieve_twitter_token';
+const GET_OAUTH_PARAMS_PATH = '/retrieve-twitter-token';
+const TWEET_IMAGE_PATH = '/tweet-image';
 
-const TWITTER_REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token';
-const TWITTER_ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token';
-const OAUTH_VERSION = '1.0';
-const REDIRECT_URL = 'https://crime-or-sublime.herokuapp.com' + GET_OAUTH_PARAMS_URL;
-const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
-
-//const TWITTER_POST_TEST
-
-function generateOAuthClient() {
-  return new OAuth(
-    TWITTER_REQUEST_TOKEN_URL,
-    TWITTER_ACCESS_TOKEN_URL,
-    process.env.TWITTER_ID,
-    process.env.TWITTER_SECRET,
-    OAUTH_VERSION,
-    REDIRECT_URL,
-    ENCRYPTION_ALGORITHIM
-  );
+function tweetImage(req, res) {
+  twitterClient
+    .makeTweetWithImage(
+      'I hope this works too', 
+      'https://i.imgur.com/Y9rP9eks.jpg',
+       req.session)
+        .then(() => { res.send('OH YEAH!'); })
+        .catch((error) => { res.send('ERROR' + error); });
 }
 
-function tieAccessTokenToSession(req, res) {
-  // TO-DO. Verify that the attributed email is correct.
-  //req.session.twitterOAuthToken = req.query.oauth_token;
-  //req.session.twitterOAuthVerifier = req.query.oauth_verifier;
-  generateOAuthClient().getOAuthAccessToken(
-    req.session.twitterOAuthRequestToken,
-    req.session.twitterOAuthRequestTokenSecret,
-    req.query.oauth_verifier,
-    (error, oauthAccessToken, oauthAccessTokenSecret, results) => {
-      if (error) {
-        res.send("Error getting OAuth access token : " + req.session.twitterOAuthRequestToken + " " + req.session.twitterOAuthRequestTokenSecret + " " + req.query.oauth_verifier + " " + JSON.stringify(req.session));
-      } else {
-        req.session.twitterOAuthAccessToken = oauthAccessToken;
-        req.session.twitterOAuthAccessTokenSecret = oauthAccessTokenSecret;
-        // Right here is where we would write out some nice user stuff
-        generateOAuthClient().get(
-          "https://api.twitter.com/1.1/account/verify_credentials.json",
-          req.session.twitterOAuthAccessToken,
-          req.session.twitterOAuthAccessTokenSecret,
-          (error, data, response) => {
-            if (error) {
-              res.send("Error getting twitter screen name : " + JSON.stringify(data) + " " + JSON.stringify(req.session));
-            } else {
-              req.session.twitterScreenName = data["screen_name"];
-              res.send('You are signed in: ' + JSON.stringify(data))
-            }
-          }
-        );
-
-        //    res.redirect('/');
-      }
-    }
-  );
-}
-
-function postATweetDemo(req, res) {
-  let oauthClient = generateOAuthClient();
-
-  oauthClient.post(
-    "https://api.twitter.com/1.1/statuses/update.json",
-    req.session.twitterOAuthAccessToken,
-    req.session.twitterOAuthAccessTokenSecret,
-    { 'status': 'It\s Alive!!!!' },
-    (error, data) => {
-      if (error) {
-        res.send('nope' + ' ' + JSON.stringify(data));
-      }
-      else res.send('check it');
-    }
-  );
-}
 
 module.exports = function (router) {
-  router.get(GET_OAUTH_PARAMS_URL, tieAccessTokenToSession);
-  router.get('/test', (req, res) => {
-    generateOAuthClient().getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
-      if (error) {
-        res.send("Error getting OAuth request token : ");
-      } else {
-        req.session.twitterOAuthRequestToken = oauthToken;
-        req.session.twitterOAuthRequestTokenSecret = oauthTokenSecret;
-        res.redirect("https://twitter.com/oauth/authorize?oauth_token=" + req.session.twitterOAuthRequestToken);
-        console.log(JSON.stringify(req.session));
-      }
-    });
-  });
-
-  router.get('/do-it', postATweetDemo);
-
+  router.get(GET_OAUTH_PARAMS_PATH, tieAccessTokenToSession);
+  router.get(TWEET_IMAGE_PATH, tweetImage);
 }
 
-/*
-
-let express = require('express');
-let app = express()
-let sessionConfiguration = require('../../libs/session/session');
-app.use(sessionConfiguration);
-
-app.listen(3000, function () {
-	console.log('Server running on port 3000');
-});
-
-/*
-
-let oa2 = new OAuth(
-    TWITTER_REQUEST_TOKEN_URL,
-    TWITTER_ACCESS_TOKEN_URL,
-    process.env.TWITTER_ID,
-    process.env.TWITTER_SECRET,
-    OAUTH_VERSION,
-    REDIRECT_URL,
-    ENCRYPTION_ALGORITHIM
-);
-
-oa2.getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret, results){
-    if (error) {
-      res.send("Error getting OAuth request token : " + sys.inspect(error), 500);
-    } else {  
-      req.session.oauthRequestToken = oauthToken;
-      req.session.oauthRequestTokenSecret = oauthTokenSecret;
-      res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.oauthRequestToken);      
-    }
-
-});
-
-http.createServer(function (request, response) {
-    oa2.getOAuthRequestToken(function (error, oAuthToken, oAuthTokenSecret, results) {
-        var urlObj = url.parse(request.url, true);
-        var authURL = 'https://twitter.com/' +
-            'oauth/authenticate?oauth_token=' + oAuthToken;
-        console.log('THE TOKEN!');
-        console.log(oAuthToken);
-        response.writeHead(302, {
-            'Location': 'https://api.twitter.com/oauth/authenticate?oauth_token=' + oAuthToken
-            //add other headers here...
-        });
-        response.end();
-    });
-
-}).listen(3000);
-*/
