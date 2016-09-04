@@ -110,7 +110,7 @@ function generateShareUrl() {
   };
 
   let shareUrl = FACEBOOK_URL +
-                 FACEBOOK_SHARE_PATH +
+                 FACEBOOK_SHARE_PATH + '?' +
                  querystring.stringify(shareParams);
   
   return shareUrl;
