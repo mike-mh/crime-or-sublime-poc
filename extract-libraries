@@ -74,7 +74,7 @@ make_library_directory "css/bootstrap"
 extract_library $MIN_BOOTSTRAP_PATH "css/bootstrap/bootstrap.min.css"
 
 # Only need this file for compilation. Don't include with client
-if [ -e ./google.maps.d.ts ] then;
+if [ -e ./google.maps.d.ts ]; then
   rm ./google.maps.d.ts
 fi
 
