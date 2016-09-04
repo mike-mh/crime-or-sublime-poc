@@ -78,6 +78,7 @@ function associateAccessTokenWithSession(code, session) {
     );
   });
 
+  return getAccessTokenPromise;
 }
 
 RedditClient.getRedditLoginUrl = getRedditLoginUrl;
