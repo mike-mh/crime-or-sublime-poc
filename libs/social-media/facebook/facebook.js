@@ -10,8 +10,8 @@ const FACEBOOK_REDIRECT_URI =
 
 const FACEBOOK_URL = 'https://www.facebook.com';
 const FACEBOOK_GRAPH_URL = 'https://graph.facebook.com';
-const FACEBOOK_AUTHROIZE_PATH = '/dialog/oauth';
-const FACEBOOK_ACCESS_TOKEN_PATH = '/v2.7/oauth/access_token';
+const FACEBOOK_AUTHROIZE_PATH = 'dialog/oauth';
+const FACEBOOK_ACCESS_TOKEN_PATH = 'v2.7/oauth/access_token';
 
 const COS_PERMISSION_SCOPES = ['public_profile', 'email', 'publish_actions'];
 
@@ -70,15 +70,19 @@ function getFacebookLoginUrl() {
  */
 function associateRequestTokenWithSession(code, session) {
   let client = new generateFBRequestTokenOAuthClient();
+  console.log('HERE');
   let getRequestTokenPromise = new Promise((resolve, reject) => {
     client.getOAuthAccessToken(
       code,
       { redirect_uri: FACEBOOK_REDIRECT_URI },
       (error, accessToken, refreshToken, results) => {
+  console.log('HERE');
         if (error || results.error) {
+  console.log('ERROR');
           reject(error || results.error);
         }
 
+  console.log('NO ERROR');
         session.facebookAccessToken = accessToken;
         session.facebookRefreshToken = refreshToken;
 

@@ -11,7 +11,7 @@ function facebookLogin(req, res) {
 }
 
 function facebookRetrieveAccessToken(req, ress) {
-  let code = req.query.code
+  let code = req.query.code;
   facebookClient
     .associateRequestTokenWithSession(code, req.session)
       .then(() => {  res.send(req.session); })
