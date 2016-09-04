@@ -42,7 +42,9 @@ function getRedditLoginUrl() {
     .getAuthorizeUrl({
       redirect_uri: REDDIT_REDIRECT_URI,
       scope: REDDIT_PERMISSIONS,
-      state: 'Need to figure out what this does'
+      state: 'Need to figure out what this does',
+      response_type: 'code',
+      duration: 'temporary'
   });
 
   return loginUrl;
