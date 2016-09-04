@@ -12,6 +12,15 @@ function redditLogin(req, res) {
   res.redirect(loginUrl);
 }
 
+function redditRetrieveAccessToken(req, res) {
+  let code = req.query.code;
+  RedditClient
+    .associateAccessTokenWithSession(code, req.session)
+      .then(() => { res.send(req.session); })
+      .catch((error) => { res.send(error); });
+}
+
 module.exports = function(router) {
   router.get(REDDIT_LOGIN_URL, redditLogin);
+  router.get(REDDIT_REDIRECT_PATH, redditRetrieveAccessToken);
 }

@@ -67,9 +67,9 @@ function getFacebookLoginUrl() {
  * @return {Promise} - Rejects itself if an error occurs, simple resolves
  *   otherwise.
  */
-function associateRequestTokenWithSession(code, session) {
+function associateAccessTokenWithSession(code, session) {
   let client = new generateFBRequestTokenOAuthClient();
-  let getRequestTokenPromise = new Promise((resolve, reject) => {
+  let getAccessTokenPromise = new Promise((resolve, reject) => {
     client.getOAuthAccessToken(
       code,
       { redirect_uri: FACEBOOK_REDIRECT_URI },
@@ -86,7 +86,7 @@ function associateRequestTokenWithSession(code, session) {
     );
   });
 
-  return getRequestTokenPromise;
+  return getAccessTokenPromise;
 }
 
 /**
@@ -116,7 +116,7 @@ function generateShareUrl() {
 
 FacebookClient.getFacebookLoginUrl = getFacebookLoginUrl;
 FacebookClient.generateShareUrl = generateShareUrl;
-FacebookClient.associateRequestTokenWithSession =
-  associateRequestTokenWithSession;
+FacebookClient.associateAccessTokenWithSession =
+  associateAccessTokenWithSession;
 
 module.exports = FacebookClient;

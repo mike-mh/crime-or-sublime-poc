@@ -50,5 +50,35 @@ function getRedditLoginUrl() {
   return loginUrl;
 }
 
+/**
+ * Use this function to associate the access_token with the current session.
+ * 
+ * @param code {string} - Code retrieved from Reddit server after login.
+ * @param session {object} - Session associated with user.
+ * 
+ * @return {Promise} - Promise resolves to error if one occurs. Otherwise,
+ *   simply resolves.
+ */
+function associateAccessTokenWithSession(code, session) {
+  let client = generateRedditOAuthClient();
+    let getAccessTokenPromise = new Promise((resolve, reject) => {
+    client.getOAuthAccessToken(
+      code,
+      { redirect_uri: REDDIT_REDIRECT_URI },
+      (error, accessToken, refreshToken, results) => {
+        if (error || results.error) {
+          reject(error || results.error);
+        }
+
+        session.redditAccessToken = accessToken;
+        session.redditRefreshToken = refreshToken;
+
+        resolve(1);
+      }
+    );
+  });
+
+}
+
 RedditClient.getRedditLoginUrl = getRedditLoginUrl;
 module.exports = RedditClient;

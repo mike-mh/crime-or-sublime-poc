@@ -19,7 +19,7 @@ function facebookShare(req, res) {
 function facebookRetrieveAccessToken(req, res) {
   let code = req.query.code;
   FacebookClient
-    .associateRequestTokenWithSession(code, req.session)
+    .associateAccessTokenWithSession(code, req.session)
       .then(() => {  res.send('winner'); })
       .catch((error) => { res.send(error); });
 }
