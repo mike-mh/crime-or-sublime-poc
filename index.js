@@ -17,13 +17,7 @@ let configureRouter = require('./routes/routes');
 let router = express.Router();
 let bodyParser = require('body-parser');
 
-mongoose.connect(mongoUri, function (err, res) {
-  if (err) {
-    console.log('ERROR connecting to: ' + process.env.MONGODB_URI + '. ' + err);
-  } else {
-    console.log('Succeeded connected to: ' + process.env.MONGODB_URI);
-  }
-});
+mongoose.connect(mongoUri, function (err, res) {});
 
 app.use(express.static('public'));
 app.use(sessionConfiguration);
