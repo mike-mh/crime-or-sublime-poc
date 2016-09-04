@@ -12,6 +12,7 @@ const FACEBOOK_URL = 'https://www.facebook.com';
 const FACEBOOK_GRAPH_URL = 'https://graph.facebook.com';
 const FACEBOOK_AUTHROIZE_PATH = '/dialog/oauth';
 const FACEBOOK_ACCESS_TOKEN_PATH = '/v2.7/oauth/access_token';
+const FACEBOOK_SHARE_PATH = '/dialog/share';
 
 const COS_PERMISSION_SCOPES = ['public_profile', 'email', 'publish_actions'];
 
@@ -70,19 +71,15 @@ function getFacebookLoginUrl() {
  */
 function associateRequestTokenWithSession(code, session) {
   let client = new generateFBRequestTokenOAuthClient();
-  console.log('HERE');
   let getRequestTokenPromise = new Promise((resolve, reject) => {
     client.getOAuthAccessToken(
       code,
       { redirect_uri: FACEBOOK_REDIRECT_URI },
       (error, accessToken, refreshToken, results) => {
-  console.log('HERE');
         if (error || results.error) {
-  console.log('ERROR');
           reject(error || results.error);
         }
 
-  console.log('NO ERROR');
         session.facebookAccessToken = accessToken;
         session.facebookRefreshToken = refreshToken;
 
@@ -94,7 +91,33 @@ function associateRequestTokenWithSession(code, session) {
   return getRequestTokenPromise;
 }
 
+/**
+ * Use this function to generate a URL to allow a user to share the page og a
+ * certain graffiti.
+ * 
+ * TO-DO: Still need to work in 'likes' and other actions after app is approved
+ *        by Facebook. Also, this is preliminary. Should have more functionlity
+ *        soon.
+ * 
+ * @return {string} - URL for user to share image and login if necessarry.
+ */
+function generateShareUrl() {
+  let shareParams = {
+    app_id: '1111086175633223',
+    display: 'popup',
+    redirect_uri: 'https://crime-or-sublime.herokuapp.com',
+    href: 'https://crime-or-sublime.herokuapp.com'    
+  };
+
+  let shareUrl = FACEBOOK_URL +
+                 FACEBOOK_SHARE_PATH +
+                 querystring.stringify(shareParams);
+  
+  return shareUrl;
+}
+
 facebookClient.getFacebookLoginUrl = getFacebookLoginUrl;
+facebookClient.generateShareUrl = generateShareUrl;
 facebookClient.associateRequestTokenWithSession =
   associateRequestTokenWithSession;
 
