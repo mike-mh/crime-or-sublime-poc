@@ -64,7 +64,10 @@ function associateAccessTokenWithSession(code, session) {
     let getAccessTokenPromise = new Promise((resolve, reject) => {
     client.getOAuthAccessToken(
       code,
-      { redirect_uri: REDDIT_REDIRECT_URI },
+      {
+        redirect_uri: REDDIT_REDIRECT_URI,
+        grant_type: 'authorization_code'
+      },
       (error, accessToken, refreshToken, results) => {
         if (error || results.error) {
           reject(error || results.error);
