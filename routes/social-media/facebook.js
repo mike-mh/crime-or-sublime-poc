@@ -10,7 +10,7 @@ function facebookLogin(req, res) {
   res.redirect(loginUrl);
 }
 
-function facebookRetrieveAccessToken(req, ress) {
+function facebookRetrieveAccessToken(req, res) {
   let code = req.query.code;
   facebookClient
     .associateRequestTokenWithSession(code, req.session)
