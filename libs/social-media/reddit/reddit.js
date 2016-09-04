@@ -43,12 +43,13 @@ function generateRedditOAuthClient() {
  */
 function generateRedditOAuthClientWithBasicAuth() {
   let encodedAuthToken =
-    new Buffer(
-      'Basic ' + process.env.REDDIT_ID + ':' + process.env.REDDIT_SECRET)
-        .toString('base64');
+    new Buffer(process.env.REDDIT_ID + ':' + process.env.REDDIT_SECRET)
+      .toString('base64');
+
+  let authorizationValue = 'Basic ' + encodedAuthToken;
 
   let basicAuthHeader = {
-    Authorization: encodedAuthToken
+    Authorization: authorizationValue
   };
 
   return new OAuth2(
