@@ -81,4 +81,7 @@ function associateAccessTokenWithSession(code, session) {
 }
 
 RedditClient.getRedditLoginUrl = getRedditLoginUrl;
+RedditClient
+  .associateAccessTokenWithSession = associateAccessTokenWithSession;
+
 module.exports = RedditClient;
