@@ -2,6 +2,7 @@
 
 let facebookClient = require('../../libs/social-media/facebook/facebook');
 
+const FB_LOGIN_PATH = '/fb-login'
 const FB_REDIRECT_PATH = '/fb-redirect';
 
 function facebookLogin(req, res) {
@@ -18,5 +19,6 @@ function facebookRetrieveAccessToken(req, ress) {
 }
 
 module.exports = function (router) {
-  router.get(FB_REDIRECT_PATH, (req, res) => {});
+  router.get(FB_LOGIN_PATH, facebookLogin);
+  router.get(FB_REDIRECT_PATH, facebookLogin);
 }
