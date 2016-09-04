@@ -92,4 +92,4 @@ facebookClient.getFacebookLoginUrl = getFacebookLoginUrl;
 facebookClient.associateRequestTokenWithSession =
   associateRequestTokenWithSession;
 
-module.exports.facebookClient = facebookClient;
+module.exports = facebookClient;
