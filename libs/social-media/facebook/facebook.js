@@ -86,6 +86,8 @@ function associateRequestTokenWithSession(code, session) {
       }
     );
   });
+
+  return getRequestTokenPromise;
 }
 
 facebookClient.getFacebookLoginUrl = getFacebookLoginUrl;

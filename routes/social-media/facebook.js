@@ -14,8 +14,8 @@ function facebookRetrieveAccessToken(req, ress) {
   let code = req.query.code
   facebookClient
     .associateRequestTokenWithSession(code, req.session)
-    .then(() => {  res.send(req.session); })
-    .catch((error) => { res.send(error); });
+      .then(() => {  res.send(req.session); })
+      .catch((error) => { res.send(error); });
 }
 
 module.exports = function (router) {
