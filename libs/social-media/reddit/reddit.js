@@ -47,7 +47,7 @@ function generateRedditOAuthClientWithBasicAuth() {
       .toString('base64');
 
   let basicAuthHeader = {
-    Authorization: encodedAuthToken;
+    Authorization: encodedAuthToken
   };
 
   return new OAuth2(
