@@ -1,6 +1,6 @@
 'use strict';
 
-let twitterClient = require('../../libs/social-media/twitter/twitter');
+let TwitterClient = require('../../libs/social-media/twitter/twitter');
 
 let bodyParser = require('body-parser')
 let jsonParser = bodyParser.json();
@@ -14,7 +14,7 @@ const TWITTER_REDIRECT_PATH = '/twitter-redirect';
 const TWEET_IMAGE_PATH = '/tweet-image';
 
 function twitterLogin(req, res) {
-  twitterClient
+  TwitterClient
     .associateRequestTokensWithSession(req.session)
       .then(() => {
         res.redirect(
@@ -27,7 +27,7 @@ function twitterLogin(req, res) {
 
 function getRedirectTokens(req, res) {
   let oAuthVerifier = req.query.oauth_verifier;
-  twitterClient
+  TwitterClient
     .associateAccessTokensWithSession(oAuthVerifier, req.session)
       .then(() => {
         res.send("OH YEAH!");
@@ -36,7 +36,7 @@ function getRedirectTokens(req, res) {
 }
 
 function tweetImage(req, res) {
-  twitterClient
+  TwitterClient
     .makeTweetWithImage(
       'I hope this works too', 
       'https://i.imgur.com/Y9rP9eks.jpg',

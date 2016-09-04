@@ -2,8 +2,6 @@
 
 let OAuth2 = require('oauth').OAuth2;
 let querystring = require('querystring');
-let express = require('express');
-let app = express();
 
 const FACEBOOK_REDIRECT_URI =
   'https://crime-or-sublime.herokuapp.com/fb-redirect';
@@ -16,7 +14,7 @@ const FACEBOOK_SHARE_PATH = '/dialog/share';
 
 const COS_PERMISSION_SCOPES = ['public_profile', 'email', 'publish_actions'];
 
-function facebookClient() { }
+function FacebookClient() { }
 
 // Unfortuantely, Facebook has two different domains for their authorization
 // and acess token URLs. Use two different clients for each situation.
@@ -116,9 +114,9 @@ function generateShareUrl() {
   return shareUrl;
 }
 
-facebookClient.getFacebookLoginUrl = getFacebookLoginUrl;
-facebookClient.generateShareUrl = generateShareUrl;
-facebookClient.associateRequestTokenWithSession =
+FacebookClient.getFacebookLoginUrl = getFacebookLoginUrl;
+FacebookClient.generateShareUrl = generateShareUrl;
+FacebookClient.associateRequestTokenWithSession =
   associateRequestTokenWithSession;
 
-module.exports = facebookClient;
+module.exports = FacebookClient;

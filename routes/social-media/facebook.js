@@ -1,24 +1,24 @@
 'use strict';
 
-let facebookClient = require('../../libs/social-media/facebook/facebook');
+let FacebookClient = require('../../libs/social-media/facebook/facebook');
 
 const FB_LOGIN_PATH = '/fb-login'
 const FB_REDIRECT_PATH = '/fb-redirect';
 const FB_SHARE_PATH = '/fb-share'
 
 function facebookLogin(req, res) {
-  let loginUrl = facebookClient.getFacebookLoginUrl();
+  let loginUrl = FacebookClient.getFacebookLoginUrl();
   res.redirect(loginUrl);
 }
 
 function facebookShare(req, res) {
-  let shareUrl = facebookClient.generateShareUrl();
+  let shareUrl = FacebookClient.generateShareUrl();
   res.redirect(shareUrl);
 }
 
 function facebookRetrieveAccessToken(req, res) {
   let code = req.query.code;
-  facebookClient
+  FacebookClient
     .associateRequestTokenWithSession(code, req.session)
       .then(() => {  res.send('winner'); })
       .catch((error) => { res.send(error); });

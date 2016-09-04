@@ -25,7 +25,7 @@ const REDIRECT_URL = COS_URL + OAUTH_REDIRECT_PATH;
 const ENCRYPTION_ALGORITHIM = 'HMAC-SHA1';
 
 
-function twitterClient() { }
+function TwitterClient() { }
 
 /**
  * Generates the OAuth client from OAuth library
@@ -293,8 +293,8 @@ function makeTweetWithImage(tweetText, imageUrl, session) {
     .then(() => { return new Promise(tweetPromise); });
 }
 
-twitterClient.makeTweetWithImage = makeTweetWithImage;
-twitterClient.associateRequestTokensWithSession = associateRequestTokensWithSession;
-twitterClient.associateAccessTokensWithSession = associateAccessTokensWithSession;
+TwitterClient.makeTweetWithImage = makeTweetWithImage;
+TwitterClient.associateRequestTokensWithSession = associateRequestTokensWithSession;
+TwitterClient.associateAccessTokensWithSession = associateAccessTokensWithSession;
 
-module.exports = twitterClient;
+module.exports = TwitterClient;
