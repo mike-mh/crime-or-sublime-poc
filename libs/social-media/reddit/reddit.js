@@ -32,6 +32,35 @@ function generateRedditOAuthClient() {
 }
 
 /**
+ * To get access_token from Reddit a 'Basic Authorization' header is needed
+ * before a token will be granted. This function generates an OAuth2 client
+ * that makes use of this header.
+ * 
+ * More details can be found here:
+ * https://tools.ietf.org/html/rfc2617
+ * 
+ * @return { OAuth2 } - OAuth2 client configured for CoS with Basic Auth.
+ */
+function generateRedditOAuthClientWithBasicAuth() {
+  let encodedAuthToken =
+    new Buffer(process.env.REDDIT_ID + ':' + pocess.env.REDDIT_SECRET)
+      .toString('base64');
+
+  let basicAuthHeader = {
+    Authorization: encodedAuthToken;
+  };
+
+  return new OAuth2(
+    process.env.REDDIT_ID,
+    process.env.REDDIT_SECRET,
+    REDDIT_URL,
+    REDDIT_AUTHORIZE_PATH,
+    REDDIT_ACCESS_TOKEN_PATH,
+    basicAuthHeader
+  );
+}
+
+/**
  * Use this function to generate the Reddit login URL.
  * 
  * @return {string} - Reddit login URL.
@@ -60,8 +89,9 @@ function getRedditLoginUrl() {
  *   simply resolves.
  */
 function associateAccessTokenWithSession(code, session) {
-  let client = generateRedditOAuthClient();
-    let getAccessTokenPromise = new Promise((resolve, reject) => {
+  let client = generateRedditOAuthClientWithBasicAuth();  
+
+  let getAccessTokenPromise = new Promise((resolve, reject) => {
     client.getOAuthAccessToken(
       code,
       {
