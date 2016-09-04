@@ -20,5 +20,5 @@ function facebookRetrieveAccessToken(req, ress) {
 
 module.exports = function (router) {
   router.get(FB_LOGIN_PATH, facebookLogin);
-  router.get(FB_REDIRECT_PATH, facebookLogin);
+  router.get(FB_REDIRECT_PATH, facebookRetrieveAccessToken);
 }
