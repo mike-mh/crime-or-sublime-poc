@@ -77,7 +77,7 @@ function getRedditLoginUrl() {
       scope: REDDIT_PERMISSIONS,
       state: 'Need to figure out what this does',
       response_type: 'code',
-      duration: 'temporary'
+      duration: 'permanent'
   });
 
   return loginUrl;
@@ -132,7 +132,7 @@ function associateAccessTokenWithSession(code, session) {
  */
 function postToReddit(session) {
   let client = generateRedditOAuthClient();
-//  client.setAuthMethod('bearer');
+  client.setAuthMethod('bearer');
 
   // It's a bit smelly to do it this way but library doesn't support a basic
   // post method yet.
