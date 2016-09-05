@@ -10,7 +10,7 @@ const REDDIT_AUTHORIZE_PATH = '/api/v1/authorize';
 const REDDIT_ACCESS_TOKEN_PATH = '/api/v1/access_token';
 const REDDIT_SUBMIT_PATH = '/api/submit';
 
-const REDDIT_PERMISSIONS = ['submit', 'identity', 'history'];
+const REDDIT_PERMISSIONS = ['submit']//, 'identity', 'history'];
 
 const REDDIT_REDIRECT_URI = 'https://crime-or-sublime.herokuapp.com/reddit-redirect';
 
@@ -150,9 +150,9 @@ function postToReddit(session) {
   let submitRedditThreadPromise = new Promise((resolve, reject) => {
     client._request(
       'GET',
-      REDDIT_OAUTH_URL + '/api/v1/me', //REDDIT_SUBMIT_PATH,
+      REDDIT_OAUTH_URL + REDDIT_SUBMIT_PATH,
       {Authorization: client.buildAuthHeader(session.redditAccessToken)},
-      null,//postBody,
+      postBody,
       null,
       (error, data) => {
         console.log(session.redditAccessToken);
