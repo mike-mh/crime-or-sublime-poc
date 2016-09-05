@@ -142,7 +142,7 @@ function postToReddit(session) {
   }
 
   let postBody = querystring.stringify(postObject);
-  let submitRedditThreadPromise = new Promise((resolve, rejects) => {
+  let submitRedditThreadPromise = new Promise((resolve, reject) => {
     client._request(
       "POST",
       REDDIT_URL + REDDIT_SUBMIT_PATH,
