@@ -150,7 +150,7 @@ function postToReddit(session) {
   let submitRedditThreadPromise = new Promise((resolve, reject) => {
     client._request(
       'GET',
-      REDDIT_OAUTH_URL + 'api/v1/me', //REDDIT_SUBMIT_PATH,
+      REDDIT_OAUTH_URL + '/api/v1/me', //REDDIT_SUBMIT_PATH,
       {Authorization: client.buildAuthHeader(session.redditAccessToken)},
       null,//postBody,
       null,
