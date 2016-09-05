@@ -151,10 +151,12 @@ function postToReddit(session) {
     client._request(
       'POST',
       REDDIT_OAUTH_URL + REDDIT_SUBMIT_PATH,
-      null,
+      {Authorization: client.buildAuthHeader(session.redditAccessToken)},
       postBody,
-      session.redditAccessToken,
+      null,
       (error, data) => {
+        console.log(session.redditAccessToken);
+        console.log(client.buildAuthHeader(session.redditAccessToken));
         if (error) {
           reject(error);
         }
