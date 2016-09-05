@@ -125,7 +125,7 @@ function associateAccessTokenWithSession(code, session) {
  * although a public version of that method would probably do the exact same
  * thing.
  * 
- * @param session {obsject} - Session associated with user.
+ * @param session {object} - Session associated with user.
  * 
  * @return {Promise} - Promise resolves to error message should one occur._customHeaders
  *   Otherwise simply resolves.
@@ -157,6 +157,7 @@ function postToReddit(session) {
       (error, data) => {
         console.log(session.redditAccessToken);
         console.log(client.buildAuthHeader(session.redditAccessToken));
+        console.log(postBody);
         if (error) {
           reject(error);
         }
