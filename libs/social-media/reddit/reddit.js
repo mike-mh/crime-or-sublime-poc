@@ -4,6 +4,7 @@ let OAuth2 = require('oauth').OAuth2;
 let querystring = require('querystring');
 
 const REDDIT_URL = 'https://www.reddit.com';
+const REDDIT_OAUTH_URL = 'https://oauth.reddit.com';
 
 const REDDIT_AUTHORIZE_PATH = '/api/v1/authorize';
 const REDDIT_ACCESS_TOKEN_PATH = '/api/v1/access_token';
@@ -149,12 +150,11 @@ function postToReddit(session) {
   let submitRedditThreadPromise = new Promise((resolve, reject) => {
     client._request(
       'POST',
-      REDDIT_URL + REDDIT_SUBMIT_PATH,
+      REDDIT_OAUTH_URL + REDDIT_SUBMIT_PATH,
       null,
       postBody,
       session.redditAccessToken,
       (error, data) => {
-        console.log(session.redditAccessToken);
         if (error) {
           reject(error);
         }
