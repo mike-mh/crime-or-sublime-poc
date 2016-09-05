@@ -143,9 +143,6 @@ function postToReddit(session) {
     kind: 'self'
   }
 
-  // Need to get the modhash before being able to post thread to Reddit
-
-
   let postBody = querystring.stringify(postObject);
   let submitRedditThreadPromise = new Promise((resolve, reject) => {
     client._request(
