@@ -25,7 +25,7 @@ function postRedditThread(req, res) {
   RedditClient
     .postToReddit(req.session)
       .then((data) => res.send('WIN!' + data))
-      .catch((error) => { res.send('LOSE!' + error)});
+      .catch((error) => { res.send('LOSE!' + JSON.stringify(error))});
 }
 
 module.exports = function(router) {
