@@ -10,7 +10,9 @@ const REDDIT_AUTHORIZE_PATH = '/api/v1/authorize';
 const REDDIT_ACCESS_TOKEN_PATH = '/api/v1/access_token';
 const REDDIT_SUBMIT_PATH = '/api/submit';
 
-const REDDIT_PERMISSIONS = ['submit']//, 'identity', 'history'];
+// Reddit doens't play well with multiple URL params with the same name. Just
+// keep all permissions in string seperated by commas to avoid this problem.
+const REDDIT_PERMISSIONS = 'submit,identity,history';
 
 const REDDIT_REDIRECT_URI = 'https://crime-or-sublime.herokuapp.com/reddit-redirect';
 
