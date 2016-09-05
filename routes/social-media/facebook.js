@@ -1,6 +1,6 @@
 'use strict';
 
-let FacebookClient = require('../../libs/social-media/facebook/facebook');
+let FacebookClient = require('../../libs/social-media/facebook/facebook-client');
 
 const FB_LOGIN_PATH = '/fb-login'
 const FB_REDIRECT_PATH = '/fb-redirect';

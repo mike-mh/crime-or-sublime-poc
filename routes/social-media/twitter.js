@@ -1,6 +1,6 @@
 'use strict';
 
-let TwitterClient = require('../../libs/social-media/twitter/twitter');
+let TwitterClient = require('../../libs/social-media/twitter/twitter-client');
 
 let bodyParser = require('body-parser')
 let jsonParser = bodyParser.json();

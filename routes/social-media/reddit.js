@@ -1,6 +1,6 @@
 'use strict';
 
-let RedditClient = require('../../libs/social-media/reddit/reddit');
+let RedditClient = require('../../libs/social-media/reddit/reddit-client');
 
 const REDDIT_LOGIN_URL = '/reddit-login';
 const REDDIT_REDIRECT_PATH = '/reddit-redirect';
