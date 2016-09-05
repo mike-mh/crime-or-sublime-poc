@@ -139,7 +139,7 @@ function postToReddit(session) {
   let postObject = {
     title: 'Hello Reddit',
     text: 'Yay yay yay yay yay',
-    sr: 'sircmpwn',
+    sr: 'devdogfood',
     kind: 'self'
   }
 
