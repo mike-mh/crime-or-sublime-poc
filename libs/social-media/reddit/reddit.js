@@ -132,15 +132,15 @@ function associateAccessTokenWithSession(code, session) {
  */
 function postToReddit(session) {
   let client = generateRedditOAuthClient();
-  client.setAuthMethod('bearer');
+//  client.setAuthMethod('bearer');
 
   // It's a bit smelly to do it this way but library doesn't support a basic
   // post method yet.
   let postObject = {
-    title: 'Hello Reddit!',
-    text: 'Yay!',
+    title: 'Hello Reddit',
+    text: 'Yay yay yay yay yay',
     sr: 'sircmpwn',
-    kind: 'self',
+    kind: 'self'
   }
 
   // Need to get the modhash before being able to post thread to Reddit
