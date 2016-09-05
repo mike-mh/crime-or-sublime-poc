@@ -24,7 +24,7 @@ function redditRetrieveAccessToken(req, res) {
 function postRedditThread(req, res) {
   RedditClient
     .postToReddit(req.session)
-      .then((data) => res.send('WIN!' + data))
+      .then((data) => res.send('WIN!' + data)
       .catch((error) => { res.send('LOSE!' + error)});
 }
 

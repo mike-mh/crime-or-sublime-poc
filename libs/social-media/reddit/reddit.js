@@ -154,6 +154,7 @@ function postToReddit(session) {
       postBody,
       session.redditAccessToken,
       (error, data) => {
+        console.log(session.redditAccessToken);
         if (error) {
           reject(error);
         }
