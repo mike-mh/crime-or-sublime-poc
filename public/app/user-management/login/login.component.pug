@@ -5,6 +5,7 @@ div(class="container")
   form((ngSubmit)="onSubmit()")
     div(class="form-group")
       label(for="email")
+        | Email
       input(type="text", class="form-control", id="name", [(ngModel)]="userEmail", name="test", required)
     div(class="form-group")
       label(for="password")
