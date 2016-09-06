@@ -8,12 +8,6 @@ let jsonParser = bodyParser.json();
 const LOGIN_PAGE_URL = '/login';
 const LOGIN_SUBMISSION_URL = '/submit-credentials';
 
-function getLoginPageCallback(req, res)
-{
-  res.sendFile(path.join(__dirname + '/../../public/compiled_app/user-management/login/login.component.html'));
-  console.log(req.session);
-}
-
 function submitLoginCredentials(req, res)
 {
   let params = req.body.params;
@@ -45,11 +39,10 @@ function submitLoginCredentials(req, res)
         req.session.email = email;
         res.json({message: 'success'});
       })
-      .catch((err) => {res.send('AN ERROR: ' + err + '\n')});
+      .catch((err) => {res.json({error: err})});
 }
 
 module.exports = function(router)
 {
-  router.get(LOGIN_PAGE_URL, getLoginPageCallback);
   router.post(LOGIN_SUBMISSION_URL, jsonParser, submitLoginCredentials);
 }

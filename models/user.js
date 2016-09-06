@@ -37,31 +37,6 @@ let userSchema = new Schema(
     minimize: false
   });
 
-/**
- * Use this function to ensure the username and email a user passed in are
- * unique.
- * 
- * @param username {string} - Username  given by user.
- * @param email {string} - Email given by user.
- * 
- * @return {promise} - Promise resolves to true if username and email are
- *   unique is otherwise rejected.
- */
-function emailAndUsernameAreUnique(username, email)
-{
-  return new Promise((resolve, reject) => {
-    this
-      .find({ $or: [{ email: email }, { username: username }] })
-      .then((users) => {
-        if (users.length > 0) {
-          reject('Username or email are already taken.');
-        }
-        resolve(true);
-      })
-      .catch((err) => {
-        reject('Error occured looking through usernames and emails.')});
-  });
-}
 
 /**
  * Ensures that the username or email passed in by the user exist in the
@@ -147,43 +122,6 @@ function confirmPasswordsMatch(email, password)
 }
 
 /**
- * Register user to DB. Adds username, password and salt.
- * 
- * @param username {string} - Username  given by user.
- * @param email {string} - Email given by user.
- * @param password {string} - Password given by user.
- * 
- * @return {Promise} - Promise resolves with the success flag otherwise
- *   resolves to an error.
- */
-function registerUser(username, email, password) {
-
-  let generatedSalt = '';
-
-  let chainedRegistrationPromise =
-    this.emailAndUsernameAreUnique(username, email)
-      .then(() => {
-        return authentication.generateSalt(password);
-      })
-      .then((salt) => {
-        generatedSalt = salt;
-        return authentication.hashPassword(password, salt);
-      })
-      .then((hashedPassword) => {
-        let newUser = new User({
-          username: username,
-          email: email,
-          password: hashedPassword,
-          salt: generatedSalt
-        });
-
-        return newUser.save();
-      })
-
-      return chainedRegistrationPromise;
-}
-
-/**
  * Authenticates user.
  * 
  * @param email {string} - Email given by user.
@@ -202,11 +140,9 @@ function authenticate(email, password) {
     return chainedAuthenticationPromise;
 }
 
-userSchema.statics.emailAndUsernameAreUnique = emailAndUsernameAreUnique;
-userSchema.statics.registerUser = registerUser;
+userSchema.statics.getUserSalt = getUserSalt;
 userSchema.statics.authenticate = authenticate;
 userSchema.statics.checkUserExists = checkUserExists;
-userSchema.statics.getUserSalt = getUserSalt;
 userSchema.statics.confirmPasswordsMatch = confirmPasswordsMatch;
 
 let User = mongoose.model('User', userSchema);

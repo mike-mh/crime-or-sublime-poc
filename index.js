@@ -28,36 +28,3 @@ app.use('/', router);
 app.listen(port, function () {
   console.log('Server running on port ' + port.toString());
 });
-
-let https = require('https');
-
-let options = {
-  host: 'api.postmarkapp.com',
-  port: 443,
-  path: '/email',
-  method: 'post',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'X-Postmark-Server-Token': process.env.POSTMARK_KEY
-  }
-}
-
-let request = https.request(options, (response) => {
-  response.on('data', (chunk) => {
-    console.log(chunk);
-  });
-});
-
-request.on('error',(error) => {
-  console.log(error);
-});
-
-request.write(JSON.stringify({
-  From: 'registration@crimeorsublime.com',
-  To: '0x4d464d48@gmail.com',
-  Subject: 'Oh yeah baby...',
-  HtmlBody: '<b><i><h1>AHHHHHHHH!</h1></i></b>'
-}));
-
-request.end();

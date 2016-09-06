@@ -22,6 +22,6 @@ export class LoginComponent
     this
       .loginService
         .loginUser(this.userEmail, this.userPassword)
-          .subscribe((response) => alert(JSON.stringify(response)), (err) => {alert(err)}, () => alert('COMPLETE!'));
+          .subscribe((response) => alert(JSON.stringify(response)), (err) => {alert(JSON.stringify(err))}, () => console.log('response recevied'));
   }
 }

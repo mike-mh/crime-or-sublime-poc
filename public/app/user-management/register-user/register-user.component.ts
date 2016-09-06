@@ -26,6 +26,6 @@ export class RegisterUserComponent
     this
       .registerUserService
         .registerUser(this.userEmail, this.userUsername, this.userPassword)
-          .subscribe((response) => alert(JSON.stringify(response)), (err) => {alert(err)}, () => alert('COMPLETE!'));
+          .subscribe((response) => alert(JSON.stringify(response)), (err) => {alert(JSON.stringify(err))}, () => console.log('response recevied'));
   }
 }

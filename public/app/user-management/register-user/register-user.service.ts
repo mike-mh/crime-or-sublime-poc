@@ -30,7 +30,8 @@ export class RegisterUserService
 
   private extractData(res: Response): JSON {
     let body = res.json();
-    return body.data || { };
+    console.log(res);
+    return body || { };
   }
 
 

@@ -27,7 +27,8 @@ export class LoginService
   }
 
   private extractData(res: Response): JSON {
+    console.log(res);
     let body = res.json();
-    return body.data || {};
+    return body || {};
   }
 }

@@ -9,20 +9,21 @@ html(lang="en")
     meta(content="www.something.com" property="og:url")
     meta(content="CRIME OR SUBLIME!" property="og:title")
     meta(content="http://crime-or-sublime.herokuapp.com/imgs/best-head.png" property="og:image")
-    // Need to change the href to 
+    //- Need to change the href to 
     link(rel="stylesheet" href="libs/css/bootstrap/bootstrap.min.css")
     base(href="/")
-    // Include google maps API
+    //- Include google maps API
     script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVnOaPHXlVaFvM-wZr1xpiFUcfVTrpjss")
-    // Include node modules
+    //- Include node modules
     script(src="libs/shim/shim.min.js")
     script(src="libs/zone/zone.min.js")
     script(src="libs/reflect-metadata/Reflect.js")
     script(src="libs/systemjs/system.src.js")
-    // Include typescript configurations
-    //script(src="systemjs.config.js")
+    //- Include typescript configurations
     script(src="systemjs.config.js")
-    // Import Angular project
+    //- This is for reCAPTCHA
+    script(src="https://www.google.com/recaptcha/api.js")
+    //- Import Angular project
     script
       | System
       |   .import('compiled_app')
