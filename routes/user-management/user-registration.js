@@ -60,7 +60,6 @@ function registerUserCallback(req, res) {
     ReCaptchaClient
       .verifyRecaptchaSuccess(reCaptchaResponse)
         .then(() => {
-          console.log('OUT!');
           return TempUser.createTempUser(username, email, password);
         });
 

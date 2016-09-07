@@ -71,8 +71,8 @@ function emailAndUsernameAreUnique(username, email) {
           .find({ $or: [{ email: email }, { username: username }] })
           .then((users) => {
             if (users.length > 0) {
-              console.log('gasp!');
-              reject('Username or email are already taken.');
+              //console.log('gasp!');
+              //reject('Username or email are already taken.');
             }
             resolve(1);
           })
