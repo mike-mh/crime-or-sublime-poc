@@ -6,14 +6,14 @@ let bodyParser = require('body-parser');
 let jsonParser = bodyParser.json();
 
 let User = require('../../models/user');
-let authenticationCtrl = require('../../libs/authentication/authentication');
+let TempUser = require('../../models/temp-user');
+let ReCaptchaClient = require('../../libs/authentication/recaptcha');
 
-const REGISTER_USER_URL = '/register-user';
-const REGISTRATION_PAGE_URL = '/registration-page';
+const REGISTER_USER_PATH = '/register-user';
+const CONFIRM_USER_REGISTRATION_PATH =
+  '/confirm-user-registration/:username/:registrationKey';
 
 function registerUserCallback(req, res) {
-  let mxResponse;
-  let mxError;
 
   let params = req.body.params;
   console.log(req.body);
@@ -26,6 +26,7 @@ function registerUserCallback(req, res) {
   let email = params.email;
   let username = params.username;
   let password = params.password;
+  let reCaptchaResponse = params.reCaptchaResponse;
 
   if (!email) {
     res.json({ error: { code: -500, message: 'No email given', id: 'id' } });
@@ -42,7 +43,10 @@ function registerUserCallback(req, res) {
     return;
   }
 
-  console.log(email)
+  else if (!reCaptchaResponse) {
+    res.json({ error: { code: -500, message: 'No reCAPTCHA response given', id: 'id' } });
+    return;
+  }
 
   // Verify email address
   if (!validator.isEmail(email)) {
@@ -50,20 +54,33 @@ function registerUserCallback(req, res) {
     return;
   }
 
-  // Ensure username and email doesn't exist then register. A bit smelly and
-  // could probably refactor
-  let registrationPromise = User.registerUser(username, email, password);
 
-  registrationPromise
+  // Verify that user completed the recaptcha successfully then register.
+  let verificationPromise =
+    ReCaptchaClient
+      .verifyRecaptchaSuccess(reCaptchaResponse)
+        .then(() => {
+          console.log('OUT!');
+          return TempUser.createTempUser(username, email, password);
+        });
+
+  verificationPromise
     .then(() => res.json({message: 'success'}))
     .catch((err) => res.json({error: {message: 'AN ERROR: ' + err}}));
 }
 
-function getRegistrationPageCallback(req, res) {
-  res.sendFile(path.join(__dirname + '/../../public/compiled_app/user-management/register-user/register-user.component.html'));
+function confirmUserRegistration(req, res) {
+  let username = req.params.username;
+  let registrationKey = req.params.registrationKey;
+
+  let registrationPromise = TempUser.registerUser(username, registrationKey);
+
+  registrationPromise
+    .then(() => {res.redirect('https://crime-or-sublime.herokuapp.com')})
+    .catch((error) => {res.json({error: error})});
 }
 
 module.exports = function (router) {
-  router.get(REGISTRATION_PAGE_URL, getRegistrationPageCallback);
-  router.post(REGISTER_USER_URL, jsonParser, registerUserCallback);
+  router.post(REGISTER_USER_PATH, jsonParser, registerUserCallback);
+  router.get(CONFIRM_USER_REGISTRATION_PATH, confirmUserRegistration)
 }

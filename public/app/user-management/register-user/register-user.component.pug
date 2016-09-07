@@ -2,13 +2,14 @@ div(class="container")
   //- Should probably get rid of this
   h
     | Register Here:
-  form((ngSubmit)="onSubmit()")
+  form((ngSubmit)="onSubmit()",
+       id="registration-form")
     div(class="form-group")
       label(for="username")
         | Username
       input([(ngModel)]="userUsername",
             class="form-control",
-            id="password",
+            id="username",
             type="uername",
             name="username",
             required)
@@ -18,7 +19,7 @@ div(class="container")
       input([(ngModel)]="userEmail",
             type="text",
             class="form-control",
-            id="name",
+            id="email",
             name="email",
             required)
     div(class="form-group")
@@ -30,7 +31,11 @@ div(class="container")
             type="password",
             name="password",
             required)
-    div(class="g-recaptcha",
-        data-sitekey="6LdhiCkTAAAAAKm0VwPm_vw-ZdzMEfUmmmmVyXZR")
-    button(class="btn btn-default")
+    div(class="form-group")
+      div(class="g-recaptcha",
+          data-sitekey="6LdhiCkTAAAAAKm0VwPm_vw-ZdzMEfUmmmmVyXZR",
+          data-callback="verifyCallback",
+          data-expired-callback="captchaExpiredCallback")
+    button(class="btn btn-default",
+           [disabled]="!captchaResponse")
       | Submit

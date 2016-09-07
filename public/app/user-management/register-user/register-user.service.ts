@@ -9,14 +9,18 @@ export class RegisterUserService
 
   constructor(private http: Http) {}
 
-  public registerUser(email: string, username: string, password: string): Observable<JSON> {
+  public registerUser(email: string,
+                      username: string,
+                      password: string,
+                      reCaptchaResponse:String): Observable<JSON> {
     let registrationHeaders: Headers = new Headers({'Content-Type': 'application/json'});
     let registrationOptions = new RequestOptions({headers: registrationHeaders});
     let registrationPayload: Object = {
       params: {
         email: email,
         username: username,
-        password: password
+        password: password,
+        reCaptchaResponse: reCaptchaResponse
       }
     };
 
