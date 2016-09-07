@@ -52,8 +52,8 @@ function sendRegistrationEmail(toEmail, username, registrationKey) {
     Subject: 'Welcome ' + username + '!',
     HtmlBody: '<h1>Hey ' + username + '!</h1><br>' +
      'Click here to officially register: ' +
-     '<a href="https://crime-or-sublime.herokuapp.com/register-user/"' +
-     username + '/' + registrationKey + '/> REGISTER </a><br>' +
+     '<a href="https://crime-or-sublime.herokuapp.com/confirm-user-registration' +
+     username + '/' + registrationKey + '"/> REGISTER </a><br>' +
      '<p>Please don\'t respond to this email.</p>'
   }));
 
