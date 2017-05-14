@@ -1,0 +1,22 @@
+{
+  "name": "angular2-dogfood",
+  "version": "1.0.0",
+  "description": "Test to make a NodeJS server entirely out of Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Mitchell-Halter",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.0.35",
+    "@types/mongodb": "^2.2.2",
+    "@types/mongoose": "^4.7.12",
+    "tslint": "^5.2.0"
+  },
+  "dependencies": {
+    "express": "^4.15.2",
+    "mongodb": "^2.2.26",
+    "mongoose": "^4.9.9"
+  }
+}
