@@ -22,7 +22,6 @@ interface IUserDocument extends Document {
 export class UserModel extends CoSAbstractModel {
 
     protected model: Model<IUserDocument>;
-    private static isCompiled = false;
 
     constructor() {
         super("User");
@@ -32,18 +31,17 @@ export class UserModel extends CoSAbstractModel {
 
     /**
      * Authenticates user.
-     * 
+     *
      * @param email - Email of user to authenticate.
      * @param password - Password of user to authenticate
-     * 
+     *
      * @return - Promise that resolves to boolean value 'true'
      */
-    public authenticate(email: string, password: string): Promise<boolean> {
+    public authenticate(email: string, password: string): Promise<void> {
         return this.checkUserExists(email)
             .then(() => {
                 return this.confirmPasswordsMatch(email, password);
             });
-
     }
 
     /**
@@ -53,6 +51,31 @@ export class UserModel extends CoSAbstractModel {
      */
     public getModel(): Model<IUserDocument> {
         return this.model;
+    }
+
+    /**
+     * Confirms that passwords match. Assumes email is correct (should change this)
+     *
+     * @param email - Email of user logging in.
+     * @param password - Hashed password.
+     *
+     * @return - Void resolving promise
+     */
+    public confirmPasswordsMatch(email: string, password: string): Promise<void> {
+        return this.getUserSalt(email)
+            .then((salt) => {
+                return PasswordHelper.hashPassword(password, salt);
+            })
+            .then((hashedPassword) => {
+                return this.getModel()
+                    .find({ email }, { password: 1 })
+                    .then((users) => {
+                        if (users.shift().password === hashedPassword) {
+                            return;
+                        }
+                        throw new Error("Passwords do not match");
+                    });
+            });
     }
 
     /**
@@ -102,19 +125,14 @@ export class UserModel extends CoSAbstractModel {
      * @return - Promise resolves to salt
      */
     private getUserSalt(email: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            this.getModel()
-                .find({ email }, { salt: 1 })
-                .then((users) => {
-                    if (users.length) {
-                        resolve(users.shift().salt);
-                    }
-                    reject("User does not exist");
-                })
-                .catch((err) => {
-                    reject("Error occured looking for salt");
-                });
-        });
+        return this.getModel()
+            .find({ email }, { salt: 1 })
+            .then((users) => {
+                if (users.length) {
+                    return users.shift().salt;
+                }
+                throw new Error("User does not exist");
+            });
     }
 
     /**
@@ -123,52 +141,17 @@ export class UserModel extends CoSAbstractModel {
      *
      * @param email - Email given by user.
      *
-     * @return - Promise resolves with boolean 'true'
+     * @return - Void resolving promise
      */
-    private checkUserExists(email: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            this.getModel()
-                .find({ email })
-                .then((users) => {
-                    if (users.length) {
-                        resolve(true);
-                    }
-                    reject("User does not exist!");
-                })
-                .catch((err) => {
-                    reject("Error occured looking through usernames and emails.");
-                });
-        });
+    private checkUserExists(email: string): Promise<void> {
+        return this.getModel()
+            .find({ email })
+            .then((users) => {
+                if (users.length) {
+                    return;
+                }
+                throw new Error("User does not exist!");
+            });
     }
 
-    /**
-     * Confirms that passwords match. Assumes email is correct (should change this)
-     *
-     * @param email - Email of user logging in.
-     * @param password - Hashed password.
-     *
-     * @return - Promise resolves to boolean value 'true' if passwords
-     *     match. Should consider changing this.
-     */
-    public confirmPasswordsMatch(email: string, password: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            this.getUserSalt(email)
-                .then((salt) => {
-                    return PasswordHelper.hashPassword(password, salt);
-                })
-                .then((hashedPassword) => {
-                    return this.getModel()
-                        .find({ email }, { password: 1 })
-                        .then((users) => {
-                            if (users.shift().password === hashedPassword) {
-                                resolve(true);
-                            }
-                            reject("Passwords do not match");
-                        });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
 }

@@ -23,13 +23,13 @@ export abstract class CoSAbstractModel {
     /**
      * Generates the model to be used by the inheriting class. First tries to
      * call it by name alone but if it doesn't exist compiles it instead.
-     * 
+     *
      * TO-DO: See if this can be done without a try/catch clause.
      */
     protected generateModel(): void {
         try {
             this.model = model(this.modelName);
-        } catch(error) {
+        } catch (error) {
             this.model = model(this.modelName, this.schema);
         }
     }

@@ -66,25 +66,10 @@ export class TempUserModel extends CoSAbstractModel {
                     salt: generatedSalt,
                     username,
                 }).save();
-
-                /*                    let newUser = new TempUser({
-                                        email: email,
-                                        password: hashedPassword,
-                                        registrationKey: registrationKey,
-                                        salt: generatedSalt,
-                                        username: username,
-                                    });
-                                    return newUser.save();*/
             })
             .then((model) => {
-
+                return;
             });
-        /* TO-DO: Implement emailer
-        .then(() => {
-            console.log('emailing');
-            //authenticationEmailer.sendRegistrationEmail(email, username, registrationKey);
-        });*/
-
     }
 
     /**
@@ -107,7 +92,6 @@ export class TempUserModel extends CoSAbstractModel {
                 throw new Error("User does not exist");
             })
             .then((tempUser) => {
-                console.log("Saving.");
                 const newUser = new UserModel();
                 return new (newUser.getModel())({
                     email: tempUser.email,
@@ -117,7 +101,6 @@ export class TempUserModel extends CoSAbstractModel {
                 }).save();
             })
             .then(() => {
-                console.log("Removing.");
                 return this.getModel()
                     .remove({ email, registrationKey });
             });
@@ -177,28 +160,25 @@ export class TempUserModel extends CoSAbstractModel {
      * @param username - Username to check.
      * @param email - Email to check.
      *
-     * @return - Promise resolves to boolean 'true'.
+     * @return - Void resolving promise. Throws error if username or email are
+     *     taken.
      */
-    private emailAndUsernameAreUnique(username: string, email: string): Promise<boolean> {
-        const User = new UserModel().getModel();
-        return new Promise((resolve, reject) => {
-            User.find({ $or: [{ email }, { username }] })
-                .then((users) => {
-                    if (users.length) {
-                        reject("Username or email are already taken.");
-                    }
-                })
-                .then(() => {
-                    this.getModel()
-                        .find({ $or: [{ email }, { username }] })
-                        .then((users) => {
-                            if (users.length) {
-                                reject("Username or email are already taken.");
-                            }
-                            resolve(true);
-                        });
-                });
-        });
+    private emailAndUsernameAreUnique(username: string, email: string): Promise<void> {
+        return new UserModel().getModel()
+            .find({ $or: [{ email }, { username }] })
+            .then((users) => {
+                if (users.length) {
+                    throw new Error("Username or email are already taken.");
+                }
+
+                return this.getModel()
+                    .find({ $or: [{ email }, { username }] });
+            })
+            .then((users) => {
+                if (users.length) {
+                    throw new Error("Username or email are already taken.");
+                }
+            });
     }
 
     /**
@@ -208,20 +188,15 @@ export class TempUserModel extends CoSAbstractModel {
      *
      * @return - Promise resolves to the salt associated with email
      */
-    private getUserSalt(email: string) {
-        return new Promise((resolve, reject) => {
-            this.getModel()
-                .find({ email }, { salt: 1 })
-                .then((users) => {
-                    if (users.length) {
-                        resolve(users.shift().salt);
-                    }
-                    reject("User does not exist");
-                })
-                .catch((err) => {
-                    reject("Error occured looking for salt");
-                });
-        });
+    private getUserSalt(email: string): Promise<string> {
+        return this.getModel()
+            .find({ email }, { salt: 1 })
+            .then((users) => {
+                if (users.length) {
+                    return users.shift().salt;
+                }
+                throw new Error("User does not exist.");
+            });
     }
 
 }
