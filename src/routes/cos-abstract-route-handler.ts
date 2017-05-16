@@ -1,3 +1,4 @@
+import { json } from "body-parser";
 import { IRouterMatcher, Request, RequestHandler, RequestParamHandler, Response, Router } from "express";
 import { CoSRouteConstants, HTTPMethods, RequestPathTupleIndices } from "./cos-route-constants";
 
@@ -91,13 +92,14 @@ export abstract class CoSAbstractRouteHandler {
      * Installs all request handlers stored in methodPathRequestHandlerMap into
      * the express router and associating them with the proper HTTP method.
      */
-    protected instalRequestHandlers(): void {
+    protected installRequestHandlers(): void {
         for (const method in HTTPMethods) {
             if (HTTPMethods.hasOwnProperty(method)) {
                 for (const tuple of this.methodPathRequestHandlerMap[method]) {
                     const path = tuple[RequestPathTupleIndices.Path];
                     const handler = tuple[RequestPathTupleIndices.Handler];
-                    this.routerRequestMatcherMap[method].call(this.router, path, handler);
+                    // Assume that all handlers will require a json parser, for now.
+                    this.routerRequestMatcherMap[method].call(this.router, path, json(), handler);
                 }
             }
         }

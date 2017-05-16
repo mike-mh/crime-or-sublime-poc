@@ -113,8 +113,6 @@ export class UserModel extends CoSAbstractModel {
             {
                 minimize: false,
             });
-
-        return;
     }
 
     /**

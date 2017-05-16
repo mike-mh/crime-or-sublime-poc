@@ -18,7 +18,7 @@ export class ProfileRouter extends CoSAbstractRouteHandler {
         }
 
         this.stageRequestPathHandlerTuples();
-        this.instalRequestHandlers();
+        this.installRequestHandlers();
 
         ProfileRouter.isInstantiated = true;
     }

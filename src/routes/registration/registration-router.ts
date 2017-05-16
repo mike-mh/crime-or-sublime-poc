@@ -19,7 +19,7 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
         }
 
         this.stageRequestPathHandlerTuples();
-        this.instalRequestHandlers();
+        this.installRequestHandlers();
 
         RegistrationRouter.isInstantiated = true;
     }
