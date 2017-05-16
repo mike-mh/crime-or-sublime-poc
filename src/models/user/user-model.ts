@@ -1,13 +1,12 @@
-import { Document, Model, Schema } from "mongoose";
+import { Document, model, Model, Schema } from "mongoose";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
 import { StaticMethodTupleIndices } from "./../cos-model-constants";
 
 /**
- * Document implementation fro User.
+ * Document implementation for User.
  */
 interface IUserDocument extends Document {
-    createdAt: Date;
     email: string;
     favourites: [Schema.Types.ObjectId];
     password: string;
@@ -23,20 +22,20 @@ interface IUserDocument extends Document {
 export class UserModel extends CoSAbstractModel {
 
     protected model: Model<IUserDocument>;
+    private static isCompiled = false;
 
     constructor() {
-        super("user");
+        super("User");
         this.generateSchema();
-        this.generateStaticMethods();
+        //        this.generateStaticMethods();
 
-        for (const index in this.staticMethods) {
+        /*for (const index in this.staticMethods) {
             if (this.staticMethods[index]) {
                 const methodTuple = this.staticMethods[index];
                 this.installStaticMethod(methodTuple[StaticMethodTupleIndices.Name],
                     methodTuple[StaticMethodTupleIndices.Method]);
             }
-        }
-
+        }*/
         this.generateModel();
     }
 
@@ -46,7 +45,7 @@ export class UserModel extends CoSAbstractModel {
      * @return - The mongoose user model object.
      */
     public getModel(): Model<IUserDocument> {
-        throw new Error("Method not implemented.");
+        return this.model;
     }
 
     /**
@@ -152,7 +151,7 @@ export class UserModel extends CoSAbstractModel {
      *
      * @return - Promise resolves with boolean 'true'
      */
-    private checkUserExists(email: string) {
+    private checkUserExists(email: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.getModel()
                 .find({ email })
@@ -177,7 +176,7 @@ export class UserModel extends CoSAbstractModel {
      * @return - Promise resolves to boolean value 'true' if passwords
      *     match. Should consider changing this.
      */
-    private confirmPasswordsMatch = (email: string, password: string) => {
+    private confirmPasswordsMatch(email: string, password: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.getUserSalt(email)
                 .then((salt) => {

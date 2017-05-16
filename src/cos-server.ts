@@ -4,6 +4,9 @@ import * as mongoose from "mongoose";
 import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
 
+// For testing
+import { TempUserModel } from "./models/user/temp-user-model";
+
 /**
  * The main server for CoS. Make all calls to intialize components of backend
  * including the database and middleware.
@@ -26,15 +29,27 @@ export class CoSServer {
      * middleware and database.
      */
     public initalizeServer(): void {
+        (<any>mongoose).Promise = global.Promise;
         mongoose.connect("localhost:27017")
             .then(() => {
                 process.stdout.write("You is connected baby!\n");
+                const modelInitializer = new CoSModelInitializer();
+                modelInitializer.initiaizeModels();
+
+                const tempUser = new TempUserModel();
+                console.log("Making the call...");
+                tempUser.createTempUser("abcdef", "abcd@abc.com", "falootin")
+                    .then(() => {
+                        console.log("You win!");
+                    })
+                    .catch((err) => {
+                        console.log(err.message);
+                    });
+
             }, (error) => {
                 process.stderr.write("MongoDB connection error. Please make sure MongoDB is running.\n");
             });
 
-        const modelInitializer = new CoSModelInitializer();
-        modelInitializer.initiaizeModels();
 
         this.router.intializeRouteHandlers();
 

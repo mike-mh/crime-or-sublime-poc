@@ -28,7 +28,11 @@ export abstract class CoSAbstractModel {
      * Generates the model to be used by the inheriting class.
      */
     protected generateModel(): void {
-        this.model = model(this.modelName, this.schema);
+        try {
+            this.model = model(this.modelName);
+        } catch(error) {
+            this.model = model(this.modelName, this.schema);
+        }
     }
 
     /**
