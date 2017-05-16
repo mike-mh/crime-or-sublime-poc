@@ -1,9 +1,5 @@
 import { Document, model, Model, Schema } from "mongoose";
 
-interface ICoSDocument extends Document {
-    // Leave empty for now as a place holder but could be useful later.
-}
-
 /**
  * Use this as the template to generate all mongoose models for the app.
  * Contains all utility methods to allow for actual classes to install all
@@ -12,7 +8,7 @@ interface ICoSDocument extends Document {
 export abstract class CoSAbstractModel {
     protected modelName: string;
     protected schema: Schema;
-    protected model: Model<ICoSDocument>;
+    protected abstract model: Model<Document>;
 
     // Need to store these as tuples containing the method and its name
     protected methods: Array<[string, (... parameters: any[]) => void]> = [];
@@ -23,11 +19,10 @@ export abstract class CoSAbstractModel {
     }
 
     /**
-     * Simple getter for the model object.
+     * Simple getter for the model object. Needs to be abstract to account
+     * for different interfaces for each model.
      */
-    public getModel(): Model<ICoSDocument> {
-        return this.model;
-    }
+    public abstract getModel(): Model<Document>;
 
     /**
      * Generates the model to be used by the inheriting class.

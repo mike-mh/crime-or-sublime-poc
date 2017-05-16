@@ -4,10 +4,6 @@ import * as mongoose from "mongoose";
 import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
 
-// This is just for testing.
-import { PasswordHelper } from "./libs/authentication/password-helper";
-import { RegistrationHelper } from "./libs/authentication/registration-helper";
-
 /**
  * The main server for CoS. Make all calls to intialize components of backend
  * including the database and middleware.
@@ -39,20 +35,6 @@ export class CoSServer {
 
         const modelInitializer = new CoSModelInitializer();
         modelInitializer.initiaizeModels();
-
-        // Test
-        PasswordHelper.generateSalt()
-            .then((salt) => {
-                process.stdout.write("PW helper salt:" + salt + "\n");
-                PasswordHelper.generatePbkdf2Hash('monkeytacos', salt)
-                    .then((hash) => {
-                        process.stdout.write("monkeytacos and salt hash:" + hash + "\n");
-                    });
-            });
-        RegistrationHelper.generateRegistrationKey("monkeytacos", "monkey@monkey.com")
-            .then((hash) => {
-                process.stdout.write("monkeytacos and monkey@monkey.com hash:" + hash + "\n");
-            });
 
         this.router.intializeRouteHandlers();
 
