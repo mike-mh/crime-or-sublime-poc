@@ -10,10 +10,6 @@ export abstract class CoSAbstractModel {
     protected schema: Schema;
     protected abstract model: Model<Document>;
 
-    // Need to store these as tuples containing the method and its name
-    protected methods: Array<[string, (... parameters: any[]) => void]> = [];
-    protected staticMethods: Array<[string, (... parameters: any[]) => void]> = [];
-
     constructor(modelName: string) {
         this.modelName = modelName;
     }
@@ -25,7 +21,10 @@ export abstract class CoSAbstractModel {
     public abstract getModel(): Model<Document>;
 
     /**
-     * Generates the model to be used by the inheriting class.
+     * Generates the model to be used by the inheriting class. First tries to
+     * call it by name alone but if it doesn't exist compiles it instead.
+     * 
+     * TO-DO: See if this can be done without a try/catch clause.
      */
     protected generateModel(): void {
         try {
@@ -36,38 +35,8 @@ export abstract class CoSAbstractModel {
     }
 
     /**
-     * Utility method to isntall a static to the model.
-     *
-     * @param name - The name of the static method
-     * @param staticMethod - The function to be installed as the static method
-     */
-    protected installStaticMethod(name: string, staticMethod: (... parameters: any[]) => void) {
-        this.schema.statics[name] = staticMethod;
-    }
-
-    /**
-     * Utility method to install a static to the model.
-     *
-     * @param name - The name of the method
-     * @param method - The function to be installed as the method
-     */
-    protected installMethod(name: string, method: (... parameters: any[]) => void) {
-        this.schema.methods[name] = method;
-    }
-
-    /**
      * Unique to each subclass. Needed to generate the appropriate schemas.
      */
     protected abstract generateSchema(): void;
-
-    /**
-     * Generates the static methods
-     */
-    protected abstract generateStaticMethods(): void;
-
-    /**
-     * Generates the methods
-     */
-    protected abstract generateMethods(): void;
 
 }

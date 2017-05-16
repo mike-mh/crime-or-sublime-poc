@@ -27,16 +27,23 @@ export class UserModel extends CoSAbstractModel {
     constructor() {
         super("User");
         this.generateSchema();
-        //        this.generateStaticMethods();
-
-        /*for (const index in this.staticMethods) {
-            if (this.staticMethods[index]) {
-                const methodTuple = this.staticMethods[index];
-                this.installStaticMethod(methodTuple[StaticMethodTupleIndices.Name],
-                    methodTuple[StaticMethodTupleIndices.Method]);
-            }
-        }*/
         this.generateModel();
+    }
+
+    /**
+     * Authenticates user.
+     * 
+     * @param email - Email of user to authenticate.
+     * @param password - Password of user to authenticate
+     * 
+     * @return - Promise that resolves to boolean value 'true'
+     */
+    public authenticate(email: string, password: string): Promise<boolean> {
+        return this.checkUserExists(email)
+            .then(() => {
+                return this.confirmPasswordsMatch(email, password);
+            });
+
     }
 
     /**
@@ -88,39 +95,6 @@ export class UserModel extends CoSAbstractModel {
     }
 
     /**
-     * Generate all static methods for the model and stage them into the
-     * staticMethods array.
-     */
-    protected generateStaticMethods(): void {
-
-        /**
-         * Authenticates user.
-         *
-         * @param email - User email
-         * @param password - User password
-         *
-         * @return - Promise that resolves to boolean value 'true'. Should
-         *     consider changing this.
-         */
-        const authenticate = (email: string, password: string) => {
-            return this.checkUserExists(email)
-                .then(() => {
-                    return this.confirmPasswordsMatch(email, password);
-                });
-
-        };
-
-        this.staticMethods.push(["authenticate", authenticate]);
-    }
-
-    /**
-     * This class doesn't have any methods right now. Do nothing.
-     */
-    protected generateMethods(): void {
-        return;
-    }
-
-    /**
      * Get the users password salt.
      *
      * @param email {string} - The user's email.
@@ -156,10 +130,10 @@ export class UserModel extends CoSAbstractModel {
             this.getModel()
                 .find({ email })
                 .then((users) => {
-                    if (users.length > 0) {
+                    if (users.length) {
                         resolve(true);
                     }
-                    reject("User does not exist");
+                    reject("User does not exist!");
                 })
                 .catch((err) => {
                     reject("Error occured looking through usernames and emails.");
@@ -176,7 +150,7 @@ export class UserModel extends CoSAbstractModel {
      * @return - Promise resolves to boolean value 'true' if passwords
      *     match. Should consider changing this.
      */
-    private confirmPasswordsMatch(email: string, password: string): Promise<boolean> {
+    public confirmPasswordsMatch(email: string, password: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.getUserSalt(email)
                 .then((salt) => {
@@ -193,7 +167,7 @@ export class UserModel extends CoSAbstractModel {
                         });
                 })
                 .catch((err) => {
-                    reject("Error occured looking in database");
+                    reject(err);
                 });
         });
     }

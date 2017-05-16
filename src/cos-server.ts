@@ -5,6 +5,7 @@ import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
 
 // For testing
+import { UserModel } from "./models/user/user-model";
 import { TempUserModel } from "./models/user/temp-user-model";
 
 /**
@@ -38,12 +39,38 @@ export class CoSServer {
 
                 const tempUser = new TempUserModel();
                 console.log("Making the call...");
-                tempUser.createTempUser("abcdef", "abcd@abc.com", "falootin")
+                tempUser.createTempUser("abcdefgh", "abcde@abcde.com", "falootin")
                     .then(() => {
-                        console.log("You win!");
+                        // Need to get the registration key for testing.
+                        return new Promise((resolve, reject) => {
+                            tempUser.getModel()
+                                .find({ email: "abcde@abcde.com" })
+                                .then((users) => {
+                                    if (users.length) {
+                                        resolve(users.shift().registrationKey);
+                                    }
+                                    reject(new Error("User does not exist"));
+                                })
+                        });
+                    })
+                    .then((registrationKey: string) => {
+                        // Register the user
+                        let tempUser = new TempUserModel();
+                        return tempUser.registerUser("abcde@abcde.com", registrationKey);
+                    })
+                    .then(() => {
+                        let user = new UserModel();
+                        console.log("Let's try authenticating...");
+                        return user.authenticate("abcde@abcde.com", "falootin");
+                    })
+                    .then(() => {
+                        console.log("Oh my God... You win dawg!");
+                        console.log("Now let's try giving a shit password.");
+                        let user = new UserModel();
+                        return user.authenticate("abcde@abcde.com", "faootin");
                     })
                     .catch((err) => {
-                        console.log(err.message);
+                        console.log(err);
                     });
 
             }, (error) => {
