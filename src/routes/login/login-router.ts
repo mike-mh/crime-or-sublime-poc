@@ -1,11 +1,11 @@
 import { Request, Response, Router } from "express";
-import { HTTPMethods } from "../route-constants";
-import { RouteHandler } from "../route-handler";
+import { CoSAbstractRouteHandler } from "../cos-abstract-route-handler";
+import { HTTPMethods } from "../cos-route-constants";
 
 /**
  * This will handle all login requests
  */
-export class LoginRouter extends RouteHandler {
+export class LoginRouter extends CoSAbstractRouteHandler {
     private static isInstantiated: boolean = false;
 
     /**

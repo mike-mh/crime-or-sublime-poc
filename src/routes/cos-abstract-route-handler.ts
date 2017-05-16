@@ -1,5 +1,5 @@
 import { IRouterMatcher, Request, RequestHandler, RequestParamHandler, Response, Router } from "express";
-import { HTTPMethods, RequestPathTupleIndices, RouteConstants } from "./route-constants";
+import { CoSRouteConstants, HTTPMethods, RequestPathTupleIndices } from "./cos-route-constants";
 
 /**
  * Super class for all classes responsible for installing handlers to
@@ -13,7 +13,7 @@ import { HTTPMethods, RequestPathTupleIndices, RouteConstants } from "./route-co
  * for the proper paths and installing them to the router using the utility
  * methods already written in this class.
  */
-export abstract class RouteHandler {
+export abstract class CoSAbstractRouteHandler {
     // 2D array to associate parameters to be passed into the router.METHOD()
     // method specified by the express router according to their assigned HTTP
     // method. The index of the outer array is the assigned HTTP method and the

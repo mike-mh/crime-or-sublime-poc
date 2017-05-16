@@ -1,9 +1,9 @@
 import { Request, RequestHandler, Response, Router } from "express";
+import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
+import { CoSRouteConstants, HTTPMethods, RequestPathTupleIndices } from "./cos-route-constants";
 import { LoginRouter } from "./login/login-router";
 import { ProfileRouter } from "./profile/profile-router";
 import { RegistrationRouter } from "./registration/registration-router";
-import { HTTPMethods, RequestPathTupleIndices, RouteConstants } from "./route-constants";
-import { RouteHandler } from "./route-handler";
 
 /**
  * Initializes all middleware for CoS. Installs all routes and handlers into
@@ -11,17 +11,23 @@ import { RouteHandler } from "./route-handler";
  */
 export class CoSRouter {
     private router: Router;
+    private routeHandlers: CoSAbstractRouteHandler[] = [];
 
     /**
-     * Instantiates all routing classes which should install handlers
-     * automatically
+     * Instantiates the router
      */
     public constructor() {
         this.router = Router();
-        const loginRouter = new LoginRouter(this.router);
-        const profileRouter = new ProfileRouter(this.router);
-        const registrationRouter = new RegistrationRouter(this.router);
     }
+
+    /**
+     * Initializes all routehandlers for CoS and installs them to router.
+     */
+     public intializeRouteHandlers(): void {
+         this.routeHandlers.push(new LoginRouter(this.router));
+         this.routeHandlers.push(new ProfileRouter(this.router));
+         this.routeHandlers.push(new RegistrationRouter(this.router));
+     }
 
     /**
      * Simple getter method for router associated with class.

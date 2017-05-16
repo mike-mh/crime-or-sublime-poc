@@ -17,6 +17,7 @@
   "dependencies": {
     "express": "^4.15.2",
     "mongodb": "^2.2.26",
-    "mongoose": "^4.9.9"
+    "mongoose": "^4.9.9",
+    "typescript": "^2.3.2"
   }
 }

@@ -1,4 +1,4 @@
-export class RouteConstants {
+export class CoSRouteConstants {
     public static readonly TEST: string = "test";
 }
 
