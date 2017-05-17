@@ -1,4 +1,6 @@
+import { validate } from "email-validator";
 import { Request, Response, Router } from "express";
+import { TempUserModel } from "../../models/user/temp-user-model";
 import { CoSAbstractRouteHandler } from "../cos-abstract-route-handler";
 import { HTTPMethods } from "../cos-route-constants";
 
@@ -29,15 +31,78 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
      * it is known what handlers are going to do.
      */
     protected stageRequestPathHandlerTuples(): void {
-        const handlerOne = (req: Request, res: Response) => { res.send("This is the registration page!"); };
-        const handlerTwo = (req: Request, res: Response) => {
-            const first = req.params.first;
-            const second = req.params.second;
-            res.send("Here's your data: " + first + " and " + second);
+
+        /**
+         * Should be called after a user clicks a registration link. Registers
+         * the user into the database and removes the temporary user data type.
+         *
+         * @param req - Incoming request
+         * @param res - Server response
+         */
+        const registerUser = (req: Request, res: Response) => {
+            const params = req.body.params;
+
+            if (params === undefined) {
+                res.json({ error: { code: -500, message: "No data received", id: "id" } });
+                return;
+            }
+
+            const email = params.email;
+            const username = params.username;
+            const password = params.password;
+            // TO-DO: Set up reCaptcha
+            // let reCaptchaResponse = params.reCaptchaResponse;
+
+            if (!email) {
+                res.json({ error: { code: -500, message: "No email given", id: "id" } });
+                return;
+            } else if (!username) {
+                res.json({ error: { code: -500, message: "No username received", id: "id" } });
+                return;
+            } else if (!password) {
+                res.json({ error: { code: -500, message: "No password given", id: "id" } });
+                return;
+            }
+
+            // TO-DO
+            /*else if (!reCaptchaResponse) {
+                res.json({ error: { code: -500, message: 'No reCAPTCHA response given', id: 'id' } });
+                return;
+            }*/
+
+            // Verify email address
+            if (!validate(email)) {
+                res.json({ error: { message: "Invalid email address" } });
+                return;
+            }
+
+            new TempUserModel().createTempUser(username, email, password)
+                .then(() => {
+                    res.json({ message: "success" });
+                })
+                .catch((error) => {
+                    res.json({ error: { message: "Couldn't save new user" } });
+                });
         };
 
-        this.stageAsRequestHandeler(HTTPMethods.Get, ["/registration", handlerOne]);
-        this.stageAsRequestHandeler(HTTPMethods.Get, ["/registration/:first/:second", handlerTwo]);
+        const confirmUserRegistration = (req: Request, res: Response) => {
+            const username = req.params.username;
+            const registrationKey = req.params.registrationKey;
+
+            new TempUserModel().registerUser(username, registrationKey)
+                .then(() => {
+                    res.redirect("https://crime-or-sublime.herokuapp.com");
+                })
+                .catch((error) => {
+                    res.json({ error });
+                });
+        };
+
+        this.stageAsRequestHandeler(HTTPMethods.Post,
+                                    ["/register-user", registerUser]);
+        this.stageAsRequestHandeler(HTTPMethods.Get,
+                                    ["/confirm-user-registration/:username/:registrationKey",
+                                     confirmUserRegistration]);
     }
 
 }

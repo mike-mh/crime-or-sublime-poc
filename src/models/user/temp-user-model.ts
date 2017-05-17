@@ -76,15 +76,15 @@ export class TempUserModel extends CoSAbstractModel {
      * Register user credentials from TempUser to User. Remove the TempUser
      * document when finished.
      *
-     * @param email - The email to be registered
+     * @param username - The username to be registered
      * @param registrationKey  - The registrationKey assigned to user.
      *
      * @return - Void resolving promise.
      */
-    public registerUser(email: string, registrationKey: string): Promise<void> {
+    public registerUser(username: string, registrationKey: string): Promise<void> {
 
         return this.getModel()
-            .find({ email, registrationKey })
+            .find({ username, registrationKey })
             .then((users) => {
                 if (users.length) {
                     return users.shift();
@@ -102,7 +102,7 @@ export class TempUserModel extends CoSAbstractModel {
             })
             .then(() => {
                 return this.getModel()
-                    .remove({ email, registrationKey });
+                    .remove({ username, registrationKey });
             });
 
     }

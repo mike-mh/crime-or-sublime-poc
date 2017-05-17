@@ -32,7 +32,7 @@ export class LoginRouter extends CoSAbstractRouteHandler {
 
         /**
          * Makes all necessary calls to models to verify user login.
-         * 
+         *
          * @param req - Incoming request
          * @param res - Server response
          */
