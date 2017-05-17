@@ -1,4 +1,5 @@
 import { Document, model, Model, Schema } from "mongoose";
+import { AuthenticationEmailer } from "./../../libs/authentication/authentication-emailer";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { RegistrationHelper } from "./../../libs/authentication/registration-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
@@ -68,7 +69,7 @@ export class TempUserModel extends CoSAbstractModel {
                 }).save();
             })
             .then((model) => {
-                return;
+                return AuthenticationEmailer.sendAuthenticationEmail(email, username, registrationKey);
             });
     }
 
