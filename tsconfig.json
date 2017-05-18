@@ -5,17 +5,18 @@
         "target": "es6",
         "noImplicitAny": true,
         "moduleResolution": "node",
+        "experimentalDecorators": true,
         "sourceMap": true,
-        "outDir": "dest",
+        "outDir": "dist",
         "baseUrl": ".",
         "paths": {
             "*": [
-                "node_modules/*",
-                "src/models/*"
+                "node_modules/*"
             ]
         }
     },
     "include": [
-        "src/*"
+        "src/*",
+        "src/public/public-main.ts"
     ]
 }

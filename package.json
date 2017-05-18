@@ -14,14 +14,35 @@
     "@types/express": "^4.0.35",
     "@types/mongodb": "^2.2.2",
     "@types/mongoose": "^4.7.12",
-    "tslint": "^5.2.0"
+    "grunt": "^1.0.1",
+    "grunt-contrib-pug": "^1.0.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-uglify": "^3.0.0",
+    "rollup": "^0.41.6",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^1.0.2",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2"
   },
   "dependencies": {
+    "@angular/animations": "^4.1.2",
+    "@angular/common": "^4.1.2",
+    "@angular/compiler": "^4.1.2",
+    "@angular/compiler-cli": "^4.1.2",
+    "@angular/core": "^4.1.2",
+    "@angular/forms": "^4.1.2",
+    "@angular/http": "^4.1.2",
+    "@angular/platform-browser": "^4.1.2",
+    "@angular/platform-browser-dynamic": "^4.1.2",
+    "@angular/platform-server": "^4.1.2",
+    "@angular/router": "^4.1.2",
     "body-parser": "^1.17.1",
     "email-validator": "^1.0.7",
     "express": "^4.15.2",
     "mongodb": "^2.2.26",
     "mongoose": "^4.9.9",
-    "typescript": "^2.3.2"
+    "rxjs": "^5.4.0",
+    "zone.js": "^0.8.10"
   }
 }

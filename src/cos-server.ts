@@ -19,6 +19,10 @@ export class CoSServer {
         // Just set in constructor for now
         this.router = new CoSRouter();
         this.app = express();
+        this.app.use(express.static("dest/public"));
+        this.router.getRouter().get('/', (req, res) => {
+            res.sendFile(__dirname + '/public/index.html');
+        });
     }
 
     /**
