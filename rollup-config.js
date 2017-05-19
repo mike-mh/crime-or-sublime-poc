@@ -1,11 +1,11 @@
-import rollup      from 'rollup'
+//import rollup      from 'rollup'
 import nodeResolve from 'rollup-plugin-node-resolve'
 import commonjs    from 'rollup-plugin-commonjs';
 import uglify      from 'rollup-plugin-uglify'
 
 export default {
-  entry: 'src/public/public-main.js',
-  dest: 'build.js', // output a single application bundle
+  entry: 'compiled_app/main.js',
+  dest: 'dist/public/build.js', // output a single application bundle
   sourceMap: false,
   format: 'iife',
   onwarn: function(warning) {
@@ -22,6 +22,6 @@ export default {
       commonjs({
         include: 'node_modules/rxjs/**',
       }),
-      uglify()
+      //uglify()
   ]
 }

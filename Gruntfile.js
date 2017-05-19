@@ -11,14 +11,14 @@ module.exports = function (grunt) {
                 files: [{
                     cwd: 'src/public',
                     src: 'index.pug',
-                    dest: 'public',
+                    dest: 'dist/public',
                     expand: true,
                     ext: '.html'
                 },
                 {
                     cwd: 'src/public/app',
                     src: '**/*.component.pug',
-                    dest: 'src/public/compiled_app',
+                    dest: 'src/public/app',
                     expand: true,
                     ext: '.component.html'
                 }]
@@ -31,26 +31,16 @@ module.exports = function (grunt) {
                 files: [{
                     cwd: 'src/public/app',
                     src: '**/*.sass',
-                    dest: 'src/public/compiled_app',
+                    dest: 'src/public/app',
                     expand: true,
                     ext: '.component.css'
                 }]
             }
-        },
-        uglify: {
-            build: {
-                files: [{
-                    expand: true,
-                    cwd: 'src/public/compiled_app',
-                    src: '**/*.js',
-                    dest: 'src/public/compiled_app'
-                }]
-            }
         }
     });
+
     grunt.loadNpmTasks('grunt-contrib-pug');
     grunt.loadNpmTasks('grunt-contrib-sass');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['pug', 'sass', 'uglify']);
+    grunt.registerTask('default', ['pug', 'sass']);
 }

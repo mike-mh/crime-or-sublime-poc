@@ -16,7 +16,6 @@
         }
     },
     "include": [
-        "src/*",
-        "src/public/public-main.ts"
+        "src/main.ts"
     ]
 }
