@@ -1,5 +1,6 @@
 import { validate } from "email-validator";
 import { Request, Response, Router } from "express";
+import { ReCaptchaHelper } from "../../libs/authentication/recaptcha-helper";
 import { TempUserModel } from "../../models/user/temp-user-model";
 import { CoSAbstractRouteHandler } from "../cos-abstract-route-handler";
 import { HTTPMethods } from "../cos-route-constants";
@@ -50,6 +51,7 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
             const email = params.email;
             const username = params.username;
             const password = params.password;
+            const reCaptchaResponse = params.reCaptchaResponse;
             // TO-DO: Set up reCaptcha
             // let reCaptchaResponse = params.reCaptchaResponse;
 
@@ -62,13 +64,10 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
             } else if (!password) {
                 res.json({ error: { code: -500, message: "No password given", id: "id" } });
                 return;
-            }
-
-            // TO-DO
-            /*else if (!reCaptchaResponse) {
-                res.json({ error: { code: -500, message: 'No reCAPTCHA response given', id: 'id' } });
+            } else if (!reCaptchaResponse) {
+                res.json({ error: { code: -500, message: "No reCAPTCHA response given", id: "id" } });
                 return;
-            }*/
+            }
 
             // Verify email address
             if (!validate(email)) {
@@ -76,12 +75,20 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
                 return;
             }
 
-            new TempUserModel().createTempUser(username, email, password)
+            ReCaptchaHelper.verifyRecaptchaSuccess(reCaptchaResponse)
+                .then(() => {
+                    return new TempUserModel()
+                        .createTempUser(username, email, password);
+                })
                 .then(() => {
                     res.json({ message: "success" });
                 })
                 .catch((error) => {
-                    res.json({ error: { message: "Couldn't save new user" } });
+                    res.json({
+                        error: {
+                            message: "Couldn't save new user",
+                        },
+                    });
                 });
         };
 
@@ -99,10 +106,10 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
         };
 
         this.stageAsRequestHandeler(HTTPMethods.Post,
-                                    ["/register-user", registerUser]);
+            ["/register-user", registerUser]);
         this.stageAsRequestHandeler(HTTPMethods.Get,
-                                    ["/confirm-user-registration/:username/:registrationKey",
-                                     confirmUserRegistration]);
+            ["/confirm-user-registration/:username/:registrationKey",
+                confirmUserRegistration]);
     }
 
 }

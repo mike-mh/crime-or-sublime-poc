@@ -64,7 +64,7 @@ cleanup () {
 
   find ./src/public -name "*.html" -type f -delete
   find ./src/public -name "*.css" -type f -delete
-  find ./src/public -name "*.map.css" -type f -delete
+  find ./src/public -name "*.css.map" -type f -delete
 }
 
 ###############################################################################
