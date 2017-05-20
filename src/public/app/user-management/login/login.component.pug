@@ -1,0 +1,21 @@
+div(class="container")
+  //- Should probably get rid of this
+  h1
+    | Login Here:
+  form((ngSubmit)="onSubmit()")
+    .form-group
+      label(for="email")
+        | Email
+      input#name.form-control([(ngModel)]="userEmail",
+                              type="text",
+                              name="email",
+                              required)
+    .form-group
+      label(for="password")
+        | Password
+      input#password.form-control([(ngModel)]="userPassword",
+                                  type="password",
+                                  name="password",
+                                  required)
+    button.btn.btn-default
+      | Submit

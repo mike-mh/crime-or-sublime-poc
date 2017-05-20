@@ -6,6 +6,9 @@ import { Component } from "@angular/core";
   templateUrl: "./cos.component.html",
 })
 
+/**
+ * Contains the main component for CoS. No business lovic yet.
+ */
 export class CoSComponent {
 
 }

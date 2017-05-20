@@ -1,8 +1,9 @@
 import { NgModule } from "@angular/core";
+import { LoginModule } from "./login/login.module";
 import { RegisterUserModule } from "./register-user/register-user.module";
 
 @NgModule({
-    exports: [RegisterUserModule],
+    exports: [RegisterUserModule, LoginModule],
 })
 
 export class UserManagementModule {

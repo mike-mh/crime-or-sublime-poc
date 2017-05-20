@@ -69,7 +69,7 @@ export class LoginRouter extends CoSAbstractRouteHandler {
                 });
         };
 
-        this.stageAsRequestHandeler(HTTPMethods.Post, ["/login", submitLoginCredentials]);
+        this.stageAsRequestHandeler(HTTPMethods.Post, ["/submit-credentials", submitLoginCredentials]);
     }
 
 }

@@ -80,10 +80,8 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
                     return new TempUserModel()
                         .createTempUser(username, email, password);
                 })
-                .then(() => {
-                    res.json({ message: "success" });
-                })
                 .catch((error) => {
+                    console.log(error);
                     res.json({
                         error: {
                             message: "Couldn't save new user",
@@ -94,11 +92,17 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
 
         const confirmUserRegistration = (req: Request, res: Response) => {
             const username = req.params.username;
+            const email = req.params.email;
             const registrationKey = req.params.registrationKey;
 
             new TempUserModel().registerUser(username, registrationKey)
                 .then(() => {
                     res.redirect("https://crime-or-sublime.herokuapp.com");
+                })
+                .then(() => {
+                    req.session.email = email;
+                    req.session.username = username;                    
+                    req.session.save((error) => console.log(error));
                 })
                 .catch((error) => {
                     res.json({ error });

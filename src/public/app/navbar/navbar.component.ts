@@ -4,9 +4,11 @@ import { Component } from "@angular/core";
   selector: "navbar",
   styleUrls: ["./navbar.component.css"],
   templateUrl: "./navbar.component.html",
-  // directives: [ROUTER_DIRECTIVES]
 })
 
+/**
+ * Contains the navbar component. Doesn't have any business logic yet.
+ */
 export class NavbarComponent {
 
 }

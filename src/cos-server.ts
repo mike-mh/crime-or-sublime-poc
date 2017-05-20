@@ -1,6 +1,7 @@
 import * as express from "express";
 import { Express, Router } from "express";
 import mongoose = require("mongoose");
+import { SessionManager } from "./libs/session/session-manager";
 import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
 
@@ -19,9 +20,13 @@ export class CoSServer {
         // Just set in constructor for now
         this.router = new CoSRouter();
         this.app = express();
+        this.app.use(SessionManager.getSessionConfiguration());
         this.app.use(express.static("dist/public"));
         this.router.getRouter().get("/", (req, res) => {
             res.sendFile(__dirname + "public/index.html");
+        });
+        this.router.getRouter().get("/register", (req, res) => {
+            res.sendFile(__dirname + "/public/index.html");
         });
     }
 
@@ -31,9 +36,10 @@ export class CoSServer {
      */
     public initalizeServer(): void {
         mongoose.Promise = global.Promise;
-        mongoose.connect("localhost:27017")
+        mongoose.connect("mongodb://localhost/cos")
             .then(() => {
                 process.stdout.write("You is connected baby!\n");
+                
                 const modelInitializer = new CoSModelInitializer();
                 modelInitializer.initiaizeModels();
             }, (error) => {

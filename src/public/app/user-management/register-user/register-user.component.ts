@@ -10,26 +10,36 @@ import { RegisterUserService } from "./register-user.service";
   templateUrl: "register-user.component.html",
 })
 
+/**
+ * This class is responsible for controlling the user registration form.
+ */
 export class RegisterUserComponent implements OnInit {
   public CAPTCHA_API_URL: string = "https://www.google.com/recaptcha/api.js";
   public userEmail: string;
   public userUsername: string;
   public userPassword: string;
+  public confirmPassword: string;
   public captchaResponse: string;
   public reCaptchaHeadElement: HTMLScriptElement = document.createElement("script");
 
-  constructor(private registerUserService: RegisterUserService, private zone: NgZone ) {
+  /**
+   * Adds necessarry data to window object to enable reCaptcha on the
+   * registration form.
+   * 
+   * @param registerUserService - Service to handle interfacing with server and
+   *     business logic.
+   */
+  constructor(private registerUserService: RegisterUserService, private zone: NgZone) {
     window["verifyCallback" as any] = ((response: any) => zone.run(this.verifyCallback.bind(this, response)) as any);
     window["captchaExpiredCallback" as any] = (() => zone.run(this.recaptchaExpiredCallback.bind(this)) as any);
   }
 
   /**
-   * Unfortunately it is necessarry to manually render captcha
+   * Renders the reCaptcha to the form.
+   * 
+   * TO-DO: See if there is an alternative to this.
    */
   public displayRecaptcha() {
-//    const doc: HTMLElement = <HTMLDivElement> document
-//      .getElementById("registration-form");
-
     this.reCaptchaHeadElement.innerHTML = "";
     this.reCaptchaHeadElement.src = this.CAPTCHA_API_URL;
     this.reCaptchaHeadElement.async = true;
@@ -37,21 +47,36 @@ export class RegisterUserComponent implements OnInit {
     document.getElementById("registration-form").appendChild(this.reCaptchaHeadElement);
   }
 
+  /**
+   * Use as a callback for reCaptcha to verify user.
+   */
   public verifyCallback(response: string): void {
     this.captchaResponse = response;
   }
 
+  /**
+   * Callback to configure recaptcha widget after user has been idle.
+   */
   public recaptchaExpiredCallback(): void {
     this.captchaResponse = null;
   }
 
+  /**
+   * Submit handler for registration form. Gathers data from form and if valid
+   * submits registration request to the server as per JSON-RPC schema.
+   */
   public onSubmit(): void {
-    this
-      .registerUserService
-        .registerUser(this.userEmail, this.userUsername, this.userPassword, this.captchaResponse)
-          .subscribe((response) => {
-            alert(JSON.stringify(response)); }, (err) => {
-              alert(JSON.stringify(err)); });
+    if (this.userPassword !== this.confirmPassword) {
+      alert("Passwords don't match.");
+      return;
+    }
+    this.registerUserService
+      .registerUser(this.userEmail, this.userUsername, this.userPassword, this.captchaResponse)
+      .subscribe((response) => {
+        alert(JSON.stringify(response));
+      }, (err) => {
+        alert(JSON.stringify(err));
+      });
   }
 
   /*

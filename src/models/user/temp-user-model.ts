@@ -96,6 +96,7 @@ export class TempUserModel extends CoSAbstractModel {
                 const newUser = new UserModel();
                 return new (newUser.getModel())({
                     email: tempUser.email,
+                    lastLogin: new Date(),
                     password: tempUser.password,
                     salt: tempUser.salt,
                     username: tempUser.username,

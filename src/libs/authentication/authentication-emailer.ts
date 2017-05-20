@@ -6,6 +6,7 @@ export class AuthenticationEmailer {
      *
      * @param toEmail - Destination email
      * @param username - User's alias
+     * @param email - User's email
      * @param registrationKey - The registration key to use in verification URL
      *
      * @return - Void resolving promise
