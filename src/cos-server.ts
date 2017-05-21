@@ -39,7 +39,6 @@ export class CoSServer {
         mongoose.connect("mongodb://localhost/cos")
             .then(() => {
                 process.stdout.write("You is connected baby!\n");
-                
                 const modelInitializer = new CoSModelInitializer();
                 modelInitializer.initiaizeModels();
             }, (error) => {

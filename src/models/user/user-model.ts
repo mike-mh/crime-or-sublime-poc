@@ -79,6 +79,25 @@ export class UserModel extends CoSAbstractModel {
     }
 
     /**
+     * Ensures an email exists in the database. May change to include usernames
+     * as well in the future.
+     *
+     * @param email - Email given by user.
+     *
+     * @return - Void resolving promise
+     */
+    public checkUserExists(email: string): Promise<void> {
+        return this.getModel()
+            .find({ email })
+            .then((users) => {
+                if (users.length) {
+                    return;
+                }
+                throw new Error("User does not exist!");
+            });
+    }
+
+    /**
      * User schema information can be found in documentation.
      */
     protected generateSchema(): void {
@@ -130,25 +149,6 @@ export class UserModel extends CoSAbstractModel {
                     return users.shift().salt;
                 }
                 throw new Error("User does not exist");
-            });
-    }
-
-    /**
-     * Ensures an email exists in the database. May change to include usernames
-     * as well in the future.
-     *
-     * @param email - Email given by user.
-     *
-     * @return - Void resolving promise
-     */
-    public checkUserExists(email: string): Promise<void> {
-        return this.getModel()
-            .find({ email })
-            .then((users) => {
-                if (users.length) {
-                    return;
-                }
-                throw new Error("User does not exist!");
             });
     }
 

@@ -68,7 +68,6 @@ export class LoginRouter extends CoSAbstractRouteHandler {
                     res.json({ result: { email } });
                 })
                 .catch((err) => {
-                    console.log(err);
                     res.json({ error: err });
                 });
         };

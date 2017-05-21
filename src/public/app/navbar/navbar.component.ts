@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from "@angular/core";
-import { SessionDetails, SessionService } from "../shared/session/session.service";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
+import { ISessionDetails, SessionService } from "../shared/session/session.service";
 
 @Component({
   providers: [SessionService],
@@ -15,25 +15,22 @@ import { SubjectSubscription } from "rxjs/SubjectSubscription";
  */
 export class NavbarComponent implements OnDestroy {
   public isLoggedIn: boolean = false;
-  private sessionStatus: SubjectSubscription<SessionDetails>;
-  private sessionUpdateCallback: Observer<SessionDetails> = {
+  private sessionStatus: SubjectSubscription<ISessionDetails>;
+  private sessionUpdateCallback: Observer<ISessionDetails> = {
+    complete: null,
+    error: null,
     next: (response) => {
-      console.log("Yay!");
       if (response.error) {
         return;
       }
       this.isLoggedIn = (response.email) ? true : false;
     },
-    error: null,
-    complete: null,
-  }
+  };
 
   constructor(private sessionService: SessionService) {
-    this.sessionStatus = new SubjectSubscription(SessionService.SESSION_STATUS_EMITTER, this.sessionUpdateCallback);
-    console.log(SessionService.SESSION_STATUS_EMITTER);
-    SessionService.SESSION_STATUS_EMITTER.subscribe(this.sessionUpdateCallback);
+    this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
+    SessionService.sessionStatusEmitter.subscribe(this.sessionUpdateCallback);
     this.isLoggedIn = SessionService.isSessionActive();
-    console.log("Navbar, is logged in: " + this.isLoggedIn);
   }
 
   /**

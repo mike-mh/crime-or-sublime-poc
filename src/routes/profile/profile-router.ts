@@ -42,13 +42,13 @@ export class ProfileRouter extends CoSAbstractRouteHandler {
 
             new UserModel().checkUserExists(req.session.email)
                 .then(() => {
-                    res.json({"result": req.session.email});
+                    res.json({result: req.session.email});
                 })
                 .catch((error) => {
-                    res.json({"error": "Invalid session."});
+                    res.json({error: "Invalid session."});
                 });
 
-        }
+        };
 
         this.stageAsRequestHandeler(HTTPMethods.Get, ["/get-user", getUser]);
     }

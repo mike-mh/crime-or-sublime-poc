@@ -5,25 +5,25 @@ import * as mongoose from "mongoose";
 
 /**
  * This class is responsible for managing all user sessions.
- * 
+ *
  * TO-DO: Look for alternatives to connect-mongo
  */
 export class SessionManager {
+    /**
+     * Basic getter for the session settings to initalize express with.
+     *
+     * @return - The session configuration.
+     */
+    public static getSessionConfiguration(): RequestHandler {
+        return this.sessionConfiguration;
+    }
+
     private static sessionConfiguration: RequestHandler = session({
         cookie: { maxAge: 86400000, secure: false },
         resave: false,
         rolling: true,
         saveUninitialized: false,
         secret: process.env.COOKIE_SECRET,
-        store: new (require('connect-mongo')(session))({mongooseConnection: mongoose.connection}),
+        store: new (require("connect-mongo")(session))({mongooseConnection: mongoose.connection}),
     });
-
-    /**
-     * Basic getter for the session settings to initalize express with.
-     * 
-     * @return - The session configuration.
-     */
-    public static getSessionConfiguration(): RequestHandler {
-        return this.sessionConfiguration;
-    }
 }

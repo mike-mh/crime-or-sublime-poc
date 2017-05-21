@@ -2,8 +2,8 @@ import { Component, OnDestroy } from "@angular/core";
 import { NgModel } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
+import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
 import { LoginService } from "./login.service";
-import { SessionDetails, SessionService } from "./../../shared/session/session.service";
 
 @Component({
   providers: [LoginService, SessionService],
@@ -18,22 +18,21 @@ export class LoginComponent implements OnDestroy {
   public userEmail: string;
   public userPassword: string;
   public isLoggedIn: boolean = false;
-  private sessionStatus: SubjectSubscription<SessionDetails>;
-  private sessionUpdateCallback: Observer<SessionDetails> = {
+  private sessionStatus: SubjectSubscription<ISessionDetails>;
+  private sessionUpdateCallback: Observer<ISessionDetails> = {
+    complete: null,
+    error: null,
     next: (response) => {
-      console.log("I got called!");
       if (response.error) {
         return;
       }
       this.isLoggedIn = (response.email) ? true : false;
     },
-    error: null,
-    complete: null,
-  }
+  };
 
   constructor(private loginService: LoginService, private sessionService: SessionService) {
-    this.sessionStatus = new SubjectSubscription(SessionService.SESSION_STATUS_EMITTER, this.sessionUpdateCallback);
-    SessionService.SESSION_STATUS_EMITTER.subscribe(this.sessionUpdateCallback);
+    this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
+    SessionService.sessionStatusEmitter.subscribe(this.sessionUpdateCallback);
     this.isLoggedIn = SessionService.isSessionActive();
   }
 

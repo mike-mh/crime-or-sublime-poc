@@ -13,8 +13,6 @@ import { SessionService } from "./shared/session/session.service";
  */
 export class CoSComponent {
   constructor(private sessionService: SessionService) {
-    console.log("Hi");
     sessionService.checkUserIsActive();
-    console.log("Hi again");
   }
 }

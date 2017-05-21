@@ -1,15 +1,14 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { Headers, Http, RequestOptions, Response } from "@angular/http";
+import "rxjs/add/operator/toPromise";
 import { Observable } from "rxjs/Observable";
-import 'rxjs/add/operator/toPromise';
-
 
 /**
  * Use this to store data from server responses.
  */
-export interface SessionDetails {
-    email?: string,
-    error?: boolean,
+export interface ISessionDetails {
+    email?: string;
+    error?: boolean;
 }
 
 @Injectable()
@@ -20,11 +19,21 @@ export interface SessionDetails {
  * the session it notifies all observers.
  */
 export class SessionService {
+    // Use these to store session data and emit that data.
+    public static sessionStatusEmitter: EventEmitter<ISessionDetails> = new EventEmitter();
+    public static sessionIsActive: boolean = false;
+
+    /**
+     * Simple getter method to determine if session is active.
+     *
+     * @return - Boolean value of if session is active.
+     */
+    public static isSessionActive(): boolean {
+        return SessionService.sessionIsActive;
+    }
+
     private static readonly GET_USER_URL = "/get-user";
     private static readonly END_SESSION = "/logout";
-    // Use these to store session data and emit that data.
-    public static SESSION_STATUS_EMITTER: EventEmitter<SessionDetails> = new EventEmitter();
-    public static sessionIsActive: boolean = false;
 
     constructor(private http: Http) { }
 
@@ -38,22 +47,14 @@ export class SessionService {
         this.http.get(SessionService.GET_USER_URL, headers)
             .toPromise()
             .then((res) => {
-                let details: SessionDetails = {};
-                console.log(res.json());
-                console.log(res.json().result);
+                const details: ISessionDetails = {};
                 if (res.json().error || !res.json().result) {
-                    console.log("no");
                     details.error = true;
                 } else {
-                    console.log("yes");
                     details.email = res.json().result;
                 }
-                console.log("Before: " + SessionService.sessionIsActive);
-                console.log(res.json().result);
-                console.log(details.email);
                 SessionService.sessionIsActive = !!details.email;
-                console.log("After: " + SessionService.sessionIsActive);
-                SessionService.SESSION_STATUS_EMITTER.emit(details);
+                SessionService.sessionStatusEmitter.emit(details);
 
             });
     }
@@ -67,7 +68,7 @@ export class SessionService {
         this.http.get(SessionService.END_SESSION, headers)
             .toPromise()
             .then((res) => {
-                let details: SessionDetails = {};
+                const details: ISessionDetails = {};
                 if (res.json().error || !res.json().result) {
                     details.error = true;
                 } else {
@@ -75,16 +76,8 @@ export class SessionService {
                 }
                 SessionService.sessionIsActive = false;
 
-                SessionService.SESSION_STATUS_EMITTER.emit(details);
+                SessionService.sessionStatusEmitter.emit(details);
             });
     }
 
-    /**
-     * Simple getter method to determine if session is active.
-     * 
-     * @return - Boolean value of if session is active.
-     */
-    public static isSessionActive(): boolean {
-        return SessionService.sessionIsActive;
-    }
 }

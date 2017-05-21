@@ -1,10 +1,13 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { NgModel } from "@angular/forms";
 import "rxjs/add/operator/map";
+import { Observer } from "rxjs/Observer";
+import { SubjectSubscription } from "rxjs/SubjectSubscription";
+import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
 import { RegisterUserService } from "./register-user.service";
 
 @Component({
-  providers: [RegisterUserService],
+  providers: [RegisterUserService, SessionService],
   selector: "register-user",
   styleUrls: ["register-user.component.css"],
   templateUrl: "register-user.component.html",
@@ -20,23 +23,43 @@ export class RegisterUserComponent implements OnInit {
   public userPassword: string;
   public confirmPassword: string;
   public captchaResponse: string;
+  public isLoggedIn: boolean;
   public reCaptchaHeadElement: HTMLScriptElement = document.createElement("script");
+
+  private sessionStatus: SubjectSubscription<ISessionDetails>;
+  private sessionUpdateCallback: Observer<ISessionDetails> = {
+    complete: null,
+    error: null,
+    next: (response) => {
+      if (response.error) {
+        return;
+      }
+      this.isLoggedIn = (response.email) ? true : false;
+    },
+  };
 
   /**
    * Adds necessarry data to window object to enable reCaptcha on the
    * registration form.
-   * 
+   *
    * @param registerUserService - Service to handle interfacing with server and
    *     business logic.
    */
-  constructor(private registerUserService: RegisterUserService, private zone: NgZone) {
+  constructor(private registerUserService: RegisterUserService,
+              private zone: NgZone,
+              private sessionService: SessionService) {
     window["verifyCallback" as any] = ((response: any) => zone.run(this.verifyCallback.bind(this, response)) as any);
     window["captchaExpiredCallback" as any] = (() => zone.run(this.recaptchaExpiredCallback.bind(this)) as any);
+
+    this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
+    SessionService.sessionStatusEmitter.subscribe(this.sessionUpdateCallback);
+    this.isLoggedIn = SessionService.isSessionActive();
+
   }
 
   /**
    * Renders the reCaptcha to the form.
-   * 
+   *
    * TO-DO: See if there is an alternative to this.
    */
   public displayRecaptcha() {
