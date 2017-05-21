@@ -10,6 +10,7 @@ import { HTTPMethods } from "./../cos-route-constants";
  */
 export class LogoutRouter extends CoSAbstractRouteHandler {
     private static isInstantiated: boolean = false;
+    private readonly LOGOUT_PATH: string = "/logout";
 
     /**
      * Initializes all handlers for logout requests and keeps singleton pattern.
@@ -27,17 +28,21 @@ export class LogoutRouter extends CoSAbstractRouteHandler {
     }
 
     protected stageRequestPathHandlerTuples(): void {
-        /**
-         * Terminates the current session of a user.
-         */
-        const logUserOut = (req: Request, res: Response) => {
-            req.session.destroy((error) => {
-                error ?
-                    res.json({error: {message: "Error occured deleting session."}}) :
-                    res.json({result: {}});
-            });
-        };
-
-        this.stageAsRequestHandeler(HTTPMethods.Get, [ "/logout", logUserOut]);
+        this.stageAsRequestHandeler(HTTPMethods.Get, [this.LOGOUT_PATH, this.logUserOut]);
     }
+
+    /**
+     * Terminates the current session of a user.
+     *
+     * @param req - Client request
+     * @param rest - Server response
+     */
+    private logUserOut = (req: Request, res: Response): void => {
+        req.session.destroy((error) => {
+            error ?
+                res.json({ error: { message: "Error occured deleting session." } }) :
+                res.json({ result: {} });
+        });
+    }
+
 }

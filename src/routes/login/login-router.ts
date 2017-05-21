@@ -8,6 +8,7 @@ import { HTTPMethods } from "./../cos-route-constants";
  */
 export class LoginRouter extends CoSAbstractRouteHandler {
     private static isInstantiated: boolean = false;
+    private readonly LOGIN_PATH: string = "/submit-credentials";
 
     /**
      * Initializes all handlers for login requests and keeps singleton pattern.
@@ -25,54 +26,58 @@ export class LoginRouter extends CoSAbstractRouteHandler {
     }
 
     /**
-     * Stages handlers to be installed on router. Fill with more details after
-     * it is known what handlers are going to do.
+     * Stages handlers to be installed on router.
      */
     protected stageRequestPathHandlerTuples(): void {
+        this.stageAsRequestHandeler(HTTPMethods.Post, [this.LOGIN_PATH, this.submitLoginCredentials]);
+    }
 
-        /**
-         * Makes all necessary calls to models to verify user login.
-         *
-         * @param req - Incoming request
-         * @param res - Server response
-         */
-        const submitLoginCredentials = (req: Request, res: Response) => {
-            const params = req.body.params;
+    /**
+     * Verifies with backend that credentials user submitted are correct.
+     *
+     * @param req - Incoming request
+     * @param res - Server response
+     */
+    private submitLoginCredentials(req: Request, res: Response): void {
+        const params = req.body.params;
 
-            if (params === undefined) {
-                res.json({ error: { code: -500, message: "No data received", id: "id" } });
-                return;
-            }
+        if (params === undefined) {
+            res.json({ error: { code: -500, message: "No data received", id: "id" } });
+            return;
+        }
 
-            const email = params.email;
-            const password = params.password;
+        const email = params.email;
+        const password = params.password;
 
-            // Ensure parameters are set
-            if (!email) {
-                res.json({ error: { code: -500, message: "Need an email", id: "id" } });
-                return;
-            }
+        // Ensure parameters are set
+        if (!email) {
+            res.json({ error: { code: -500, message: "Need an email", id: "id" } });
+            return;
+        }
 
-            if (!password) {
-                res.json({ error: { code: -500, message: "No password received", id: "id" } });
-                return;
-            }
+        if (!password) {
+            res.json({ error: { code: -500, message: "No password received", id: "id" } });
+            return;
+        }
 
-            const User = new UserModel();
-            User.authenticate(email, password)
-                .then((messsage) => {
-                    if (req.session.email === email) {
-                        throw new Error("User already logged in.");
-                    }
-                    req.session.email = email;
-                    res.json({ result: { email } });
-                })
-                .catch((err) => {
-                    res.json({ error: err });
-                });
-        };
-
-        this.stageAsRequestHandeler(HTTPMethods.Post, ["/submit-credentials", submitLoginCredentials]);
+        const User = new UserModel();
+        User.authenticate(email, password)
+            .then((messsage) => {
+                if (req.session.email === email) {
+                    res.json({error: {message: "User already logged in."}});
+                    return;
+                }
+                req.session.email = email;
+                res.json({ result: { email } });
+            })
+            .catch((err) => {
+                if (!res.headersSent) {
+                    // There is some strange bug here where the headers appear
+                    // to change when a promise fails to resolve. Can send
+                    // strings but need to investigate.
+                    res.send("{ error: { message: " + err.message + " }}");
+                }
+            });
     }
 
 }

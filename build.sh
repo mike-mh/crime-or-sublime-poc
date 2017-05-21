@@ -128,9 +128,10 @@ build_front_end () {
   extract_library $REFLECT_METADATA_PATH
   extract_library $ZONE_PATH
 
-  echo "Extracting HTML and CSS files..."
+  echo "Extracting HTML, CSS and .pug files..."
   find ./src/public -name \*.html -exec cp {} dist/public \;
   find ./src/public -name \*.css -exec cp {} dist/public \;
+  cp ./src/views/email-templates/registration-email.pug ./dist/libs/authentication/
 
   echo "Success. You should now be able"
 

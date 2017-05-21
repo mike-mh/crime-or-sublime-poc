@@ -20,7 +20,8 @@ interface ITempUserModel extends Document {
 export class TempUserModel extends CoSAbstractModel {
     protected model: Model<ITempUserModel>;
 
-    private readonly TEMP_USER_EXPIRATION_TIME: number = 60 * 60 * 60;
+    // Temporary users only exist for about an hour.
+    private readonly TEMP_USER_EXPIRATION_TIME: number = 60 * 60;
 
     constructor() {
         super("TempUser");

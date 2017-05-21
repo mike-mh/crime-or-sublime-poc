@@ -26,7 +26,7 @@ export abstract class HashHelper {
     }
 
     /**
-     * Use this function to generate a pbkdf2 hash
+     * Use this function to generate a pbkdf2 hash.
      *
      * @param input - The input to be hashed.
      * @param salt - The salt to be used for hashing.

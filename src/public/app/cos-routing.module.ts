@@ -6,8 +6,8 @@ import { RegisterUserComponent } from "./user-management/register-user/register-
 
 const cosRoutes: Routes = [
     { path: "", redirectTo: "/", pathMatch: "full" },
-    { path: "login", component: LoginComponent },
-    { path: "register", component: RegisterUserComponent },
+    { path: "cos-fe-login", component: LoginComponent },
+    { path: "cos-fe-register", component: RegisterUserComponent },
 ];
 
 @NgModule({

@@ -35,7 +35,7 @@ export class UserModel extends CoSAbstractModel {
      * @param email - Email of user to authenticate.
      * @param password - Password of user to authenticate
      *
-     * @return - Promise that resolves to boolean value 'true'
+     * @return - Void resolving promise.
      */
     public authenticate(email: string, password: string): Promise<void> {
         return this.checkUserExists(email)
@@ -54,7 +54,7 @@ export class UserModel extends CoSAbstractModel {
     }
 
     /**
-     * Confirms that passwords match. Assumes email is correct (should change this)
+     * Confirms that passwords match.
      *
      * @param email - Email of user logging in.
      * @param password - Hashed password.
@@ -70,6 +70,9 @@ export class UserModel extends CoSAbstractModel {
                 return this.getModel()
                     .find({ email }, { password: 1 })
                     .then((users) => {
+                        if (!users.length) {
+                            throw new Error("User not found.");
+                        }
                         if (users.shift().password === hashedPassword) {
                             return;
                         }

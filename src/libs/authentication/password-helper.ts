@@ -2,7 +2,7 @@ import { pbkdf2 } from "crypto";
 import { HashHelper } from "./hash-helper";
 
 /**
- * Password utility class. Use this for all hashing.
+ * Password utility class. Use this for hashing.
  */
 export class PasswordHelper extends HashHelper {
 
