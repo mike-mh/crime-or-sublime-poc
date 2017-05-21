@@ -2,6 +2,7 @@ import { Request, RequestHandler, Response, Router } from "express";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
 import { CoSRouteConstants, HTTPMethods, RequestPathTupleIndices } from "./cos-route-constants";
 import { LoginRouter } from "./login/login-router";
+import { LogoutRouter } from "./logout/logout-router";
 import { ProfileRouter } from "./profile/profile-router";
 import { RegistrationRouter } from "./registration/registration-router";
 
@@ -25,6 +26,7 @@ export class CoSRouter {
      */
      public intializeRouteHandlers(): void {
          this.routeHandlers.push(new LoginRouter(this.router));
+         this.routeHandlers.push(new LogoutRouter(this.router));
          this.routeHandlers.push(new ProfileRouter(this.router));
          this.routeHandlers.push(new RegistrationRouter(this.router));
      }

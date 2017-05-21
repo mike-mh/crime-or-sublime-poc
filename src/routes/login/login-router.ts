@@ -61,10 +61,14 @@ export class LoginRouter extends CoSAbstractRouteHandler {
             const User = new UserModel();
             User.authenticate(email, password)
                 .then((messsage) => {
-//                    req.session.email = email;
-                    res.json({ message: "success" });
+                    if (req.session.email === email) {
+                        throw new Error("User already logged in.");
+                    }
+                    req.session.email = email;
+                    res.json({ result: { email } });
                 })
                 .catch((err) => {
+                    console.log(err);
                     res.json({ error: err });
                 });
         };

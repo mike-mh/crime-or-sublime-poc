@@ -141,7 +141,7 @@ export class UserModel extends CoSAbstractModel {
      *
      * @return - Void resolving promise
      */
-    private checkUserExists(email: string): Promise<void> {
+    public checkUserExists(email: string): Promise<void> {
         return this.getModel()
             .find({ email })
             .then((users) => {

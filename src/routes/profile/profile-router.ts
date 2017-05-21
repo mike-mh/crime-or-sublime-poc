@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { UserModel } from "../../models/user/user-model";
 import { CoSAbstractRouteHandler } from "../cos-abstract-route-handler";
 import { HTTPMethods } from "../cos-route-constants";
 
@@ -28,14 +29,28 @@ export class ProfileRouter extends CoSAbstractRouteHandler {
      * it is known what handlers are going to do.
      */
     protected stageRequestPathHandlerTuples(): void {
-        const handlerOne = (req: Request, res: Response) => { res.send("This is the profile page!"); };
-        const handlerTwo = (req: Request, res: Response) => {
-            const secret = req.params.secret;
-            res.send("Here's your secret: " + secret);
-        };
+        /**
+         * Use this to get user information.
+         *
+         * @param req - Incoming request
+         * @param res - Server response
+         */
+        const getUser = (req: Request, res: Response) => {
+            if (!req.session.email) {
+                res.json({error: { code: -500, message: "User not found.", id: "id" }});
+            }
 
-        this.stageAsRequestHandeler(HTTPMethods.Get, ["/profile", handlerOne]);
-        this.stageAsRequestHandeler(HTTPMethods.Get, ["/profile/:secret", handlerTwo]);
+            new UserModel().checkUserExists(req.session.email)
+                .then(() => {
+                    res.json({"result": req.session.email});
+                })
+                .catch((error) => {
+                    res.json({"error": "Invalid session."});
+                });
+
+        }
+
+        this.stageAsRequestHandeler(HTTPMethods.Get, ["/get-user", getUser]);
     }
 
 }

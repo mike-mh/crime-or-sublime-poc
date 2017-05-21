@@ -14,8 +14,9 @@ html(lang="en")
     //- Include node modules
     script(src="/shim.min.js")
     script(src="/zone.min.js")
-    script(src="/Reflect.js")
-  body
+    script(src="/Reflect.js")   
+    style
+      | [hidden] { display: none !important;}
     cos
       | Loading...
   script(src="/build.js")
