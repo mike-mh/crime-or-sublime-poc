@@ -5,8 +5,6 @@ import * as mongoose from "mongoose";
 
 /**
  * This class is responsible for managing all user sessions.
- *
- * TO-DO: Look for alternatives to connect-mongo
  */
 export class SessionManager {
     /**
@@ -18,12 +16,18 @@ export class SessionManager {
         return this.sessionConfiguration;
     }
 
+    /**
+     * This retrueves the session configuration to pass into the CoS express
+     * application.
+     */
     private static sessionConfiguration: RequestHandler = session({
-        cookie: { maxAge: 86400000, secure: false },
+        // Sessions should last for only one day.
+        cookie: { maxAge: 1000 * 60 * 60 * 24, secure: false },
         resave: false,
         rolling: true,
         saveUninitialized: false,
         secret: process.env.COOKIE_SECRET,
+        // Need to look into possibly replacing connect-mongo.
         store: new (require("connect-mongo")(session))({mongooseConnection: mongoose.connection}),
     });
 }

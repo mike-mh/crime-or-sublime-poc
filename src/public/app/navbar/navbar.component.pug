@@ -1,5 +1,5 @@
 nav
   a.class([routerLink]="['/']", title="home") Home
-  a.class([hidden]="isLoggedIn", [routerLink]="['/register']", title="register") Register
-  a.class([hidden]="isLoggedIn", [routerLink]="['/login']", title="login") Login
+  a.class([hidden]="isLoggedIn", [routerLink]="['/cos-fe-register']", title="register") Register
+  a.class([hidden]="isLoggedIn", [routerLink]="['/cos-fe-login']", title="login") Login
   a.class([hidden]="!isLoggedIn", (click)="endSession()") Logout

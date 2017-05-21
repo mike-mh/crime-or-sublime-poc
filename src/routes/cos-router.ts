@@ -1,4 +1,5 @@
 import { Request, RequestHandler, Response, Router } from "express";
+import { resolve } from "path";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
 import { CoSRouteConstants, HTTPMethods, RequestPathTupleIndices } from "./cos-route-constants";
 import { LoginRouter } from "./login/login-router";
@@ -13,12 +14,27 @@ import { RegistrationRouter } from "./registration/registration-router";
 export class CoSRouter {
     private router: Router;
     private routeHandlers: CoSAbstractRouteHandler[] = [];
+    private readonly CLIENT_INDEX_PATH = __dirname + "../public/index.html";
 
     /**
      * Instantiates the router
      */
     public constructor() {
         this.router = Router();
+    }
+
+    /**
+     * Initializes all static routes.
+     */
+    public initializeStaticRoutes(): void {
+        for (const feRoute of CoSRouteConstants.COS_CLIENT_PATHS) {
+            const indexPath = resolve(__dirname + "/../public/index.html");
+            // Wanted to define function as method but instance gets lost and
+            // there's not access to the CLIENT_INDEX_PATH field.
+            this.getRouter().get(feRoute, (req: Request, res: Response) => {
+                res.sendFile(indexPath);
+            });
+        }
     }
 
     /**
@@ -37,4 +53,5 @@ export class CoSRouter {
     public getRouter() {
         return this.router;
     }
+
 }

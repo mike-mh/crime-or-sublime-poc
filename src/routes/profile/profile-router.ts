@@ -8,6 +8,7 @@ import { HTTPMethods } from "../cos-route-constants";
  */
 export class ProfileRouter extends CoSAbstractRouteHandler {
     private static isInstantiated: boolean = false;
+    private readonly GET_USER_PATH: string = "/get-user";
 
     /**
      * Initializes all handlers for profile requests and keeps singleton pattern.
@@ -29,28 +30,27 @@ export class ProfileRouter extends CoSAbstractRouteHandler {
      * it is known what handlers are going to do.
      */
     protected stageRequestPathHandlerTuples(): void {
-        /**
-         * Use this to get user information.
-         *
-         * @param req - Incoming request
-         * @param res - Server response
-         */
-        const getUser = (req: Request, res: Response) => {
-            if (!req.session.email) {
-                res.json({error: { code: -500, message: "User not found.", id: "id" }});
-            }
-
-            new UserModel().checkUserExists(req.session.email)
-                .then(() => {
-                    res.json({result: req.session.email});
-                })
-                .catch((error) => {
-                    res.json({error: "Invalid session."});
-                });
-
-        };
-
-        this.stageAsRequestHandeler(HTTPMethods.Get, ["/get-user", getUser]);
+        this.stageAsRequestHandeler(HTTPMethods.Get, [this.GET_USER_PATH, this.getUser]);
     }
 
+    /**
+     * Use this to get user information.
+     *
+     * @param req - Incoming request
+     * @param res - Server response
+     */
+    private getUser(req: Request, res: Response): void {
+        if (!req.session.email) {
+            res.json({ error: { code: -500, message: "User not found.", id: "id" } });
+        }
+
+        new UserModel().checkUserExists(req.session.email)
+            .then(() => {
+                res.json({ result: req.session.email });
+            })
+            .catch((error) => {
+                res.json({ error: { message: "Invalid session." }});
+            });
+
+    }
 }

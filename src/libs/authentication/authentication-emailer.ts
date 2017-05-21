@@ -1,6 +1,13 @@
 import { request } from "https";
+import { compileFile } from "pug";
 
+/**
+ * Utility class to send emails to users after they have registered with CoS.
+ * Users should be able to click a link in the email sent and register with
+ * CoS.
+ */
 export class AuthenticationEmailer {
+
     /**
      * Use to send an email to confirm a user's registration.
      *
@@ -13,6 +20,13 @@ export class AuthenticationEmailer {
      */
     public static sendAuthenticationEmail(toEmail: string, username: string, registrationKey: string): Promise<void> {
         return new Promise((resolve, reject) => {
+            // Use pug to compile the email and set values in its delimiters.
+            // ... God I love pug.
+            const responseEmail = AuthenticationEmailer.compileEmail({
+                username,
+                registrationKey,
+            });
+
             const options = {
                 headers: {
                     "Accept": "application/json",
@@ -31,13 +45,10 @@ export class AuthenticationEmailer {
                 reject(error);
             });
 
+            // Need to remake the HTML file for the email to make it look nicer.
             postMarkRequest.write(JSON.stringify({
                 From: this.REGISTRATION_EMAIL_ADDRESS,
-                HtmlBody: "<h1>Hey " + username + "!</h1><br>" +
-                "Click here to officially register: " +
-                "<a href=\"https://crime-or-sublime.herokuapp.com/confirm-user-registration/" +
-                username + "/" + registrationKey + "\"/> REGISTER </a><br>" +
-                "<p>Please don\'t respond to this email.</p>",
+                HtmlBody: responseEmail,
                 Subject: "Welcome " + username + "!",
                 To: toEmail,
             }), () => {
@@ -45,14 +56,15 @@ export class AuthenticationEmailer {
                 resolve();
             });
 
-        })
-        .then(() => {
+        }).then(() => {
             return;
         });
     }
 
+    private static readonly PATH_TO_EMAIL_PUG = __dirname + "/registration-email.pug";
     private static readonly POSTMARK_URL: string = "api.postmarkapp.com";
     private static readonly POSTMARK_SEND_EMAIL_PATH: string = "/email";
     private static readonly REGISTRATION_EMAIL_ADDRESS: string = "registration@crimeorsublime.com";
 
+    private static compileEmail = compileFile(AuthenticationEmailer.PATH_TO_EMAIL_PUG);
 }
