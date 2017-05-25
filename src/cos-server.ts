@@ -49,7 +49,7 @@ export class CoSServer {
         this.app.use(SessionManager.getSessionConfiguration());
         this.app.use(express.static("dist/public", {
             setHeaders: (res: Response) => {
-                res.setHeader("Content-Type", "application/json");
+                //res.setHeader("Content-Type", "application/json");
             },
         }));
     }

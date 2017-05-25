@@ -9,7 +9,7 @@ import { SessionService } from "./shared/session/session.service";
 })
 
 /**
- * Contains the main component for CoS. Runs intialization protocols.
+ * Contains the main component for CoS.
  */
 export class CoSComponent {
   constructor(private sessionService: SessionService) {

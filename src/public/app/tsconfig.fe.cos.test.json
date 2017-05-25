@@ -1,0 +1,20 @@
+{
+  "extends": "../../../tsconfig-aot.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+  "files": [
+    "fe.test.ts"
+  ],
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "./main.post.ts"
+  ]
+}

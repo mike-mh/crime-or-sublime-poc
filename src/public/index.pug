@@ -1,3 +1,7 @@
+//-
+  This is the entry point for the entire application. This should be the .pug
+  file that is not with another component in the app directories (aside from
+  email templates).
 doctype html
 html(lang="en")
   head
@@ -11,12 +15,14 @@ html(lang="en")
     meta(content="http://crime-or-sublime.herokuapp.com/imgs/best-head.png" property="og:image")
     link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
     base(href="/")
-    //- Include node modules
+    //- Include necessary libraries
     script(src="/shim.min.js")
     script(src="/zone.min.js")
-    script(src="/Reflect.js")   
+    script(src="/Reflect.js")
+    //- Use this to deal with [hidden] bug for now.
     style
       | [hidden] { display: none !important;}
-    cos
+    cos(id="cos-index-main")
       | Loading...
+  //- Import the condensed CoS Angular app.
   script(src="/build.js")
