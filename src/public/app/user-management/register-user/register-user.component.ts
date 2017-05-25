@@ -1,6 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
-import { NgModel } from "@angular/forms";
-import "rxjs/add/operator/map";
+import { FormGroup, FormBuilder, ValidatorFn, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
 import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
@@ -18,13 +17,12 @@ import { RegisterUserService } from "./register-user.service";
  */
 export class RegisterUserComponent implements OnInit {
   public CAPTCHA_API_URL: string = "https://www.google.com/recaptcha/api.js";
-  public userEmail: string;
-  public userUsername: string;
-  public userPassword: string;
-  public confirmPassword: string;
   public captchaResponse: string;
   public isLoggedIn: boolean;
   public reCaptchaHeadElement: HTMLScriptElement = document.createElement("script");
+  public form: FormGroup;
+  public formSubmitted: boolean = false;
+  public passwordsMatch: boolean = true;
 
   private sessionStatus: SubjectSubscription<ISessionDetails>;
   private sessionUpdateCallback: Observer<ISessionDetails> = {
@@ -45,9 +43,23 @@ export class RegisterUserComponent implements OnInit {
    * @param registerUserService - Service to handle interfacing with server and
    *     business logic.
    */
-  constructor(private registerUserService: RegisterUserService,
+  constructor(private formBuilder: FormBuilder,
+              private registerUserService: RegisterUserService,
               private zone: NgZone,
               private sessionService: SessionService) {
+    this.form = formBuilder.group({
+      username: [null, Validators.compose([Validators.required,
+                                           Validators.maxLength(10),
+                                           Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
+      email: [null, Validators.compose([Validators.required, Validators.email])],
+      password: [null, Validators.compose([Validators.required,
+                                           Validators.maxLength(20),
+                                           Validators.minLength(8),
+                                           Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
+      passwordVerify: [null, Validators.compose([Validators.required])],
+    });
+
+    // These initialize recaptcha widget in window.
     window["verifyCallback" as any] = ((response: any) => zone.run(this.verifyCallback.bind(this, response)) as any);
     window["captchaExpiredCallback" as any] = (() => zone.run(this.recaptchaExpiredCallback.bind(this)) as any);
 
@@ -67,7 +79,7 @@ export class RegisterUserComponent implements OnInit {
     this.reCaptchaHeadElement.src = this.CAPTCHA_API_URL;
     this.reCaptchaHeadElement.async = true;
     this.reCaptchaHeadElement.defer = true;
-    document.getElementById("registration-form").appendChild(this.reCaptchaHeadElement);
+    document.getElementById("cos-registration-form").appendChild(this.reCaptchaHeadElement);
   }
 
   /**
@@ -88,14 +100,18 @@ export class RegisterUserComponent implements OnInit {
    * Submit handler for registration form. Gathers data from form and if valid
    * submits registration request to the server as per JSON-RPC schema.
    */
-  public onSubmit(): void {
-    if (this.userPassword !== this.confirmPassword) {
-      alert("Passwords don't match.");
+  public onSubmit(form: any): void {
+    this.formSubmitted = true;
+    this.passwordsMatch = (form.passwordVerify === form.password)
+
+    if (!form.valid || !this.passwordsMatch) {
+      console.log("Invalid form");
       return;
     }
+
     this.registerUserService
-      .registerUser(this.userEmail, this.userUsername, this.userPassword, this.captchaResponse)
-      .subscribe((response) => {
+      .registerUser(form.userEmail, form.userUsername, form.userPassword, form.captchaResponse)
+      .then((response) => {
         alert(JSON.stringify(response));
       }, (err) => {
         alert(JSON.stringify(err));

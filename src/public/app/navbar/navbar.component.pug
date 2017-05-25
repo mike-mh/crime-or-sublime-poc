@@ -1,5 +1,6 @@
+#cos-navbar
 nav
   a.class([routerLink]="['/']", title="home") Home
-  a.class([hidden]="isLoggedIn", [routerLink]="['/cos-fe-register']", id="fe-navbar-register-button", title="register") Register
-  a.class([hidden]="isLoggedIn", [routerLink]="['/cos-fe-login']", id="fe-navbar-login-button", title="login") Login
-  a.class([hidden]="!isLoggedIn", (click)="endSession()", id="fe-navbar-logout-button", title="logout") Logout
+  a.class(*ngIf="!isLoggedIn", [routerLink]="['/cos-register']", id="cos-navbar-register-button", title="register") Register
+  a.class(*ngIf="!isLoggedIn", [routerLink]="['/cos-login']", id="cos-navbar-login-button", title="login") Login
+  a.class(*ngIf="isLoggedIn", (click)="endSession()", id="cos-navbar-logout-button", title="logout") Logout

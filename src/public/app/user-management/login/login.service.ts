@@ -2,29 +2,34 @@ import { Injectable } from "@angular/core";
 import { Headers, Http, RequestOptions, Response } from "@angular/http";
 import "rxjs/add/operator/map";
 import { Observable } from "rxjs/Observable";
+import { SessionService } from "../../shared/session/session.service";
 
 @Injectable()
+
+/**
+ * Handles all service calls neede by Login component.
+ */
 export class LoginService {
   private LOGIN_URL: string = "/submit-credentials";
+  private sessionService: SessionService;
 
-  constructor(private http: Http) { }
-
-  public loginUser(email: string, password: string): Observable<JSON> {
-    const loginHeaders: Headers = new Headers({ "Content-Type": "application/json" });
-    const loginOptions = new RequestOptions({ headers: loginHeaders });
-    const registrationPayload: {} = {
-      params: {
-        email,
-        password,
-      },
-    };
-
-    return this.http.post(this.LOGIN_URL, registrationPayload, loginOptions)
-      .map(this.extractData);
+  constructor(private http: Http) {
+    this.sessionService = new SessionService(http);
   }
 
-  private extractData(res: Response): JSON {
-    const body = res.json();
-    return body || {};
+  /**
+   * Executes call to session service to validate credentials. May seem
+   * needlessly modular but we should keep this class in case we need to
+   * trigger more complex events through login.
+   * 
+   * @param email - User email.
+   * @param password - User password.
+   * 
+   * @return - Promise that resolves to boolean. True if given credentials are
+   *     correct, otherwise false.
+   */
+  public loginUser(email: string, password: string): Promise<boolean> {
+    return this.sessionService.beginSession(email, password);
   }
+
 }

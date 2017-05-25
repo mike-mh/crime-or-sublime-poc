@@ -52,8 +52,7 @@ describe("CoSComponent", () => {
       set: {
         providers: [{ provide: SessionService, useValue: sessionServiceStub }]
       }
-    })
-      .compileComponents()
+    }).compileComponents()
       .catch((error) => {
         console.log(error);
       })

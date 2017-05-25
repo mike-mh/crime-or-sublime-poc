@@ -49,6 +49,8 @@ export class LoginRouter extends CoSAbstractRouteHandler {
         const email = params.email;
         const password = params.password;
 
+        console.log(params);
+
         // Ensure parameters are set
         if (!email) {
             res.json({ error: { code: -500, message: "Need an email", id: "id" } });
@@ -72,12 +74,8 @@ export class LoginRouter extends CoSAbstractRouteHandler {
             })
             .catch((err) => {
                 if (!res.headersSent) {
-                    // There is some strange bug here where the headers appear
-                    // to change when a promise fails to resolve. Can send
-                    // strings but need to investigate.
-                    res.send("{ error: { message: " + err.message + " }}");
+                    res.json({ error: { message: err.message }});
                 }
             });
     }
-
 }

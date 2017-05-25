@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from "@angular/core";
-import { NgModel } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
 import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
@@ -18,6 +18,8 @@ export class LoginComponent implements OnDestroy {
   public userEmail: string;
   public userPassword: string;
   public isLoggedIn: boolean = false;
+  public form: FormGroup;
+
   private sessionStatus: SubjectSubscription<ISessionDetails>;
   private sessionUpdateCallback: Observer<ISessionDetails> = {
     complete: null,
@@ -30,7 +32,14 @@ export class LoginComponent implements OnDestroy {
     },
   };
 
-  constructor(private loginService: LoginService, private sessionService: SessionService) {
+  constructor(private formBuilder: FormBuilder,
+    private loginService: LoginService,
+    private sessionService: SessionService) {
+    this.form = formBuilder.group({
+      "email": [null, Validators.required],
+      "password": [null, Validators.required],
+    });
+
     this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
     SessionService.sessionStatusEmitter.subscribe(this.sessionUpdateCallback);
     this.isLoggedIn = SessionService.isSessionActive();
@@ -38,15 +47,24 @@ export class LoginComponent implements OnDestroy {
 
   /**
    * Handler after login form is submitted.
+   * 
+   * TO-DO: Add on handlers for server error and unsuccessful login.
+   * 
+   * @param form - The form submitted from the loging component html.
    */
-  public onSubmit(): void {
+  public onSubmit(form: any): void {
     this.loginService
-      .loginUser(this.userEmail, this.userPassword)
-      .subscribe((response) => {
-        this.sessionService.checkUserIsActive();
-      }, (err) => {
-        alert(JSON.stringify(err));
-      });
+      .loginUser(form.email, form.password)
+      .then((result) => {
+        // Reset the form if successful
+        if (result) {
+          this.form.reset();
+        }
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      })
   }
 
   /**

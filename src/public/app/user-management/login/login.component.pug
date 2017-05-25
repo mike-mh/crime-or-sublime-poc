@@ -2,20 +2,18 @@
   //- Should probably get rid of this
   h1
     | Login Here:
-  form((ngSubmit)="onSubmit()")
+  form([formGroup]="form", (ngSubmit)="onSubmit(form.value)")
     .form-group
       label(for="email")
         | Email
-      input#name.form-control([(ngModel)]="userEmail",
+      input#name.form-control([formControl]="form.controls['email']",
                               type="text",
-                              name="email",
-                              required)
+                              name="email")
     .form-group
       label(for="password")
         | Password
-      input#password.form-control([(ngModel)]="userPassword",
+      input#password.form-control([formControl]="form.controls['password']",
                                   type="password",
-                                  name="password",
-                                  required)
-    button.btn.btn-default
+                                  name="password")
+    button.btn.btn-default([disabled]="!form.valid")
       | Submit

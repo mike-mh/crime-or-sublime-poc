@@ -30,7 +30,7 @@ describe("NavbarComponent", () => {
   let userIsSignedOn = false;
 
   beforeEach(async(() => {
-      console.log(userIsSignedOn);
+    console.log(userIsSignedOn);
     let sessionServiceStub = {
       sessionIsActive: userIsSignedOn,
     }
@@ -45,7 +45,7 @@ describe("NavbarComponent", () => {
         RegisterUserModule,
         RouterTestingModule,
         FormsModule,
-        ],
+      ],
     })
 
     TestBed.overrideComponent(NavbarComponent, {
@@ -63,10 +63,10 @@ describe("NavbarComponent", () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
-    deLoginButton = fixture.debugElement.query(By.css("#fe-navbar-login-button"));
-    deLogoutButton = fixture.debugElement.query(By.css("#fe-navbar-logout-button"));
+    deLoginButton = fixture.debugElement.query(By.css("#cos-navbar-login-button"));
+    deLogoutButton = fixture.debugElement.query(By.css("#cos-navbar-logout-button"));
     deNavbar = fixture.debugElement.query(By.css("nav"));
-    deRegisterButton = fixture.debugElement.query(By.css("#fe-navbar-register-button"));
+    deRegisterButton = fixture.debugElement.query(By.css("#cos-navbar-register-button"));
     elLoginButton = deLoginButton.nativeElement;
     elLogoutButton = deLogoutButton.nativeElement;
     elNavbar = deNavbar.nativeElement;
@@ -79,8 +79,13 @@ describe("NavbarComponent", () => {
 
   it("should have a visible navbar", () => {
     fixture.detectChanges();
-    expect(elNavbar.tagName).toEqual("NAV");    
+    expect(elNavbar.tagName).toEqual("NAV");
   });
+
+  it("should know when the user is logged off", () => {
+    expect(component.isLoggedIn).toBe(false);
+  });
+
 
   it("when the user is logged off the login button is visible", () => {
     fixture.detectChanges();
@@ -100,6 +105,10 @@ describe("NavbarComponent", () => {
     userIsSignedOn = true;
   });
 
+  it("should know when the user is logged in", () => {
+    expect(component.isLoggedIn).toBe(true);
+  });
+
   it("when the user is logged in the login button is invisible", () => {
     fixture.detectChanges();
     expect(elLoginButton.hidden).toBe(true);
@@ -115,4 +124,13 @@ describe("NavbarComponent", () => {
     expect(elLogoutButton.hidden).toBe(false);
   });
 
+  it("should update automatically after a user signs out", () => {
+    SessionService.sessionStatusEmitter.emit({});
+    expect(component.isLoggedIn).toBe(false);
+  });
+
+  it("should update automatically after a user signs in", () => {
+    SessionService.sessionStatusEmitter.emit({ email: "test@test.com" });
+    expect(component.isLoggedIn).toBe(true);
+  });
 });

@@ -19,6 +19,7 @@ export class NavbarComponent implements OnDestroy {
   private sessionUpdateCallback: Observer<ISessionDetails> = {
     complete: null,
     error: null,
+    // This is the function that gets executed during a status update.
     next: (response) => {
       if (response.error) {
         return;

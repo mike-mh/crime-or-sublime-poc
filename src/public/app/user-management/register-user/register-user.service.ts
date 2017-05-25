@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Headers, Http, RequestOptions, Response } from "@angular/http";
 import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/toPromise";
+
 
 @Injectable()
 export class RegisterUserService {
@@ -12,7 +14,7 @@ export class RegisterUserService {
     email: string,
     username: string,
     password: string,
-    reCaptchaResponse: string): Observable<JSON> {
+    reCaptchaResponse: string): Promise<JSON> {
     const registrationHeaders: Headers = new Headers({ "Content-Type": "application/json" });
     const registrationOptions = new RequestOptions({ headers: registrationHeaders });
     const registrationPayload: {} = {
@@ -26,12 +28,9 @@ export class RegisterUserService {
 
     return this.http
       .post(this.REGISTER_USER_URL, registrationPayload, registrationOptions)
-      .map(this.extractData);
+      .toPromise()
+      .then((response) => {
+        return response.json();
+      });
   }
-
-  private extractData(res: Response): JSON {
-    const body = res.json();
-    return body || {};
-  }
-
 }

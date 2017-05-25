@@ -1,10 +1,10 @@
 export class CoSRouteConstants {
     // Angular uses different routes to render its application and this is used
     // to ensure that these routes are reserved exclusively for serving the
-    // application. All start with 'cos-fe' for CoS front end.
+    // application. All start with 'cos'.
     public static readonly COS_CLIENT_PATHS: string[] = [
-        "/cos-fe-login",
-        "/cos-fe-register",
+        "/cos-login",
+        "/cos-register",
     ];
 }
 
