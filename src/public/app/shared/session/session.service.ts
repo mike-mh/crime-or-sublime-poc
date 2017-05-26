@@ -49,11 +49,12 @@ export class SessionService {
         this.http.get(SessionService.GET_USER_URL, headers)
             .toPromise()
             .then((res) => {
+                console.log(res.json());
                 const details: ISessionDetails = {};
                 if (res.json().error || !res.json().result) {
                     details.error = true;
                 } else {
-                    details.email = res.json().result;
+                    details.email = res.json().result.email;
                 }
                 SessionService.sessionIsActive = !!details.email;
                 SessionService.sessionStatusEmitter.emit(details);
@@ -117,7 +118,7 @@ export class SessionService {
                 if (res.json().error || !res.json().result) {
                     details.error = true;
                 } else {
-                    details.email = res.json().result;
+                    details.email = res.json().result.email;
                 }
 
                 SessionService.sessionIsActive = !!details.email;

@@ -36,7 +36,6 @@ describe("NavbarComponent", () => {
   let userIsSignedOn = false;
 
   beforeEach(async(() => {
-    console.log(userIsSignedOn);
     let sessionServiceStub = {
       sessionIsActive: userIsSignedOn,
     }
