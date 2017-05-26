@@ -15,7 +15,7 @@ import { RegisterUserService } from "./register-user.service";
 /**
  * This class is responsible for controlling the user registration form.
  */
-export class RegisterUserComponent implements OnInit {
+export class RegisterUserComponent implements OnInit, OnDestroy {
   public CAPTCHA_API_URL: string = "https://www.google.com/recaptcha/api.js";
   public captchaResponse: string;
   public isLoggedIn: boolean;
@@ -44,18 +44,18 @@ export class RegisterUserComponent implements OnInit {
    *     business logic.
    */
   constructor(private formBuilder: FormBuilder,
-              private registerUserService: RegisterUserService,
-              private zone: NgZone,
-              private sessionService: SessionService) {
+    private registerUserService: RegisterUserService,
+    private zone: NgZone,
+    private sessionService: SessionService) {
     this.form = formBuilder.group({
       username: [null, Validators.compose([Validators.required,
-                                           Validators.maxLength(10),
-                                           Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
+      Validators.maxLength(10),
+      Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
       email: [null, Validators.compose([Validators.required, Validators.email])],
       password: [null, Validators.compose([Validators.required,
-                                           Validators.maxLength(20),
-                                           Validators.minLength(8),
-                                           Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
+      Validators.maxLength(20),
+      Validators.minLength(8),
+      Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
       passwordVerify: [null, Validators.compose([Validators.required])],
     });
 
@@ -127,5 +127,16 @@ export class RegisterUserComponent implements OnInit {
    */
   public ngOnInit() {
     this.displayRecaptcha();
+  }
+
+  /**
+   * Need to unsubscribe from session service.
+   */
+  public ngOnDestroy() {
+    // Manually remove observer from event emitter. Unsubscribe doesn't work.
+    // Will need to come back to this and fix it.
+    const observerIndex = SessionService.sessionStatusEmitter.observers.indexOf(this.sessionUpdateCallback);
+    SessionService.sessionStatusEmitter.observers.splice(observerIndex, 1);
+    this.sessionStatus.unsubscribe();
   }
 }

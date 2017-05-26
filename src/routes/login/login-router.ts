@@ -49,8 +49,6 @@ export class LoginRouter extends CoSAbstractRouteHandler {
         const email = params.email;
         const password = params.password;
 
-        console.log(params);
-
         // Ensure parameters are set
         if (!email) {
             res.json({ error: { code: -500, message: "Need an email", id: "id" } });

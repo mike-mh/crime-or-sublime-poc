@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { EventEmitter } from "@angular/core";
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
@@ -17,10 +18,15 @@ describe("NavbarComponent", () => {
   let deLogoutButton: DebugElement;
   let deNavbar: DebugElement;
   let deRegisterButton: DebugElement;
-  let elLoginButton: HTMLElement;
-  let elLogoutButton: HTMLElement;
   let elNavbar: HTMLElement;
-  let elRegisterButton: HTMLElement;
+
+
+  let htmlElements: {} = {};
+  let buttonIDs: string[] = [
+    "#cos-navbar-login-button",
+    "#cos-navbar-logout-button",
+    "#cos-navbar-register-button"
+  ];
 
   let spy: jasmine.Spy;
   let sessionServiceStub: {
@@ -45,6 +51,7 @@ describe("NavbarComponent", () => {
         RegisterUserModule,
         RouterTestingModule,
         FormsModule,
+        CommonModule
       ],
     })
 
@@ -63,14 +70,24 @@ describe("NavbarComponent", () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
-    deLoginButton = fixture.debugElement.query(By.css("#cos-navbar-login-button"));
-    deLogoutButton = fixture.debugElement.query(By.css("#cos-navbar-logout-button"));
+    fixture.detectChanges();
+
     deNavbar = fixture.debugElement.query(By.css("nav"));
-    deRegisterButton = fixture.debugElement.query(By.css("#cos-navbar-register-button"));
-    elLoginButton = deLoginButton.nativeElement;
-    elLogoutButton = deLogoutButton.nativeElement;
+
+    for (let id of buttonIDs) {
+      let de = fixture.debugElement.query(By.css(id));
+
+      htmlElements[id] = (de) ?
+        de.nativeElement :
+        undefined;
+    }
+
     elNavbar = deNavbar.nativeElement;
-    elRegisterButton = deRegisterButton.nativeElement;
+  })
+
+  afterEach(() => {
+    // Need to be sure that the fixture is always destroyed after each test.
+    fixture.destroy();
   })
 
   it("should check whether or not the user is signed in after initializing", () => {
@@ -89,17 +106,17 @@ describe("NavbarComponent", () => {
 
   it("when the user is logged off the login button is visible", () => {
     fixture.detectChanges();
-    expect(elLoginButton.hidden).toBe(false);
+    expect(htmlElements["#cos-navbar-login-button"]).toBeTruthy();
   });
 
   it("when the user is logged off the registration button is visible", () => {
     fixture.detectChanges();
-    expect(elRegisterButton.hidden).toBe(false);
+    expect(htmlElements["#cos-navbar-register-button"]).toBeTruthy();
   });
 
   it("when the user is logged off the logout button is invisible", () => {
     fixture.detectChanges();
-    expect(elLogoutButton.hidden).toBe(true);
+    expect(htmlElements["#cos-navbar-logout-button"]).toBeFalsy();
 
     // Now configure tests as if user is signed on.
     userIsSignedOn = true;
@@ -111,17 +128,17 @@ describe("NavbarComponent", () => {
 
   it("when the user is logged in the login button is invisible", () => {
     fixture.detectChanges();
-    expect(elLoginButton.hidden).toBe(true);
+    expect(htmlElements["#cos-navbar-login-button"]).toBeFalsy();
   });
 
   it("when the user is logged in the registration button is invisible", () => {
     fixture.detectChanges();
-    expect(elRegisterButton.hidden).toBe(true);
+    expect(htmlElements["#cos-navbar-register-button"]).toBeFalsy();
   });
 
   it("when the user is logged in the logout button is visible", () => {
     fixture.detectChanges();
-    expect(elLogoutButton.hidden).toBe(false);
+    expect(htmlElements["#cos-navbar-logout-button"]).toBeTruthy();
   });
 
   it("should update automatically after a user signs out", () => {
@@ -133,4 +150,10 @@ describe("NavbarComponent", () => {
     SessionService.sessionStatusEmitter.emit({ email: "test@test.com" });
     expect(component.isLoggedIn).toBe(true);
   });
+
+  it("should unsubscribe from the session service when destroyed", () => {
+    expect(SessionService.sessionStatusEmitter.observers.length).toEqual(1)
+    component.ngOnDestroy();
+    expect(SessionService.sessionStatusEmitter.observers.length).toEqual(0)
+  })
 });

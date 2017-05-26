@@ -45,6 +45,10 @@ export class NavbarComponent implements OnDestroy {
    * Need to unsubscribe from the session emitter.
    */
   public ngOnDestroy(): void {
+    // Manually remove observer from event emitter. Unsubscribe doesn't work.
+    // Will need to come back to this and fix it.
+    const observerIndex = SessionService.sessionStatusEmitter.observers.indexOf(this.sessionUpdateCallback);
+    SessionService.sessionStatusEmitter.observers.splice(observerIndex, 1);
     this.sessionStatus.unsubscribe();
   }
 

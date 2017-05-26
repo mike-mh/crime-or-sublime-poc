@@ -32,16 +32,16 @@ module.exports = function (config) {
       { pattern: 'node_modules/@angular/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/@angular/**/*.js.map', included: false, watched: false },
 
-      // Include all HTML and CSS files (be sure you compiled them with Grunt
-      // first!) and the actual app and tests themselves.
-      { pattern: './src/public/**/!(main.post).+(ts|css|html)' },
+      // Include all ts and pug files.
+      { pattern: './src/public/**/!(main.post).+(ts|pug)' },
     ],
 
    plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
-      require('karma-typescript')
+      require('karma-typescript'),
+      require('karma-pug-preprocessor'),
     ],
 
     karmaTypescriptConfig: {
@@ -55,7 +55,8 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      '**/*.ts': ['karma-typescript']
+      '**/*.ts': ['karma-typescript'],
+      '**/*.pug': ['pug'],
     },
 
 

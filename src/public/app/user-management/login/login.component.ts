@@ -20,8 +20,8 @@ export class LoginComponent implements OnDestroy {
   public isLoggedIn: boolean = false;
   public form: FormGroup;
 
-  private sessionStatus: SubjectSubscription<ISessionDetails>;
-  private sessionUpdateCallback: Observer<ISessionDetails> = {
+  public sessionStatus: SubjectSubscription<ISessionDetails>;
+  public sessionUpdateCallback: Observer<ISessionDetails> = {
     complete: null,
     error: null,
     next: (response) => {
@@ -71,6 +71,9 @@ export class LoginComponent implements OnDestroy {
    * Need to unsubscribe from the session emitter.
    */
   public ngOnDestroy(): void {
+    // Manually remove observer from event emitter. Unsubscribe doesn't work.
+    const observerIndex = SessionService.sessionStatusEmitter.observers.indexOf(this.sessionUpdateCallback);
+    SessionService.sessionStatusEmitter.observers.splice(observerIndex, 1);
     this.sessionStatus.unsubscribe();
   }
 }
