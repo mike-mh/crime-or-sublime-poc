@@ -49,7 +49,6 @@ export class SessionService {
         this.http.get(SessionService.GET_USER_URL, headers)
             .toPromise()
             .then((res) => {
-                console.log(res.json());
                 const details: ISessionDetails = {};
                 if (res.json().error || !res.json().result) {
                     details.error = true;
