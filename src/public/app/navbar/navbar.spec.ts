@@ -14,15 +14,12 @@ import { SessionService, ISessionDetails } from "./../shared/session/session.ser
 describe("NavbarComponent", () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  let deLoginButton: DebugElement;
-  let deLogoutButton: DebugElement;
-  let deNavbar: DebugElement;
-  let deRegisterButton: DebugElement;
   let elNavbar: HTMLElement;
 
 
   let htmlElements: {} = {};
   let buttonIDs: string[] = [
+    "#cos-navbar-nav",
     "#cos-navbar-login-button",
     "#cos-navbar-logout-button",
     "#cos-navbar-register-button"
@@ -58,8 +55,7 @@ describe("NavbarComponent", () => {
       set: {
         providers: [{ provide: SessionService, useValue: sessionServiceStub }]
       }
-    })
-      .compileComponents()
+    }).compileComponents()
       .catch((error) => {
         console.log(error);
       })
@@ -71,8 +67,6 @@ describe("NavbarComponent", () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    deNavbar = fixture.debugElement.query(By.css("nav"));
-
     for (let id of buttonIDs) {
       let de = fixture.debugElement.query(By.css(id));
 
@@ -80,28 +74,20 @@ describe("NavbarComponent", () => {
         de.nativeElement :
         undefined;
     }
-
-    elNavbar = deNavbar.nativeElement;
-  })
-
-  afterEach(() => {
-    // Need to be sure that the fixture is always destroyed after each test.
-    fixture.destroy();
   })
 
   it("should check whether or not the user is signed in after initializing", () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it("should have a visible navbar", () => {
-    fixture.detectChanges();
-    expect(elNavbar.tagName).toEqual("NAV");
-  });
-
   it("should know when the user is logged off", () => {
     expect(component.isLoggedIn).toBe(false);
   });
 
+  it("should have a visible navbar", () => {
+    fixture.detectChanges();
+    expect(htmlElements["#cos-navbar-nav"]).toBeTruthy();
+  });
 
   it("when the user is logged off the login button is visible", () => {
     fixture.detectChanges();

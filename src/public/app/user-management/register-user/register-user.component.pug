@@ -2,7 +2,7 @@
   //- Should probably get rid of this
   h1
     | Register Here:
-  form.registration-form#cos-registration-form([formGroup]="form", (ngSubmit)="onSubmit(form.value)")
+  form.registration-form#cos-register-user-form([formGroup]="form", (ngSubmit)="onSubmit(form.value)")
     .form-group
       label(for="username")
         | Username

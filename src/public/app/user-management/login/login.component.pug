@@ -1,19 +1,20 @@
-.container([hidden]="isLoggedIn")
+#cos-login
+.container
   //- Should probably get rid of this
   h1
     | Login Here:
-  form([formGroup]="form", (ngSubmit)="onSubmit(form.value)")
+  form#cos-login-form(*ngIf="!isLoggedIn", [formGroup]="form", (ngSubmit)="onSubmit(form.value)")
     .form-group
       label(for="email")
         | Email
-      input#name.form-control([formControl]="form.controls['email']",
+      input#cos-login-name-field.form-control([formControl]="form.controls['email']",
                               type="text",
                               name="email")
     .form-group
       label(for="password")
         | Password
-      input#password.form-control([formControl]="form.controls['password']",
+      input#cos-login-password-field.form-control([formControl]="form.controls['password']",
                                   type="password",
                                   name="password")
-    button.btn.btn-default([disabled]="!form.valid")
+    button.btn.btn-default#cos-login-submit-button([disabled]="!form.valid")
       | Submit

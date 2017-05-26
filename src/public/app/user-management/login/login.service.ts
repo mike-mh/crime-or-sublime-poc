@@ -10,7 +10,7 @@ import { SessionService } from "../../shared/session/session.service";
  * Handles all service calls neede by Login component.
  */
 export class LoginService {
-  private LOGIN_URL: string = "/submit-credentials";
+  private readonly LOGIN_URL: string = "/submit-credentials";
   private sessionService: SessionService;
 
   constructor(private http: Http) {
