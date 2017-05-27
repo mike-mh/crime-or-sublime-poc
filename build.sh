@@ -80,7 +80,7 @@ cleanup () {
 #   None
 ###############################################################################
 build_front_end () {
-  grunt
+  ./node_modules/.bin/grunt
 
   if [ $? -ne $EXIT_OK ]; then
     echo "Unable to build HTML and CSS files." >&2

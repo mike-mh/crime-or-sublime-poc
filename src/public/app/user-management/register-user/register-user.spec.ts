@@ -310,7 +310,7 @@ describe("RegisterUserComponent", () => {
             "password");
 
         component.onSubmit(component.form.value);
-        expect(serviceSpy).toHaveBeenCalledTimes(0);
+        expect(serviceSpy).not.toHaveBeenCalled();
     });
 
     // TO-DO still need to decide on what to do after a user successfully registers.
