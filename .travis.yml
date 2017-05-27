@@ -25,6 +25,7 @@ before_install:
     - sudo gem install sass
 install:
     - npm install
+    - ./node_modules/.bin/webdriver-manager update
 
 # Run the tests
 script:
