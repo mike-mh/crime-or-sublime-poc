@@ -23,6 +23,7 @@
     "grunt": "^1.0.1",
     "grunt-contrib-pug": "^1.0.0",
     "grunt-contrib-sass": "^1.0.0",
+    "jasmine-spec-reporter": "^4.1.0",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.1.1",
     "karma-jasmine": "^1.1.0",
