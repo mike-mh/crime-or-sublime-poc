@@ -31,5 +31,6 @@ script:
     - ./node_modules/.bin/karma start --single-run
     - ./node_modules/.bin/tsc
     - ./build.sh
-    - node ./dist/main.js
+    - node ./dist/main.js &
+    - ./node_modules/.bin/webdriver-manager start --standalone & > /dev/null
     - ./node_modules/.bin/protractor
