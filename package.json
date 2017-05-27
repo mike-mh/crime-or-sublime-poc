@@ -30,7 +30,7 @@
     "karma-pug-preprocessor": "^1.0.0-beta.1",
     "karma-typescript": "^3.0.2",
     "karma-typescript-angular2-transform": "^1.0.0",
-    "protractor": "^5.1.2",
+    "protractor": "^4.0.14",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
@@ -38,7 +38,7 @@
     "source-map-loader": "^0.2.1",
     "ts-node": "^3.0.4",
     "tslint": "^5.2.0",
-    "typescript": "^2.3.2"
+    "typescript": "^2.3.3"
   },
   "dependencies": {
     "@angular/animations": "^4.1.2",
