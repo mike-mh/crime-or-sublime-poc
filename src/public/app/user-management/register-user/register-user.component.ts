@@ -19,7 +19,7 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
   public reCaptchaHeadElement: HTMLScriptElement = document.createElement("script");
   public CAPTCHA_API_URL: string = "https://www.google.com/recaptcha/api.js";
   public captchaResponse: string;
-  public isLoggedIn: boolean;
+  public isLoggedIn: boolean = false;
   public form: FormGroup;
   public formSubmitted: boolean = false;
   public passwordsMatch: boolean = true;
