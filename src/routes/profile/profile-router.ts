@@ -42,11 +42,12 @@ export class ProfileRouter extends CoSAbstractRouteHandler {
     private getUser(req: Request, res: Response): void {
         if (!req.session.email) {
             res.json({ error: { code: -500, message: "User not found.", id: "id" } });
+            return;
         }
 
         new UserModel().checkUserExists(req.session.email)
             .then(() => {
-                res.json({ result: req.session.email });
+                res.json({ result: { email: req.session.email } });
             })
             .catch((error) => {
                 res.json({ error: { message: "Invalid session." }});

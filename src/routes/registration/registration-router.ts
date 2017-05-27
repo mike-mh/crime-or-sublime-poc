@@ -88,6 +88,9 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
                 return new TempUserModel()
                     .createTempUser(username, email, password);
             })
+            .then(() => {
+                res.json({results: {email, username}});
+            })
             .catch((error) => {
                 res.json({
                     error: {
@@ -117,6 +120,7 @@ export class RegistrationRouter extends CoSAbstractRouteHandler {
                 req.session.email = email;
                 req.session.username = username;
                 req.session.save((error) => { throw new Error("Failed to save session"); });
+                res.json({results: {email, username}});
             })
             .catch((err) => {
                 res.json({error: { message: err.message }});

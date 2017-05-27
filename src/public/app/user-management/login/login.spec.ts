@@ -44,7 +44,6 @@ describe("LoginComponent", () => {
         TestBed.configureTestingModule({
             declarations: [LoginComponent],
             imports: [
-                FormsModule,
                 CommonModule,
                 ReactiveFormsModule,
                 HttpModule
@@ -76,7 +75,7 @@ describe("LoginComponent", () => {
                 de.nativeElement :
                 undefined;
         }
-    })
+    });
 
     it("should have a form", () => {
         fixture.detectChanges();

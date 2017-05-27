@@ -1,9 +1,9 @@
 #cos-login
-.container
+.container(*ngIf="!isLoggedIn")
   //- Should probably get rid of this
   h1
     | Login Here:
-  form#cos-login-form(*ngIf="!isLoggedIn", [formGroup]="form", (ngSubmit)="onSubmit(form.value)")
+  form#cos-login-form([formGroup]="form", (ngSubmit)="onSubmit(form.value)")
     .form-group
       label(for="email")
         | Email

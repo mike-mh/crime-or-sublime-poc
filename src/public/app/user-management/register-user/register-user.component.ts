@@ -16,10 +16,10 @@ import { RegisterUserService } from "./register-user.service";
  * This class is responsible for controlling the user registration form.
  */
 export class RegisterUserComponent implements OnInit, OnDestroy {
+  public reCaptchaHeadElement: HTMLScriptElement = document.createElement("script");
   public CAPTCHA_API_URL: string = "https://www.google.com/recaptcha/api.js";
   public captchaResponse: string;
   public isLoggedIn: boolean;
-  public reCaptchaHeadElement: HTMLScriptElement = document.createElement("script");
   public form: FormGroup;
   public formSubmitted: boolean = false;
   public passwordsMatch: boolean = true;
@@ -48,15 +48,17 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
     private zone: NgZone,
     private sessionService: SessionService) {
     this.form = formBuilder.group({
-      username: [null, Validators.compose([Validators.required,
-      Validators.maxLength(10),
-      Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
+      username: [null, Validators.compose([
+        Validators.required,
+        Validators.maxLength(10),
+        Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
       email: [null, Validators.compose([Validators.required, Validators.email])],
-      password: [null, Validators.compose([Validators.required,
-      Validators.maxLength(20),
-      Validators.minLength(8),
-      Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
-      passwordVerify: [null, Validators.compose([Validators.required])],
+      password: [null, Validators.compose([
+        Validators.required,
+        Validators.maxLength(20),
+        Validators.minLength(8),
+        Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
+      passwordVerify: [null, [Validators.required]],
     });
 
     // These initialize recaptcha widget in window.
@@ -70,7 +72,7 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Renders the reCaptcha to the form.
+   * Renders the reCaptcha widget to the form.
    *
    * TO-DO: See if there is an alternative to this.
    */
@@ -79,7 +81,7 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
     this.reCaptchaHeadElement.src = this.CAPTCHA_API_URL;
     this.reCaptchaHeadElement.async = true;
     this.reCaptchaHeadElement.defer = true;
-    document.getElementById("cos-registration-form").appendChild(this.reCaptchaHeadElement);
+    document.getElementById("cos-register-user-form").appendChild(this.reCaptchaHeadElement);
   }
 
   /**
@@ -99,18 +101,20 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
   /**
    * Submit handler for registration form. Gathers data from form and if valid
    * submits registration request to the server as per JSON-RPC schema.
+   * 
+   * @param form - The data input into the registration form by the user.
    */
   public onSubmit(form: any): void {
     this.formSubmitted = true;
     this.passwordsMatch = (form.passwordVerify === form.password)
 
-    if (!form.valid || !this.passwordsMatch) {
-      console.log("Invalid form");
+    if (!this.form.valid || !this.passwordsMatch) {
+      console.log("No way dude.");
       return;
     }
 
     this.registerUserService
-      .registerUser(form.userEmail, form.userUsername, form.userPassword, form.captchaResponse)
+      .registerUser(form.email, form.username, form.password, this.captchaResponse)
       .then((response) => {
         alert(JSON.stringify(response));
       }, (err) => {
@@ -119,11 +123,7 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
   }
 
   /*
-   * TO-DO: Everytime the user navigates away from the registration tab and
-   *        back this places a fresh <script> tag in the head for the API.
-   *        Considering this only occurs everytime the user selects the
-   *        registration tag we should be safe if we ignore it but need to
-   *        keep an eye on this.
+   * Attaches the reCaptcha element to the DOM.
    */
   public ngOnInit() {
     this.displayRecaptcha();
@@ -133,6 +133,17 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
    * Need to unsubscribe from session service.
    */
   public ngOnDestroy() {
+    // Iterate through all script nodes and remove reCaptcha element. This a
+    // work around for bug where 'createElement' leaves a dead script tag in
+    // the head after this component is destroyed. Come back to this later and
+    // try to find a better solution.
+    for (let index = 0; index < document.getElementsByTagName('script').length; index++) {
+      const script = document.getElementsByTagName('script')[index]
+      if (script.async) {
+        script.parentNode.removeChild(script);
+        break;
+      }
+    }
     // Manually remove observer from event emitter. Unsubscribe doesn't work.
     // Will need to come back to this and fix it.
     const observerIndex = SessionService.sessionStatusEmitter.observers.indexOf(this.sessionUpdateCallback);
