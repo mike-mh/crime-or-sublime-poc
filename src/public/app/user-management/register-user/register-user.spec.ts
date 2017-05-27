@@ -2,7 +2,8 @@ import { CommonModule } from "@angular/common";
 import { EventEmitter, NgZone } from "@angular/core";
 import { async, inject, ComponentFixture, TestBed } from "@angular/core/testing";
 import { ReactiveFormsModule } from "@angular/forms";
-import { HttpModule } from '@angular/http';
+import { HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
+import { MockBackend } from '@angular/http/testing';
 import { By } from "@angular/platform-browser";
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { DebugElement } from "@angular/core";
@@ -284,7 +285,7 @@ describe("RegisterUserComponent", () => {
     it("should submit valid forms to the RegisterUserService", () => {
         let serviceSpy: jasmine.Spy;
         serviceSpy = spyOn(fixture.debugElement.injector.get(RegisterUserService), "registerUser")
-            .and.returnValue(new Promise((resolve) => {resolve({})}));
+            .and.returnValue(new Promise((resolve) => { resolve({}) }));
 
         // Need to spoof a recaptcha response
         component.captchaResponse = "response";
@@ -293,7 +294,7 @@ describe("RegisterUserComponent", () => {
             "test@test.com",
             "password",
             "password");
-        
+
         component.onSubmit(component.form.value);
         expect(serviceSpy).toHaveBeenCalled();
     });
@@ -301,13 +302,13 @@ describe("RegisterUserComponent", () => {
     it("should not submit invalid forms to the RegisterUserService", () => {
         let serviceSpy: jasmine.Spy;
         serviceSpy = spyOn(fixture.debugElement.injector.get(RegisterUserService), "registerUser")
-            .and.returnValue(new Promise((resolve) => {resolve({})}));
+            .and.returnValue(new Promise((resolve) => { resolve({}) }));
 
         fillForm("test",
             "testtest.com",
             "password",
             "password");
-        
+
         component.onSubmit(component.form.value);
         expect(serviceSpy).toHaveBeenCalledTimes(0);
     });
@@ -315,8 +316,68 @@ describe("RegisterUserComponent", () => {
     // TO-DO still need to decide on what to do after a user successfully registers.
 });
 
+/**
+ * Consider re-doing some of these tests in the future. They work but the
+ * implementation is a bit sloppy.
+ */
 describe("RegisterUserService", () => {
-    it("should send registration details to the server and return the response in a promise", () => {
+    let spy: jasmine.Spy;
+    let userIsSignedOn: boolean = false;
 
-    })
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpModule],
+            providers: [
+                RegisterUserService,
+                { provide: XHRBackend, useClass: MockBackend }]
+        })
+    });
+
+    it("should send registration details to the server and return succesful response in a promise", async(
+        inject([RegisterUserService, XHRBackend], (registerUserService: RegisterUserService,
+            mockBackend: MockBackend) => {
+
+            const mockResponse = JSON.stringify({
+                result: {
+                    email: "test@test.com",
+                    username: "test",
+                }
+            });
+
+            mockBackend.connections.subscribe((connection: any) => {
+                connection.mockRespond(new Response(new ResponseOptions({
+                    body: JSON.parse(mockResponse)
+                })));
+            });
+
+            let response = registerUserService.registerUser("test", "test@test.com", "password", "response")
+                .then((response) => {
+                    expect(JSON.stringify(response)).toEqual(mockResponse);
+                });
+
+
+        })));
+
+    it("should send registration details to the server and return error response in a promise", async(
+        inject([RegisterUserService, XHRBackend], (registerUserService: RegisterUserService,
+            mockBackend: MockBackend) => {
+
+            const mockResponse = JSON.stringify({
+                error: {
+                    message: "Couldn't register user.",
+                }
+            });
+
+            mockBackend.connections.subscribe((connection: any) => {
+                connection.mockRespond(new Response(new ResponseOptions({
+                    body: JSON.parse(mockResponse)
+                })));
+            });
+
+            let response = registerUserService.registerUser("test", "test@test.com", "password", "response")
+                .then((response) => {
+                    expect(JSON.stringify(response)).toEqual(mockResponse);
+                });
+        })));
+
 });

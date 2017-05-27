@@ -109,7 +109,6 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
     this.passwordsMatch = (form.passwordVerify === form.password)
 
     if (!this.form.valid || !this.passwordsMatch) {
-      console.log("No way dude.");
       return;
     }
 
