@@ -3,6 +3,15 @@ import { CoSAPI } from "./cos-api";
 
 // Need to extend an abstract class to instantiate it.
 class TestAPI extends CoSAPI {
+    /**
+     * Don't need to implement this. Each API subclass is unique and these
+     * will be tested in their own modules.
+     */
+    public validateParams(path: string, inputParams: {
+        [index: string]: string | number | object | any[];
+    }): void {
+        throw new Error("Method not implemented.");
+    }
 
 }
 
@@ -14,54 +23,64 @@ describe("CoS API", () => {
     });
 
     it("should invalidate input with parameters that are not in the validation schema", () => {
-        const constraints = [{
-            name: "test",
-            type: "string",
-        }];
+        const constraints = [
+            {
+                name: "test",
+                schema: {
+                    type: "string",
+                },
+            },
+        ];
 
         const invalidParameter = {
             tests: "foo",
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.NO_SUCH_PARAMETER_ERROR);
         }
     });
 
-    it("should reject input parameters that missing a required paraemter", () => {
-        const constraints = [{
-            name: "test",
-            type: "string",
-            required: true,
-        },
-        {
-            name: "again",
-            type: "string",
-            required: true,
-        },];
+    it("should reject input parameters that missing a required parameter", () => {
+        const constraints = [
+            {
+                name: "test",
+                required: true,
+                schema: {
+                    type: "string",
+                },
+            },
+            {
+                name: "again",
+                required: true,
+                schema: {
+                    type: "string",
+                },
+            },
+        ];
 
         const invalidParameter = {
             test: "foo",
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.MISSING_PARAMETER_ERROR);
         }
     });
 
     it("should reject input parameters that don't match types", () => {
         const constraints = [{
             name: "test",
-            type: "number",
             required: true,
+            schema: {
+                type: "number",
+            },
         }];
 
         const invalidParameter = {
@@ -69,20 +88,21 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_TYPE_ERROR);
         }
     });
 
     it("should reject input parameters that require an email but input doesn't match format", () => {
         const constraints = [{
             name: "test",
-            type: "string",
-            format: "email",
             required: true,
+            schema: {
+                format: "email",
+                type: "string",
+            },
         }];
 
         const invalidParameter = {
@@ -90,19 +110,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_EMAIL_ERROR);
         }
     });
 
     it("should reject input parameters that are not multiples of amount specified", () => {
         const constraints = [{
             name: "test",
-            type: "number",
-            multipleOf: 2,
+            schema: {
+                multipleOf: 2,
+                type: "number",
+            }
         }];
 
         const invalidParameter = {
@@ -110,19 +131,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_MULTIPLES_ERROR);
         }
     });
 
     it("should reject input that are larger than a set maximum", () => {
         const constraints = [{
             name: "test",
-            type: "number",
-            maximum: 2,
+            schema: {
+                maximum: 2,
+                type: "number",
+            },
         }];
 
         const invalidParameter = {
@@ -130,20 +152,21 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_MAX_VALUE_ERROR);
         }
     });
 
     it("should reject input that are larger than or equal to a set maximum with exclusiveMaximum", () => {
         const constraints = [{
             name: "test",
-            type: "number",
-            maximum: 2,
-            exclusiveMaximum: true,
+            schema: {
+                exclusiveMaximum: true,
+                maximum: 2,
+                type: "number",
+            },
         }];
 
         const invalidParameter = {
@@ -151,19 +174,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_EX_MAX_VALUE_ERROR);
         }
     });
 
     it("should reject input that are smaller than a set minimum", () => {
         const constraints = [{
             name: "test",
-            type: "number",
-            minimum: 2,
+            schema: {
+                minimum: 2,
+                type: "number",
+            }
         }];
 
         const invalidParameter = {
@@ -171,20 +195,21 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_MIN_VALUE_ERROR);
         }
     });
 
     it("should reject input that are smaller than or equal to a set minimum with exclusiveMinimum", () => {
         const constraints = [{
             name: "test",
-            type: "number",
-            minimum: 2,
-            exclusiveMinimum: true,
+            schema: {
+                type: "number",
+                exclusiveMinimum: true,
+                minimum: 2,
+            },
         }];
 
         const invalidParameter = {
@@ -192,19 +217,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_EX_MIN_VALUE_ERROR);
         }
     });
 
     it("should reject strings that violate maxLength", () => {
         const constraints = [{
             name: "test",
-            type: "string",
-            maxLength: 4,
+            schema: {
+                type: "string",
+                maxLength: 4,
+            }
         }];
 
         const invalidParameter = {
@@ -212,19 +238,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_MAX_LENGTH_ERROR);
         }
     });
 
     it("should reject strings that violate minLength", () => {
         const constraints = [{
             name: "test",
-            type: "string",
-            minLength: 4,
+            schema: {
+                minLength: 4,
+                type: "string",
+            },
         }];
 
         const invalidParameter = {
@@ -232,19 +259,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_MIN_LENGTH_ERROR);
         }
     });
 
     it("should reject strings that violate regex patterns", () => {
         const constraints = [{
             name: "test",
-            type: "string",
-            pattern: /^[A-Za-z0-9]+$/,
+            schema: {
+                pattern: /^[A-Za-z0-9]+$/,
+                type: "string",
+            },
         }];
 
         const invalidParameter = {
@@ -252,19 +280,20 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_REGEX_ERROR);
         }
     });
 
     it("should reject arrays that have non-unique elements when the unique constraint is set", () => {
         const constraints = [{
             name: "test",
-            type: "array",
-            uniqueItems: true,
+            schema: {
+                type: "array",
+                uniqueItems: true,
+            },
         }];
 
         const invalidParameter = {
@@ -272,11 +301,10 @@ describe("CoS API", () => {
         };
 
         try {
-            testAPI.validateParams(invalidParameter, constraints);
+            testAPI.validate(invalidParameter, constraints);
             expect(true).toBe(false);
         } catch (e) {
-            process.stderr.write(e.message + "\n");
-            expect(e).toBeTruthy();
+            expect(e.name).toEqual(testAPI.PARAMETER_UNIQUE_ELEMS_ERROR);
         }
     });
 });
