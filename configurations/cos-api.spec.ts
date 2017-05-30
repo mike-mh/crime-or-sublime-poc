@@ -123,7 +123,7 @@ describe("CoS API", () => {
             schema: {
                 multipleOf: 2,
                 type: "number",
-            }
+            },
         }];
 
         const invalidParameter = {
@@ -187,7 +187,7 @@ describe("CoS API", () => {
             schema: {
                 minimum: 2,
                 type: "number",
-            }
+            },
         }];
 
         const invalidParameter = {
@@ -206,9 +206,9 @@ describe("CoS API", () => {
         const constraints = [{
             name: "test",
             schema: {
-                type: "number",
                 exclusiveMinimum: true,
                 minimum: 2,
+                type: "number",
             },
         }];
 
@@ -228,9 +228,9 @@ describe("CoS API", () => {
         const constraints = [{
             name: "test",
             schema: {
-                type: "string",
                 maxLength: 4,
-            }
+                type: "string",
+            },
         }];
 
         const invalidParameter = {
@@ -305,6 +305,35 @@ describe("CoS API", () => {
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(testAPI.PARAMETER_UNIQUE_ELEMS_ERROR);
+        }
+    });
+
+    it("should skip over parameters that aren't required if not set.", () => {
+        const constraints = [{
+            name: "test",
+            required: true,
+            schema: {
+                type: "array",
+                uniqueItems: true,
+            },
+        },
+        {
+            name: "ignore",
+            required: false,
+            schema: {
+                type: "string",
+            },
+        }];
+
+        const invalidParameter = {
+            test: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        };
+
+        try {
+            testAPI.validate(invalidParameter, constraints);
+        } catch (e) {
+            expect(e).toBeFalsy();
+            expect(true).toBe(false);
         }
     });
 });

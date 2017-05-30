@@ -1,7 +1,7 @@
 import { SessionAPI } from "./session-api";
 
 describe("SessionAPI", () => {
-    let sessionAPI = new SessionAPI();
+    const sessionAPI = new SessionAPI();
 
     it("should reject a call to create a user session without parameters", () => {
         try {
@@ -13,7 +13,7 @@ describe("SessionAPI", () => {
     });
 
     it("should reject a call to create a user session without an identifier", () => {
-        let input = {
+        const input = {
             password: "foobarbaz",
         };
 
@@ -26,7 +26,7 @@ describe("SessionAPI", () => {
     });
 
     it("should reject a call to create a user session without a password", () => {
-        let input = {
+        const input = {
             identifier: "manman",
         };
 
@@ -39,9 +39,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject nonstring identifiers", () => {
-        let input = {
+        const input = {
             identifier: 2341,
-            password: "foobarbaz"
+            password: "foobarbaz",
         };
 
         try {
@@ -53,9 +53,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject nonstring passwords", () => {
-        let input = {
+        const input = {
             identifier: "test",
-            password: 234432631
+            password: 234432631,
         };
 
         try {
@@ -67,9 +67,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject identifiers that are too long", () => {
-        let input = {
+        const input = {
             identifier: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            password: "foobarbaz"
+            password: "foobarbaz",
         };
 
         try {
@@ -81,9 +81,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject nonalphanumeric passwords", () => {
-        let input = {
+        const input = {
             identifier: "test",
-            password: "!!!!bannasd"
+            password: "!!!!bannasd",
         };
 
         try {
@@ -95,9 +95,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject passwords that are too short", () => {
-        let input = {
+        const input = {
             identifier: "test",
-            password: "foobars"
+            password: "foobars",
         };
 
         try {
@@ -109,9 +109,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject passwords that are too long", () => {
-        let input = {
+        const input = {
             identifier: "test",
-            password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         };
 
         try {
@@ -122,11 +122,10 @@ describe("SessionAPI", () => {
         }
     });
 
-
     it("should reject a call to end a user session with parameters", () => {
-        let input = {
+        const input = {
             identifier: "test",
-            password: "foobarba"
+            password: "foobarba",
         };
 
         try {
@@ -138,9 +137,9 @@ describe("SessionAPI", () => {
     });
 
     it("should reject a call to verify session with parameters", () => {
-        let input = {
+        const input = {
             identifier: "test",
-            password: "foobarba"
+            password: "foobarba",
         };
 
         try {
@@ -152,7 +151,7 @@ describe("SessionAPI", () => {
     });
 
     it("should accept a call to create a session with valid parameters", () => {
-        let input = {
+        const input = {
             identifier: "test",
             password: "password",
         };

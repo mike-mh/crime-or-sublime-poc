@@ -21,7 +21,6 @@ export abstract class CoSAPI {
     public readonly PARAMETER_REGEX_ERROR = "ParameterRegexError";
     public readonly PARAMETER_UNIQUE_ELEMS_ERROR = "ParameterUniqueElemsError";
 
-
     /**
      * Use this to verify all input for a given schema. Takes input as an
      * object to make verification simpler.
@@ -30,7 +29,7 @@ export abstract class CoSAPI {
      * @param schemaConstraints - Array of parameter constriants in schema.
      */
     public validate(inputParameters: { [index: string]: (number | object | any[] | string) },
-        schemaConstraints: any[]) {
+                    schemaConstraints: any[]) {
         // Sanity check
         if (!inputParameters || !schemaConstraints) {
             throw new Error("Critical Error - Missing schema or parameter.");
@@ -66,9 +65,14 @@ export abstract class CoSAPI {
                 throw error;
             }
 
-            if (constraint.schema.type !== typeof (inputParameterValue) && constraint.schema.type !== "array") {
+            // Don't validate an unset parameter if it isn't required.
+            if (!constraint.required && !inputParameterValue) {
+                continue;
+            }
+
+            if (constraint.schema.type !== typeof(inputParameterValue) && constraint.schema.type !== "array") {
                 error = new Error("Given parameter " + inputParameterValue + " is of type " +
-                    typeof (inputParameterValue) + " but " + constraint.schema.type + " expected.")
+                    typeof (inputParameterValue) + " but " + constraint.schema.type + " expected.");
                 error.name = this.PARAMETER_TYPE_ERROR;
                 throw error;
             }
@@ -150,9 +154,11 @@ export abstract class CoSAPI {
             }
 
             if (constraint.schema.minLength) {
+                if (inputParameterValue.length < constraint.schema.minLength) {
                     error = new Error("The length of parameter " + constraint.name + " is too short.");
                     error.name = this.PARAMETER_MIN_LENGTH_ERROR;
                     throw error;
+                }
             }
 
             if (constraint.schema.pattern) {
@@ -190,11 +196,11 @@ export abstract class CoSAPI {
      * of parameters. Calls validate method above but leaves the subclass
      * responsible for locating the appropriate parameters template from the
      * schema itself.
-     * 
+     *
      * @param path - The path from the schema against which to validate params.
      * @param inputParams - The parameters to validate.
      */
     public abstract validateParams(path: string,
-        inputParams: { [index: string]: (number | object | any[] | string) }): void;
+                                   inputParams: { [index: string]: (number | object | any[] | string) }): void;
 
 }

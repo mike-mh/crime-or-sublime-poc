@@ -1,7 +1,5 @@
-import { CoSAPI } from "../cos-api";
+import { CoSAPI } from "../../cos-api";
 
-// As of May 30, 2017 there is still no standardized way of importing JSON with
-// an 'import' statement.
 /* tslint:disable:no-var-requires */
 const swaggerAPI = require("../cos-swagger.json");
 /* tslint:enable:no-var-requires */
@@ -10,18 +8,21 @@ const swaggerAPI = require("../cos-swagger.json");
  * Use this class to enforce the schema definitions assigned to session related
  * tasks.
  */
-export class SessionAPI extends CoSAPI {
+export class UserRegsiterAPI extends CoSAPI {
 
-    public readonly SESSION_CREATE_USER_PATH: string = "/session-create-user";
-    public readonly SESSION_END_USER_PATH: string = "/session-end-user";
-    public readonly SESSION_VERIFY_USER_PATH: string = "/session-verify-user";
-    public readonly SESSION_PARAM_ERROR: string = "SessionParamError";
+    public readonly USER_REGISTER_CONFIRM_PATH: string = "/user-register-confirm";
+    public readonly USER_REGISTER_SUBMIT_PATH: string = "/user-register-submit";
+    public readonly USER_REGISTER_PARAM_ERROR: string = "UserRegisterParamError";
 
-    private readonly SESSION_CREATE_USER_PATH_PARAMS: object[] =
-        swaggerAPI.paths[this.SESSION_CREATE_USER_PATH].post.parameters;
+    private readonly USER_REGISTER_CONFIRM_PATH_PARAMS: object[] =
+        swaggerAPI.paths[this.USER_REGISTER_CONFIRM_PATH].get.parameters;
+
+    private readonly USER_REGISTER_SUBMIT_PATH_PARAMS: object[] =
+        swaggerAPI.paths[this.USER_REGISTER_SUBMIT_PATH].post.parameters;
 
     private readonly PATH_PARAMETER_MAP: {[path: string]: object[]} = {
-        "/session-create-user" : this.SESSION_CREATE_USER_PATH_PARAMS,
+        "/user-register-confirm" : this.USER_REGISTER_CONFIRM_PATH_PARAMS,
+        "/user-register-submit" : this.USER_REGISTER_SUBMIT_PATH_PARAMS,
     };
 
     /**
@@ -35,7 +36,7 @@ export class SessionAPI extends CoSAPI {
                           inputParams: { [index: string]: string | number | object | any[]; }): void {
         if (!this.PATH_PARAMETER_MAP[path]) {
             const error = Error("This path doesn't accept parameters.");
-            error.name = this.SESSION_PARAM_ERROR;
+            error.name = this.USER_REGISTER_PARAM_ERROR;
             throw error;
         }
         try {
