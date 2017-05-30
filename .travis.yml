@@ -30,6 +30,7 @@ install:
 # Run the tests
 script:
     - ./node_modules/.bin/karma start --single-run
+    - ./node_modules/.bin/jasmine-ts
     - ./node_modules/.bin/tsc
     - ./build.sh
     - node ./dist/main.js &
