@@ -1,7 +1,7 @@
 import { CoSAPI } from "../../cos-api";
 
 /* tslint:disable:no-var-requires */
-const swaggerAPI = require("../cos-swagger.json");
+const swaggerAPI = require("../../cos-swagger.json");
 /* tslint:enable:no-var-requires */
 
 /**
