@@ -3,7 +3,7 @@ import { resolve } from "path";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
 import { CoSRouteConstants, RequestPathTupleIndices } from "./cos-route-constants";
 import { SessionRouter } from "./session/session-router";
-import { UserRegistrationRouter } from "./user/user-registration/user-registration-router";
+import { UserRegisterRouter } from "./user/user-register/user-register-router";
 
 /**
  * Initializes all middleware for CoS. Installs all routes and handlers into
@@ -25,7 +25,7 @@ export class CoSRouter {
      */
     public initializeStaticRoutes(): void {
         for (const feRoute of CoSRouteConstants.COS_CLIENT_PATHS) {
-            const indexPath = resolve(__dirname + "/../public/index.html");
+            const indexPath = resolve(__dirname + "/../../public/index.html");
             // Wanted to define function as method but instance gets lost and
             // there's not access to the CLIENT_INDEX_PATH field.
             this.getRouter().get(feRoute, (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ export class CoSRouter {
      */
      public intializeRouteHandlers(): void {
          this.routeHandlers.push(new SessionRouter(this.router));
-         this.routeHandlers.push(new UserRegistrationRouter(this.router));
+         this.routeHandlers.push(new UserRegisterRouter(this.router));
      }
 
     /**
