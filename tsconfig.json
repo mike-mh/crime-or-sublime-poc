@@ -15,7 +15,11 @@
             ]
         }
     },
+    "exclude": [
+        "configurations/session/*"
+    ],
     "include": [
+        "configurations/cos-swagger.ts",
         "src/main.ts"
     ]
 }

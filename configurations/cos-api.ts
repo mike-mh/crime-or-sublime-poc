@@ -4,8 +4,12 @@
  * using TSC. This file is renamed during a build run with build.sh. Hopefully
  * we'll have a more robust solution to this soon.
  */
+import * as API from "./cos-swagger";
 
-import { cosAPI } from "./cos-swagger";
+
+const cosAPI = (API.cosAPI) ?
+    API.cosAPI :
+    API;
 
 /**
  * This class serves as the entry point for both the front and backends to get

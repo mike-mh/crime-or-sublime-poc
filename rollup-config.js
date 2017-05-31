@@ -25,10 +25,6 @@ export default {
         'email-validator': [ 'validate' ]
       }
     }),
-    json({
-      include: 'compiled_app/configurations/**', 
-      preferConst: true,
-    }),
     nodeResolve({ jsnext: true, module: true }),
     uglify()
   ]

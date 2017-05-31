@@ -1,8 +1,31 @@
 /**
- * This is a temporary fix until a way can be founded to load .json files
- * directly into typescript files as es6 modules during compilation
+ * Have to define the schema as an interface for importing issues. Should
+ * consider sharing this as a library later.
  */
-export const cosAPI: {[index: string]: any} = {
+interface ISwaggerAPI {
+    swagger: string,
+    info: any,
+    host?: string,
+    basePath?: string,
+    schemes?: string[],
+    consumes?: string[],
+    produces?: string[],
+    paths: {[path: string]: any},
+    definitions?: any,
+    parameters?: any,
+    responses?: any,
+    securityDefinitions?: any,
+    security?: any[],
+    tags?: any[],
+    externalDocs?:any,
+}
+
+/**
+ * This is a temporary fix until a way can be founded to load .json files
+ * directly into typescript files as es6 modules during compilation. Export as
+ * a class so that no issues arise with jasmine-ts
+ */
+export const cosAPI: any = {
     "basePath": "/",
     "consumes": [
         "application/json"
@@ -346,7 +369,7 @@ export const cosAPI: {[index: string]: any} = {
             }
         }
     },
-    "schems": [
+    "schemes": [
         "http",
         "https"
     ],
