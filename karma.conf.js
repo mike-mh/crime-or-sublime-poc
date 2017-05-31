@@ -31,6 +31,9 @@ module.exports = function (config) {
       { pattern: 'node_modules/@angular/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/@angular/**/*.js.map', included: false, watched: false },
 
+      // Load all configuration files
+      { pattern: './configurations/**/!(*.spec)*.ts' },
+
       // Include all ts and pug files.
       { pattern: './src/public/**/!(main.post).+(ts|pug)' },
     ],

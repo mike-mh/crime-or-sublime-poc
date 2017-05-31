@@ -12,16 +12,16 @@ export class RegisterUserService {
   constructor(private http: Http) { }
 
   public registerUser(
-    email: string,
     username: string,
+    email: string,
     password: string,
-    reCaptchaResponse: string): Promise<JSON> {
+    captcha: string): Promise<JSON> {
     const registrationHeaders: Headers = new Headers({ "Content-Type": "application/json" });
     const registrationOptions = new RequestOptions({ headers: registrationHeaders });
     const registrationPayload: {} = {
         email,
         password,
-        captcha: reCaptchaResponse,
+        captcha,
         username,
     };
 

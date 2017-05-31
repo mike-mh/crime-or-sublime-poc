@@ -115,7 +115,7 @@ describe("SessionService", () => {
 
         })));
 
-    it("should be able to broadcast session change after start a new session", async(
+    it("should be able to broadcast session change after starting a new session", async(
         inject([SessionService, XHRBackend], (sessionService: SessionService, mockBackend: MockBackend) => {
             emitterSubscription = new SubjectSubscription(SessionService.sessionStatusEmitter,
                 sessionStartEventCallback);
@@ -134,7 +134,7 @@ describe("SessionService", () => {
                 })));
             });
 
-            sessionService.beginSession("test@test.com", "test").then((result) => {
+            sessionService.beginSession("test@test.com", "password").then((result) => {
                 // Promise should resolve to true for components that run on
                 // login conditionals.
                 expect(result).toBe(true);
@@ -184,12 +184,12 @@ describe("SessionService", () => {
                 })));
             });
 
-            sessionService.beginSession("test@test.com", "test").then(() => {
+            sessionService.beginSession("test@test.com", "password").then(() => {
                 mockBackend.connections.subscribe((connection: any) => {
                     // Should not make HTTP calls when there is an active session.
                     expect(true).toBe(false);
                 });
-                sessionService.beginSession("test@test.com", "test")
+                sessionService.beginSession("test@test.com", "password")
             });
         })));
 
@@ -235,7 +235,7 @@ describe("SessionService", () => {
                 })));
             });
 
-            sessionService.beginSession("test@test.com", "test").then((result) => {
+            sessionService.beginSession("test@test.com", "password").then((result) => {
                 // Need to be sure that components relying on this resolution
                 // get the correct response.
                 expect(result).toBe(false);

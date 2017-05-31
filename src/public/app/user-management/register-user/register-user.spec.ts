@@ -377,7 +377,7 @@ describe("RegisterUserService", () => {
             let response = registerUserService.registerUser("test", "test@test.com", "password", "response")
                 .then((response) => {
                     expect(JSON.stringify(response)).toEqual(mockResponse);
-                });
+                }).catch(error => {console.log(error.message)});
         })));
 
 });

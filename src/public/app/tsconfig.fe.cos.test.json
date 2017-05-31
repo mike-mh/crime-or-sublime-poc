@@ -8,13 +8,15 @@
       "node"
     ]
   },
-  "files": [
-    "fe.test.ts"
-  ],
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+    "../../../configurations/**/*.ts"
   ],
   "exclude": [
     "./main.post.ts"
+  ],
+  "files": [
+    "./main.pre.ts",
+    "./cos.module.ts"
   ]
 }
