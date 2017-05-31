@@ -4,7 +4,7 @@ import { CoSAPI } from "./cos-api";
 // Need to extend an abstract class to instantiate it.
 class TestAPI extends CoSAPI {
     /**
-     * Don't need to implement this. Each API subclass is unique and these
+     * Don't need to implement these. Each API subclass is unique and these
      * will be tested in their own modules.
      */
     public validateParams(path: string, inputParams: {
@@ -13,6 +13,9 @@ class TestAPI extends CoSAPI {
         throw new Error("Method not implemented.");
     }
 
+    protected associatePathsWithMethodsAndParams(): void {
+        throw new Error("Method not implemented.");
+    }
 }
 
 describe("CoS API", () => {

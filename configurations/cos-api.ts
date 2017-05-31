@@ -1,5 +1,11 @@
 import { validate } from "email-validator";
 
+// As of May 30, 2017 there is still no standardized way of importing JSON with
+// an 'import' statement.
+/* tslint:disable:no-var-requires */
+const swaggerAPI = require("./cos-swagger.json");
+/* tslint:enable:no-var-requires */
+
 /**
  * This class serves as the entry point for both the front and backends to get
  * paths and data types defined in the cos-api schema. Should use this class
@@ -20,6 +26,13 @@ export abstract class CoSAPI {
     public readonly PARAMETER_MIN_LENGTH_ERROR = "ParameterMinLengthError";
     public readonly PARAMETER_REGEX_ERROR = "ParameterRegexError";
     public readonly PARAMETER_UNIQUE_ELEMS_ERROR = "ParameterUniqueElemsError";
+    public readonly PATH_ERROR = "APIPathError";
+    public readonly METHOD_ERROR = "APIMethodError";
+
+    protected pathsMethodsAndParamsMap: {[path: string]: {
+            [method: string]: any[],
+        },
+    } = {};
 
     /**
      * Use this to verify all input for a given schema. Takes input as an
@@ -192,15 +205,55 @@ export abstract class CoSAPI {
     }
 
     /**
-     * This function is defined uniquely in each subclass to use a path instead
-     * of parameters. Calls validate method above but leaves the subclass
-     * responsible for locating the appropriate parameters template from the
-     * schema itself.
+     * Use this to verify all params for paths and the methods they are called
+     * with as per the CoS API schema.
      *
-     * @param path - The path from the schema against which to validate params.
-     * @param inputParams - The parameters to validate.
+     * @param input - The object to be validated.
+     * @param schema - The schema to validate the object against.
+     * @param method - The HTTP method used to send data.
      */
-    public abstract validateParams(path: string,
-                                   inputParams: { [index: string]: (number | object | any[] | string) }): void;
+    public validateParams(path: string,
+                          inputParams: { [index: string]: string | number | object | any[]; },
+                          method: string): void {
 
+        if (!this.pathsMethodsAndParamsMap[path]) {
+            const error = new Error("This path doesn't exist in the API");
+            error.name = this.PATH_ERROR;
+            throw error;
+        }
+
+        if (!this.pathsMethodsAndParamsMap[path][method]) {
+            const error = new Error("This path doesn't accept this method.");
+            error.name = this.METHOD_ERROR;
+            throw error;
+        }
+
+        try {
+            this.validate(inputParams, this.pathsMethodsAndParamsMap[path][method]);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * Maps an array of paths to the pathsMethodsAndParamsMap. Associates each
+     * path with its HTTP method and that method is in turn mapped to the
+     * parameters specified in the CoS API schema itself.
+     *
+     * @param paths - The paths to be associated with their HTTP method and
+     *     necessarry parameters.
+     */
+    protected associatePathsWithMethodsAndParams(paths: string[]): void {
+
+        // Iterate through the API schema for all methods associated with paths
+        // and get all parameters associated with that path. If there are no
+        // parameters assign an empty array instead
+        for (const path of paths) {
+            this.pathsMethodsAndParamsMap[path] = {};
+            for (const method of Object.keys(swaggerAPI.paths[path])) {
+                this.pathsMethodsAndParamsMap[path][method] = (swaggerAPI.paths[path][method].parameters) ?
+                    swaggerAPI.paths[path][method].parameters : [ ];
+            }
+        }
+    }
 }

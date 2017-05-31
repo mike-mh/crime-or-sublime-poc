@@ -3,9 +3,37 @@ import { UserRegsiterAPI } from "./user-register-api";
 describe("UserRegsiterAPI", () => {
     const userRegsiterAPI = new UserRegsiterAPI();
 
+    it("should reject registration submit call that wasn't made with POST", () => {
+        const input = {
+            registrationKey: "deadbeef783",
+            username: "deadbeef",
+        };
+
+        try {
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "get");
+        } catch (e) {
+            expect(e.name).toEqual(userRegsiterAPI.METHOD_ERROR);
+        }
+    });
+
+    it("should reject registration confirmt call that wasn't made with GET", () => {
+        const input = {
+            captcha: "response",
+            email: "test@test.com",
+            password: "password",
+            username: "test",
+        };
+
+        try {
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "post");
+        } catch (e) {
+            expect(e.name).toEqual(userRegsiterAPI.METHOD_ERROR);
+        }
+    });
+
     it("should reject a call to submit user registration without parameters", () => {
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {});
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {}, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -20,7 +48,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {});
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {}, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -34,7 +62,7 @@ describe("UserRegsiterAPI", () => {
             username: "test",
         };
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {});
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {}, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -48,7 +76,7 @@ describe("UserRegsiterAPI", () => {
             username: "test",
         };
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {});
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {}, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -62,7 +90,7 @@ describe("UserRegsiterAPI", () => {
             username: "test",
         };
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {});
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, {}, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -78,7 +106,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
@@ -94,7 +122,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_MAX_LENGTH_ERROR);
@@ -110,7 +138,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_REGEX_ERROR);
@@ -126,7 +154,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
@@ -142,7 +170,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_EMAIL_ERROR);
@@ -158,7 +186,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
@@ -174,7 +202,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_MIN_LENGTH_ERROR);
@@ -190,7 +218,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_MAX_LENGTH_ERROR);
@@ -206,7 +234,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_REGEX_ERROR);
@@ -222,7 +250,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
@@ -238,7 +266,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, input, "post");
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
             expect(true).toBe(false);
@@ -247,7 +275,7 @@ describe("UserRegsiterAPI", () => {
 
     it("should reject registration confirmation without parameters", () => {
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, {});
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, {}, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -260,7 +288,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -273,7 +301,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.MISSING_PARAMETER_ERROR);
@@ -287,7 +315,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
@@ -301,7 +329,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_MAX_LENGTH_ERROR);
@@ -315,7 +343,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_REGEX_ERROR);
@@ -329,7 +357,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_TYPE_ERROR);
@@ -343,7 +371,7 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
             expect(true).toBe(false);
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_REGEX_ERROR);
@@ -357,9 +385,10 @@ describe("UserRegsiterAPI", () => {
         };
 
         try {
-            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input);
+            userRegsiterAPI.validateParams(userRegsiterAPI.USER_REGISTER_CONFIRM_PATH, input, "get");
         } catch (e) {
             expect(e.name).toEqual(userRegsiterAPI.PARAMETER_REGEX_ERROR);
         }
     });
+
 });
