@@ -25,8 +25,6 @@ export class RegisterUserService {
         username,
     };
 
-    console.log();
-
     try {
         this.userRegsiterAPI.validateParams(this.userRegsiterAPI.USER_REGISTER_SUBMIT_PATH,
                                             registrationPayload, "post");

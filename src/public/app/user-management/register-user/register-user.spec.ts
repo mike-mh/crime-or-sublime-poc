@@ -154,6 +154,9 @@ describe("RegisterUserComponent", () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(RegisterUserComponent);
         component = fixture.componentInstance;
+        // Need to change the reCaptcha URL to prevent violating same-origin
+        // policy.
+        component.CAPTCHA_API_URL = "/raboof";
 
         fixture.detectChanges();
         mapChanges();

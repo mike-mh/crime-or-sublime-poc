@@ -115,9 +115,9 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
     this.registerUserService
       .registerUser(form.username, form.email, form.password, this.captchaResponse)
       .then((response) => {
-        alert(JSON.stringify(response));
+//        alert(JSON.stringify(response));
       }, (err) => {
-        alert(JSON.stringify(err));
+//        alert(JSON.stringify(err));
       });
   }
 
