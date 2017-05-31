@@ -26,10 +26,10 @@
                 "error": {
                     "type": "object",
                     "properties": {
-                        "code": {
-                            "type": "number"
-                        },
                         "message": {
+                            "type": "string"
+                        },
+                        "name": {
                             "type": "string"
                         }
                     }
@@ -57,8 +57,11 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidRegistration": {
-                        "$ref": "#/responses/InvalidRegistration"
+                    "AlreadyActiveSessionError": {
+                        "$ref": "#/responses/AlreadyActiveSession"
+                    },
+                    "InvalidParameters": {
+                        "$ref": "#/responses/InvalidParameters"
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
@@ -115,7 +118,10 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidNoActiveSession": {
+                    "InvalidParameters": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "NoActiveSession": {
                         "$ref": "#/responses/NoActiveSession"
                     },
                     "InternalServerError": {
@@ -142,7 +148,10 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidNoActiveSession": {
+                    "InvalidParameters": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "NoActiveSession": {
                         "$ref": "#/responses/NoActiveSession"
                     },
                     "InternalServerError": {
@@ -164,10 +173,13 @@
                 "description": "This link is sent to users via their email after they register with CoS. Using this link will activate accounts that are on hold for registartion. Accounts on hold for registration exist for one hour before they are deleted.",
                 "responses": {
                     "200": {
-                        "description": "A simple get route that ends an active session attached to request when executed.",
+                        "description": "A simple string with the user's username.",
                         "schema": {
                             "$ref": "#/definitions/successResponseString"
                         }
+                    },
+                    "InvalidParameters": {
+                        "$ref": "#/responses/InvalidParameters"
                     },
                     "InvalidRegistration": {
                         "$ref": "#/responses/InvalidRegistration"
@@ -216,6 +228,9 @@
                         "schema": {
                             "$ref": "#/definitions/successResponseString"
                         }
+                    },
+                    "InvalidParameters": {
+                        "$ref": "#/responses/InvalidParameters"
                     },
                     "InvalidRegistration": {
                         "$ref": "#/responses/InvalidRegistration"
@@ -278,6 +293,12 @@
         "application/json"
     ],
     "responses": {
+        "AlreadyActiveSession": {
+            "description": "Someone attempted to create a session over an already active sesison",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
         "InternalServerError": {
             "description": "An internal server error occured.",
             "schema": {
@@ -296,6 +317,12 @@
                 "$ref": "#/definitions/errorResponse"
             }
         },
+        "InvalidParameters": {
+            "description": "A request is made with invalid parameters",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
         "MissingParamater": {
             "description": "A parameter is missing from an API call",
             "schema": {
@@ -308,7 +335,7 @@
                 "$ref": "#/definitions/errorResponse"
             }
         },
-        "UserNotfound": {
+        "UserNotFound": {
             "description": "A query searching for a user returned nothing.",
             "schema": {
                 "$ref": "#/definitions/errorResponse"

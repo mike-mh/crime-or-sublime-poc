@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { Headers, Http, RequestOptions, Response } from "@angular/http";
 import "rxjs/add/operator/toPromise";
 import { Observable } from "rxjs/Observable";
+import { SessionAPI } from "../../../../../configurations/session/session-api";
 
 /**
  * Use this to store data from server responses.
@@ -24,6 +25,7 @@ export class SessionService {
     // Use these to store session data and emit that data.
     public static sessionStatusEmitter: EventEmitter<ISessionDetails> = new EventEmitter();
     private static sessionIsActive: boolean = false;
+    private readonly sessionAPI = new SessionAPI();
 
     /**
      * Simple getter method to determine if session is active.
@@ -34,10 +36,6 @@ export class SessionService {
         return SessionService.sessionIsActive;
     }
 
-    private static readonly GET_USER_URL = "/get-user";
-    private static readonly BEGIN_SESSION = "/submit-credentials";
-    private static readonly END_SESSION = "/logout";
-
     constructor(private http: Http) { }
 
     /**
@@ -46,7 +44,7 @@ export class SessionService {
      */
     public checkUserIsActive(): void {
         const headers: Headers = new Headers({ "Content-Type": "application/json" });
-        this.http.get(SessionService.GET_USER_URL, headers)
+        this.http.get(this.sessionAPI.SESSION_VERIFY_USER_PATH, headers)
             .toPromise()
             .then((res) => {
                 const details: ISessionDetails = {};
@@ -67,7 +65,7 @@ export class SessionService {
     public endSession(): void {
         const headers: Headers = new Headers({ "Content-Type": "application/json" });
         const options = new RequestOptions({ headers });
-        this.http.get(SessionService.END_SESSION, headers)
+        this.http.get(this.sessionAPI.SESSION_END_USER_PATH, headers)
             .toPromise()
             .then((res) => {
                 const details: ISessionDetails = {};
@@ -103,13 +101,20 @@ export class SessionService {
         const headers: Headers = new Headers({ "Content-Type": "application/json" });
         const options = new RequestOptions({ headers });
         const credentialsPayload: {} = {
-            params: {
-                email,
+                identifier: email,
                 password,
-            },
         }
 
-        return this.http.post(SessionService.BEGIN_SESSION, credentialsPayload, options)
+        try {
+            this.sessionAPI.validateParams(this.sessionAPI.SESSION_CREATE_USER_PATH,
+                                           credentialsPayload,
+                                           "post");
+        } catch(error) {
+            console.log(error);
+            return Promise.reject(error);
+        }
+
+        return this.http.post(this.sessionAPI.SESSION_CREATE_USER_PATH, credentialsPayload, options)
             .toPromise()
             .then((res) => {
                 const details: ISessionDetails = {};

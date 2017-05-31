@@ -2,11 +2,12 @@ import { Injectable } from "@angular/core";
 import { Headers, Http, RequestOptions, Response } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 import "rxjs/add/operator/toPromise";
+import { UserRegsiterAPI } from "../../../../../configurations/user/user-register/user-register-api";
 
 
 @Injectable()
 export class RegisterUserService {
-  private readonly REGISTER_USER_URL: string = "/register-user";
+  private userRegsiterAPI: UserRegsiterAPI = new UserRegsiterAPI();
 
   constructor(private http: Http) { }
 
@@ -18,16 +19,24 @@ export class RegisterUserService {
     const registrationHeaders: Headers = new Headers({ "Content-Type": "application/json" });
     const registrationOptions = new RequestOptions({ headers: registrationHeaders });
     const registrationPayload: {} = {
-      params: {
         email,
         password,
-        reCaptchaResponse,
+        captcha: reCaptchaResponse,
         username,
-      },
     };
 
+    console.log();
+
+    try {
+        this.userRegsiterAPI.validateParams(this.userRegsiterAPI.USER_REGISTER_SUBMIT_PATH,
+                                            registrationPayload, "post");
+    } catch(error) {
+      console.log(error.message);
+      return Promise.reject(error);
+    }
+
     return this.http
-      .post(this.REGISTER_USER_URL, registrationPayload, registrationOptions)
+      .post(this.userRegsiterAPI.USER_REGISTER_SUBMIT_PATH, registrationPayload, registrationOptions)
       .toPromise()
       .then((response) => {
         return response.json();

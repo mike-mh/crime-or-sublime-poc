@@ -140,7 +140,7 @@ export class UserModel extends CoSAbstractModel {
     /**
      * Get the users password salt.
      *
-     * @param email {string} - The user's email.
+     * @param email - The user's email.
      *
      * @return - Promise resolves to salt
      */

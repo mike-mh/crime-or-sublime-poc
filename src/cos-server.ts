@@ -4,6 +4,7 @@ import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";
 import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
+import {CoSAPI} from "../configurations/cos-api";
 
 /**
  * The main server for CoS. Make all calls to intialize components of backend
@@ -12,7 +13,6 @@ import { CoSRouter } from "./routes/cos-router";
 export class CoSServer {
     private app: Express;
     private router: CoSRouter;
-    private readonly APP_LOCATION: string = __dirname + "public/index.html";
 
     /**
      * Initializes the router and express application.

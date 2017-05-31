@@ -15,6 +15,7 @@ import { ISessionDetails, SessionService } from "../shared/session/session.servi
  */
 export class NavbarComponent implements OnDestroy {
   public isLoggedIn: boolean = false;
+  private sessionAPI: SessionAPI = new SessionAPI();
   private sessionStatus: SubjectSubscription<ISessionDetails>;
   private sessionUpdateCallback: Observer<ISessionDetails> = {
     complete: null,

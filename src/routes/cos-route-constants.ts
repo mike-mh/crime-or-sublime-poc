@@ -8,17 +8,8 @@ export class CoSRouteConstants {
     ];
 }
 
-export enum HTTPMethods {
-    Get = 0,
-    Put,
-    Post,
-    Delete,
-    Patch,
-    Options,
-    Head,
-}
-
 export enum RequestPathTupleIndices {
-    Path = 0,
+    Method = 0,
+    Path,
     Handler,
 }

@@ -1,11 +1,9 @@
 import { Request, RequestHandler, Response, Router } from "express";
 import { resolve } from "path";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
-import { CoSRouteConstants, HTTPMethods, RequestPathTupleIndices } from "./cos-route-constants";
-import { LoginRouter } from "./login/login-router";
-import { LogoutRouter } from "./logout/logout-router";
-import { ProfileRouter } from "./profile/profile-router";
-import { RegistrationRouter } from "./registration/registration-router";
+import { CoSRouteConstants, RequestPathTupleIndices } from "./cos-route-constants";
+import { SessionRouter } from "./session/session-router";
+import { UserRegistrationRouter } from "./user/user-registration/user-registration-router";
 
 /**
  * Initializes all middleware for CoS. Installs all routes and handlers into
@@ -14,7 +12,6 @@ import { RegistrationRouter } from "./registration/registration-router";
 export class CoSRouter {
     private router: Router;
     private routeHandlers: CoSAbstractRouteHandler[] = [];
-    private readonly CLIENT_INDEX_PATH = __dirname + "../public/index.html";
 
     /**
      * Instantiates the router
@@ -41,10 +38,8 @@ export class CoSRouter {
      * Initializes all routehandlers for CoS and installs them to router.
      */
      public intializeRouteHandlers(): void {
-         this.routeHandlers.push(new LoginRouter(this.router));
-         this.routeHandlers.push(new LogoutRouter(this.router));
-         this.routeHandlers.push(new ProfileRouter(this.router));
-         this.routeHandlers.push(new RegistrationRouter(this.router));
+         this.routeHandlers.push(new SessionRouter(this.router));
+         this.routeHandlers.push(new UserRegistrationRouter(this.router));
      }
 
     /**
