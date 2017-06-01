@@ -1,4 +1,5 @@
 import { pbkdf2, randomBytes } from "crypto";
+import { CoSServerConstants } from "./../../cos-server-constants";
 
 /**
  * Use this class to hold common hasing functions used by other tools.
@@ -16,7 +17,8 @@ export abstract class HashHelper {
                 parseInt(process.env.SALT_LENGTH, 10),
                 (err, salt) => {
                     if (err) {
-                        reject(err);
+                        // Async calls must use reject. Can't use 'throw'.
+                        reject(CoSServerConstants.SALT_GENERATION_ERROR);
                     }
                     resolve(salt.toString("hex"));
                 });

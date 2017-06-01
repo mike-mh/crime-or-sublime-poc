@@ -25,6 +25,43 @@ describe("CoS API", () => {
         testAPI = new TestAPI();
     });
 
+    it("should throw a ciritical error when given parameters of the wrong type", () => {
+        let badInput: any = "Die in a lake of fire.";
+        const constraints = [
+            {
+                name: "test",
+                schema: {
+                    type: "string",
+                },
+            },
+        ];
+
+        const parameter = {
+            test: "foo",
+        };
+
+        try {
+            testAPI.validate(badInput, constraints);
+            expect(true).toBe(false);
+        } catch (e) {
+            expect(e.name).toEqual(testAPI.CRITICAL_ERROR);
+        }
+
+        try {
+            testAPI.validate(parameter, badInput);
+            expect(true).toBe(false);
+        } catch (e) {
+            expect(e.name).toEqual(testAPI.CRITICAL_ERROR);
+        }
+
+        try {
+            testAPI.validate(badInput, badInput);
+            expect(true).toBe(false);
+        } catch (e) {
+            expect(e.name).toEqual(testAPI.CRITICAL_ERROR);
+        }
+    });
+
     it("should invalidate input with parameters that are not in the validation schema", () => {
         const constraints = [
             {

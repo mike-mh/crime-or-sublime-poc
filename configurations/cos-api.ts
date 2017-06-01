@@ -98,12 +98,21 @@ export abstract class CoSAPI {
      */
     public validate(inputParameters: { [index: string]: (number | object | any[] | string) },
                     schemaConstraints: any[]) {
-        // Sanity check
-        if (!inputParameters || !schemaConstraints) {
-            throw new Error("Critical Error - Missing schema or parameter.");
-        }
 
         let error;
+
+        // Sanity check
+        if (!inputParameters || !schemaConstraints) {
+            error = new Error("Critical Error - Missing schema or parameter.");
+            error.name = this.CRITICAL_ERROR;
+            throw error;
+        }
+
+        if (typeof(inputParameters) !== "object" || schemaConstraints.constructor !== Array) {
+            error = new Error("Critical Error - One of the inputs is of incorrect type.");
+            error.name = this.CRITICAL_ERROR;;
+            throw error;
+        }
 
         // Verify input against schema for any possible inconsistancy.
         for (const param of Object.keys(inputParameters)) {

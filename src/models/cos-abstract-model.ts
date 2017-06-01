@@ -33,10 +33,4 @@ export abstract class CoSAbstractModel {
             this.model = model(this.modelName, this.schema);
         }
     }
-
-    /**
-     * Unique to each subclass. Needed to generate the appropriate schemas.
-     */
-    protected abstract generateSchema(): void;
-
 }

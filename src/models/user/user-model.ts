@@ -1,12 +1,13 @@
 import { Document, model, Model, Schema } from "mongoose";
+import { CoSServerConstants } from "./../../cos-server-constants";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
-import { StaticMethodTupleIndices } from "./../cos-model-constants";
+import { UserModelSchema } from "./../cos-model-constants";
 
 /**
  * Document implementation for User.
  */
-interface IUserDocument extends Document {
+export interface IUserDocument extends Document {
     email: string;
     favourites: [Schema.Types.ObjectId];
     password: string;
@@ -25,7 +26,7 @@ export class UserModel extends CoSAbstractModel {
 
     constructor() {
         super("User");
-        this.generateSchema();
+        this.schema = UserModelSchema;
         this.generateModel();
     }
 
@@ -71,12 +72,12 @@ export class UserModel extends CoSAbstractModel {
                     .find({ email }, { password: 1 })
                     .then((users) => {
                         if (!users.length) {
-                            throw new Error("User not found.");
+                            throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
                         }
                         if (users.shift().password === hashedPassword) {
                             return;
                         }
-                        throw new Error("Passwords do not match");
+                        throw CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR;
                     });
             });
     }
@@ -96,7 +97,7 @@ export class UserModel extends CoSAbstractModel {
                 if (users.length) {
                     return;
                 }
-                throw new Error("User does not exist!");
+                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
             });
     }
 
@@ -151,7 +152,7 @@ export class UserModel extends CoSAbstractModel {
                 if (users.length) {
                     return users.shift().salt;
                 }
-                throw new Error("User does not exist");
+                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
             });
     }
 

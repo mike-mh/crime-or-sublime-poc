@@ -1,15 +1,16 @@
 import { Document, model, Model, Schema } from "mongoose";
+import { CoSServerConstants } from "./../../cos-server-constants";
 import { AuthenticationEmailer } from "./../../libs/authentication/authentication-emailer";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { RegistrationHelper } from "./../../libs/authentication/registration-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
-import { StaticMethodTupleIndices } from "./../cos-model-constants";
-import { UserModel } from "./user-model";
+import { TempUserModelSchema } from "./../cos-model-constants";
+import { UserModel, IUserDocument } from "./user-model";
 
 /**
  * Document implementation for TempUser.
  */
-interface ITempUserModel extends Document {
+interface ITempUserDocument extends Document {
     email: string;
     password: string;
     registrationKey: string;
@@ -18,14 +19,14 @@ interface ITempUserModel extends Document {
 }
 
 export class TempUserModel extends CoSAbstractModel {
-    protected model: Model<ITempUserModel>;
+    protected model: Model<ITempUserDocument>;
 
     // Temporary users only exist for about an hour.
     private readonly TEMP_USER_EXPIRATION_TIME: number = 60 * 60;
 
     constructor() {
         super("TempUser");
-        this.generateSchema();
+        this.schema = TempUserModelSchema;
         this.generateModel();
     }
 
@@ -54,20 +55,20 @@ export class TempUserModel extends CoSAbstractModel {
                 registrationKey = key;
             })
             .then(() => {
-                return RegistrationHelper.generateSalt();
+                return PasswordHelper.generateSalt();
             })
             .then((salt) => {
                 generatedSalt = salt;
                 return PasswordHelper.hashPassword(password, salt);
             })
             .then((hashedPassword) => {
-                return new (this.getModel())({
+                return this.commitTempUserData(
                     email,
-                    password: hashedPassword,
+                    hashedPassword,
                     registrationKey,
-                    salt: generatedSalt,
-                    username,
-                }).save();
+                    generatedSalt,
+                    username
+                );
             })
             .then((model) => {
                 return AuthenticationEmailer.sendAuthenticationEmail(email, username, registrationKey);
@@ -91,21 +92,26 @@ export class TempUserModel extends CoSAbstractModel {
                 if (users.length) {
                     return users.shift();
                 }
-                throw new Error("User does not exist");
+
+                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
             })
             .then((tempUser) => {
                 const newUser = new UserModel();
-                return new (newUser.getModel())({
-                    email: tempUser.email,
-                    lastLogin: new Date(),
-                    password: tempUser.password,
-                    salt: tempUser.salt,
-                    username: tempUser.username,
-                }).save();
+                return this.commitUserData(
+                    newUser,
+                    tempUser.email,
+                    tempUser.password,
+                    tempUser.salt,
+                    tempUser.username
+                );
             })
             .then(() => {
                 return this.getModel()
-                    .remove({ username, registrationKey });
+                    .remove({ username, registrationKey }, (error) => {
+                        if (error) {
+                            throw CoSServerConstants.DATABASE_DELETION_ERROR;
+                        }
+                    });
             });
 
     }
@@ -113,48 +119,8 @@ export class TempUserModel extends CoSAbstractModel {
     /**
      * Getter for the model.
      */
-    public getModel(): Model<ITempUserModel> {
+    public getModel(): Model<ITempUserDocument> {
         return this.model;
-    }
-
-    /**
-     * Generate the schema. See docs for more details.
-     */
-    protected generateSchema(): void {
-        this.schema = new Schema(
-            {
-                createdAt: {
-                    default: Date.now,
-                    expires: this.TEMP_USER_EXPIRATION_TIME,
-                    type: Date,
-                },
-                email: {
-                    required: true,
-                    type: String,
-                    unique: true,
-                },
-                password: {
-                    required: true,
-                    type: String,
-                },
-                registrationKey: {
-                    required: true,
-                    type: String,
-                    unique: true,
-                },
-                salt: {
-                    required: true,
-                    type: String,
-                },
-                username: {
-                    required: true,
-                    type: String,
-                    unique: true,
-                },
-            },
-            {
-                minimize: false,
-            });
     }
 
     /**
@@ -171,15 +137,17 @@ export class TempUserModel extends CoSAbstractModel {
             .find({ $or: [{ email }, { username }] })
             .then((users) => {
                 if (users.length) {
-                    throw new Error("Username or email are already taken.");
+                    throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
                 }
 
+                // Need to check that another user hasn't submitted a new
+                // account for registration with provided credentials.
                 return this.getModel()
                     .find({ $or: [{ email }, { username }] });
             })
             .then((users) => {
                 if (users.length) {
-                    throw new Error("Username or email are already taken.");
+                    throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
                 }
             });
     }
@@ -198,8 +166,73 @@ export class TempUserModel extends CoSAbstractModel {
                 if (users.length) {
                     return users.shift().salt;
                 }
-                throw new Error("User does not exist.");
+                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
             });
     }
 
+    /**
+     * Use this function to save temp user data to the database.
+     * 
+     * @param email - The email of the user to save.
+     * @param hashedPassword - The hashed password of the user to save.
+     * @param registrationKey - The registration key of the user to save.
+     * @param salt - The salt of the user to save.
+     * @param username - The username of the user to save.
+     * 
+     * @return - Promise that resolves to the data saved.
+     */
+    private commitTempUserData(
+        email: string,
+        password: string,
+        registrationKey: string,
+        salt: string,
+        username: string): Promise<ITempUserDocument> {
+
+        return new (this.getModel())(
+            {
+                email,
+                password,
+                registrationKey,
+                salt,
+                username,
+            }).save((error) => {
+                if (error) {
+                    throw CoSServerConstants.DATABASE_SAVE_ERROR;
+                }
+            });
+    }
+
+    /**
+     * Use this function to save permenant user data to the database. This is
+     * usually called after a user confirms their registration.
+     * 
+     * @param email - The email of the user to save.
+     * @param hashedPassword - The hashed password of the user to save.
+     * @param registrationKey - The registration key of the user to save.
+     * @param salt - The salt of the user to save.
+     * @param username - The username of the user to save.
+     * 
+     * @return - Promise that resolves to the data saved.
+     */
+    private commitUserData(
+        user: UserModel,
+        email: string,
+        password: string,
+        salt: string,
+        username: string): Promise<IUserDocument> {
+
+        return new (user.getModel())(
+            {
+                email,
+                lastLogin: new Date(),
+                password,
+                salt,
+                username,
+            }).save((error) => {
+                if (error) {
+                    throw CoSServerConstants.DATABASE_SAVE_ERROR;
+                }
+            });
+
+    }
 }
