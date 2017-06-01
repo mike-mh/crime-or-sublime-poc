@@ -30,10 +30,10 @@ install:
 # Run the tests
 script:
     - ./node_modules/.bin/karma start --single-run
+    - cp ./src/views/email-templates/registration-email.pug ./src/libs/authentication
     - ./node_modules/.bin/jasmine-ts
     - ./node_modules/.bin/tsc
     - cp ./src/views/email-templates/registration-email.pug ./dist/src/libs/authentication
-    - cp ./src/views/email-templates/registration-email.pug ./src/libs/authentication
     - ./build.sh
     - node ./dist/src/main.js &
     - ./node_modules/.bin/webdriver-manager start --standalone & > /dev/null
