@@ -20,6 +20,8 @@ let passwordHashSpy: jasmine.Spy;
 let tempUserCommitSpy: jasmine.Spy;
 let userCommitSpy: jasmine.Spy;
 
+let confirmPasswordsMatchSpy: jasmine.Spy;
+
 // Need to establish a connection a MongoDB and create spies.
 beforeAll((done) => {
     mongoose.Promise = global.Promise;
@@ -42,10 +44,6 @@ beforeAll((done) => {
  */
 describe("TempUserModel", () => {
     const tempUserModel: any = new TempUserModel();
-
-    beforeAll(() => {
-  //      userCommitSpy = spyOn(tempUserModel, "commitUserData");
-    });
 
     it("should have the TempUserSchema assigned to it", () => {
         expect(tempUserModel.schema).toEqual(TempUserModelSchema);
@@ -202,7 +200,7 @@ describe("TempUserModel", () => {
                 return tempUserModel.registerUser("gg", "gg")
             })
             .then(() => {
-                return tempUserModel.getModel().find({email: "gg"});
+                return tempUserModel.getModel().find({ email: "gg" });
             })
             .then((docs: any) => {
                 if (docs.length) {
@@ -210,14 +208,14 @@ describe("TempUserModel", () => {
                     done();
                 }
 
-                return new UserModel().getModel().find({email: "gg"})
+                return new UserModel().getModel().find({ email: "gg" })
             })
             .then((users: any) => {
                 if (!users.length) {
                     expect(true).toBe(false);
                     done();
                 }
-                new UserModel().getModel().remove({email: "gg"}).then(done);
+                new UserModel().getModel().remove({ email: "gg" }).then(done);
             })
             .catch((error: any) => {
                 console.log(error.message);
@@ -227,15 +225,348 @@ describe("TempUserModel", () => {
     });
 
     it("should know when a username or email is already taken in temp users", (done) => {
-        done();
+        tempUserModel.commitTempUserData(
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "deadbeef",
+            "testing")
+            .then(() => {
+                return tempUserModel.emailAndUsernameAreUnique("uniqueAlias", "test@test.com");
+            })
+            // This promise chain should never execute.
+            .then(() => {
+                return tempUserModel.getModel().remove({ email: "test@test.com" })
+            })
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+            })
+            .then(() => {
+                return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com")
+            })
+            // This promise chain should never execute.
+            .then(() => {
+                return tempUserModel.getModel().remove({ username: "testing" })
+            })
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+            })
+            .then(() => {
+                return tempUserModel.getModel().remove({ username: "testing" })
+            })
+            .then(() => {
+                done();
+            });
     });
 
     it("should know when a username or email is already taken in users", (done) => {
-        done();
+        const userModel = new UserModel();
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing")
+            .then(() => {
+                return tempUserModel.emailAndUsernameAreUnique("uniqueAlias", "test@test.com");
+            })
+            // This promise chain should never execute.
+            .then(() => {
+                return userModel.getModel().remove({ email: "test@test.com" })
+            })
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+            })
+            .then(() => {
+                return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com")
+            })
+            // This promise chain should never execute.
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" })
+            })
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" })
+            })
+            .then(() => {
+                done();
+            });
     });
 
 });
 
 describe("UserModel", () => {
-    it("this is a stub", () => { });
+    let tempUserModel: any;
+    let userModel: any;
+
+    beforeAll(() => {
+        tempUserModel = new TempUserModel();
+        userModel = new UserModel();
+    });
+
+    it("should throw an error when fetching a salt for a non-existant user", (done) => {
+        userModel.getUserSalt("fakedude")
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toBe(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
+                done();
+            });
+    });
+
+    it("should be able to get the salt of a registered user", (done) => {
+        let returnedSalt: string;
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.getUserSalt("test@test.com")
+            })
+            .then((salt: string) => {
+                returnedSalt = salt;
+
+                return userModel.getModel().remove({ username: "testing" })
+            })
+            .then(() => {
+                expect(returnedSalt).toBe("deadbeef");
+                done();
+            })
+            .catch((error: any) => {
+                console.log(error.message);
+                expect(error).toBeFalsy();
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                done();
+            });
+    });
+
+    it("should throw an error when checking for a user that doesn't exist", (done) => {
+        userModel.checkUserExists("test@test.com")
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
+                done();
+            })
+    });
+
+    it("should be able to check an existing user exists", (done) => {
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.checkUserExists("test@test.com")
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" })
+            })
+            .then(() => {
+                done();
+            })
+            .catch((error: any) => {
+                expect(error).toBeFalsy();
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                done();
+            });
+    });
+
+    it("should catch errors from password hashing", (done) => {
+        passwordSpy.calls.reset();
+        passwordSpy.and.stub();
+        passwordSpy.and.throwError(CoSServerConstants.PBKDF2_HASH_ERROR.message);
+
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.confirmPasswordsMatch("test@test.com", "password");
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.message).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.message);
+                expect(passwordSpy).toHaveBeenCalledTimes(1);
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                done();
+            });
+    });
+
+    it("should detect when passwords don't match", (done) => {
+        passwordSpy.calls.reset();
+        passwordSpy.and.stub();
+        passwordSpy.and.returnValue("passwor");
+
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.confirmPasswordsMatch("test@test.com", "passwor");
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(passwordSpy).toHaveBeenCalledTimes(1);
+                expect(error.message).toEqual(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                done();
+            });
+    });
+
+    it("should detect when passwords match", (done) => {
+        passwordSpy.calls.reset();
+        passwordSpy.and.stub();
+        passwordSpy.and.returnValue("password");
+
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.confirmPasswordsMatch("test@test.com", "passwor");
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                done();
+            })
+            .catch((error: any) => {
+                expect(error).toBeFalsy();
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                done();
+            });
+    });
+
+    it("should know when user credentials are invalid", (done) => {
+        confirmPasswordsMatchSpy = spyOn(userModel, "confirmPasswordsMatch");
+        confirmPasswordsMatchSpy.and.throwError(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
+
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.authenticate("test@test.com", "passwor");
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                confirmPasswordsMatchSpy.and.stub();
+                passwordSpy.and.stub();
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.message).toEqual(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                confirmPasswordsMatchSpy.and.stub();
+                passwordSpy.and.stub();
+                done();
+            });
+    });
+
+    it("should know when user credentials are valid", (done) => {
+        confirmPasswordsMatchSpy = spyOn(userModel, "confirmPasswordsMatch");
+        confirmPasswordsMatchSpy.and.returnValue("password");
+
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing"
+        )
+            .then(() => {
+                return userModel.authenticate("test@test.com", "password");
+            })
+            .then(() => {
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                done();
+            })
+            .catch((error: any) => {
+                expect(error).toBeFalsy();
+                return userModel.getModel().remove({ username: "testing" });
+            })
+            .then(() => {
+                passwordSpy.and.stub();
+                done();
+            });
+    });
+
+
 });

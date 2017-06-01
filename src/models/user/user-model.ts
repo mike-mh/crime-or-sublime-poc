@@ -31,6 +31,15 @@ export class UserModel extends CoSAbstractModel {
     }
 
     /**
+     * Simple getter for the model.
+     *
+     * @return - The mongoose user model object.
+     */
+    public getModel(): Model<IUserDocument> {
+        return this.model;
+    }
+
+    /**
      * Authenticates user.
      *
      * @param email - Email of user to authenticate.
@@ -43,15 +52,6 @@ export class UserModel extends CoSAbstractModel {
             .then(() => {
                 return this.confirmPasswordsMatch(email, password);
             });
-    }
-
-    /**
-     * Simple getter for the model.
-     *
-     * @return - The mongoose user model object.
-     */
-    public getModel(): Model<IUserDocument> {
-        return this.model;
     }
 
     /**
@@ -98,43 +98,6 @@ export class UserModel extends CoSAbstractModel {
                     return;
                 }
                 throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
-            });
-    }
-
-    /**
-     * User schema information can be found in documentation.
-     */
-    protected generateSchema(): void {
-        this.schema = new Schema(
-            {
-                createdAt: {
-                    default: Date.now,
-                    type: Date,
-                },
-                email: {
-                    required: true,
-                    type: String,
-                    unique: true,
-                },
-                favourites: [Schema.Types.ObjectId],
-                password: {
-                    required: true,
-                    select: false,
-                    type: String,
-                },
-                salt: {
-                    required: true,
-                    select: false,
-                    type: String,
-                },
-                username: {
-                    required: true,
-                    type: String,
-                    unique: true,
-                },
-            },
-            {
-                minimize: false,
             });
     }
 

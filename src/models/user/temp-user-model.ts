@@ -76,6 +76,13 @@ export class TempUserModel extends CoSAbstractModel {
     }
 
     /**
+     * Getter for the model.
+     */
+    public getModel(): Model<ITempUserDocument> {
+        return this.model;
+    }
+
+    /**
      * Register user credentials from TempUser to User. Remove the TempUser
      * document when finished.
      *
@@ -117,13 +124,6 @@ export class TempUserModel extends CoSAbstractModel {
     }
 
     /**
-     * Getter for the model.
-     */
-    public getModel(): Model<ITempUserDocument> {
-        return this.model;
-    }
-
-    /**
      * Use this to ensure a username and email are unique.
      *
      * @param username - Username to check.
@@ -149,24 +149,6 @@ export class TempUserModel extends CoSAbstractModel {
                 if (users.length) {
                     throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
                 }
-            });
-    }
-
-    /**
-     * Get the user's salt.
-     *
-     * @param email - The email to query
-     *
-     * @return - Promise resolves to the salt associated with email
-     */
-    private getUserSalt(email: string): Promise<string> {
-        return this.getModel()
-            .find({ email }, { salt: 1 })
-            .then((users) => {
-                if (users.length) {
-                    return users.shift().salt;
-                }
-                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
             });
     }
 

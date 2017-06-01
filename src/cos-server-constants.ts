@@ -14,6 +14,7 @@ enum ErrrorCodes {
     DATABASE_USER_IDENTIFIER_TAKEN_ERROR,
     DATABASE_USER_INVALID_PASSWORD_ERROR,
     DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR,
+    PBKDF2_HASH_ERROR,
     SALT_GENERATION_ERROR
 }
 
@@ -53,5 +54,9 @@ export class CoSServerConstants {
         "An error occured generating a salt.",
         ErrrorCodes.SALT_GENERATION_ERROR);
 
-}
+    public static readonly PBKDF2_HASH_ERROR = new CoSError(
+        "PBKDF2HashError",
+        "An error occured PBKDF2 hash.",
+        ErrrorCodes.PBKDF2_HASH_ERROR);
 
+}
