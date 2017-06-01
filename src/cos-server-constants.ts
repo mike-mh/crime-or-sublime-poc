@@ -13,6 +13,7 @@ enum ErrrorCodes {
     DATABASE_USER_DOES_NOT_EXIST_ERROR,
     DATABASE_USER_IDENTIFIER_TAKEN_ERROR,
     DATABASE_USER_INVALID_PASSWORD_ERROR,
+    DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR,
     SALT_GENERATION_ERROR
 }
 
@@ -41,7 +42,12 @@ export class CoSServerConstants {
         "DatabaseUserInvalidPasswordError",
         "The given password was incorrect.",
         ErrrorCodes.DATABASE_USER_INVALID_PASSWORD_ERROR);
-    
+
+    public static readonly DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR = new CoSError(
+        "DatabaseUserRegistrationConfirmationError",
+        "The given password was incorrect.",
+        ErrrorCodes.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR);
+
     public static readonly SALT_GENERATION_ERROR = new CoSError(
         "SaltGenerationError",
         "An error occured generating a salt.",

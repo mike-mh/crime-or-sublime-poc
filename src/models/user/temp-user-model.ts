@@ -93,7 +93,7 @@ export class TempUserModel extends CoSAbstractModel {
                     return users.shift();
                 }
 
-                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
+                throw CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR;
             })
             .then((tempUser) => {
                 const newUser = new UserModel();

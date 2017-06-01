@@ -17,6 +17,9 @@ let registrationHashSpy: jasmine.Spy;
 let passwordSpy: jasmine.Spy;
 let passwordHashSpy: jasmine.Spy;
 
+let tempUserCommitSpy: jasmine.Spy;
+let userCommitSpy: jasmine.Spy;
+
 // Need to establish a connection a MongoDB and create spies.
 beforeAll((done) => {
     mongoose.Promise = global.Promise;
@@ -39,6 +42,10 @@ beforeAll((done) => {
  */
 describe("TempUserModel", () => {
     const tempUserModel: any = new TempUserModel();
+
+    beforeAll(() => {
+  //      userCommitSpy = spyOn(tempUserModel, "commitUserData");
+    });
 
     it("should have the TempUserSchema assigned to it", () => {
         expect(tempUserModel.schema).toEqual(TempUserModelSchema);
@@ -71,7 +78,7 @@ describe("TempUserModel", () => {
                         done();
                     }
                 });
-           })
+        })
             .catch((error: any) => {
                 console.log(error)
                 expect(true).toBe(false)
@@ -106,7 +113,7 @@ describe("TempUserModel", () => {
                         done();
                     }
                 });
-           })
+        })
             .catch((error: any) => {
                 console.log(error)
                 expect(true).toBe(false)
@@ -145,7 +152,7 @@ describe("TempUserModel", () => {
             })
     });
 
-    it("should throw error when generating a salt for a password fails", (done) => {
+    it("should throw error when generating a password hash fails", (done) => {
         passwordHashSpy.and.returnValue(Promise.resolve("AHASH"));
         passwordSpy.and.throwError(CoSServerConstants.SALT_GENERATION_ERROR.message);
         tempUserModel.createTempUser("test", "test@test.com", "testings")
@@ -159,6 +166,72 @@ describe("TempUserModel", () => {
                 passwordHashSpy.and.stub();
                 done();
             })
+    });
+
+    it("after a temp user is created, an email should be sent to that user", (done) => {
+        tempUserCommitSpy = spyOn(tempUserModel, "commitTempUserData");
+        passwordSpy.and.returnValue("HASHY");
+        tempUserCommitSpy.and.returnValue(Promise.resolve());
+
+        tempUserModel.createTempUser("test", "test@test.com", "testings")
+            .then(() => {
+                expect(emailSpy).toHaveBeenCalledTimes(1);
+                done();
+            })
+            .catch((error: Error) => {
+                expect(true).toEqual(false);
+                done();
+            })
+    });
+
+    it("should throw an error if a request is made to register a user that doesn't exist", (done) => {
+        tempUserModel.registerUser("Fake", "Dudes")
+            .then(() => {
+                expect(true).toBe(false);
+                done();
+            })
+            .catch((error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code);
+                done();
+            });
+    });
+
+    it("should create a new user after confirmation and delete old temp user data", (done) => {
+        tempUserModel.commitTempUserData("gg", "gg", "gg", "gg", "gg")
+            .then(() => {
+                return tempUserModel.registerUser("gg", "gg")
+            })
+            .then(() => {
+                return tempUserModel.getModel().find({email: "gg"});
+            })
+            .then((docs: any) => {
+                if (docs.length) {
+                    expect(true).toBe(false);
+                    done();
+                }
+
+                return new UserModel().getModel().find({email: "gg"})
+            })
+            .then((users: any) => {
+                if (!users.length) {
+                    expect(true).toBe(false);
+                    done();
+                }
+                new UserModel().getModel().remove({email: "gg"}).then(done);
+            })
+            .catch((error: any) => {
+                console.log(error.message);
+                expect(true).toBe(false);
+                done();
+            });
+    });
+
+    it("should know when a username or email is already taken in temp users", (done) => {
+        done();
+    });
+
+    it("should know when a username or email is already taken in users", (done) => {
+        done();
     });
 
 });
