@@ -80,6 +80,10 @@ export abstract class CoSAPI {
 
     }
 
+    // This map has a paths for indices which dereferance to another map
+    // containg all methods associated with that path. Those methods
+    // then derefence to an array of parameters required for a successful HTTP
+    // call to that path.
     protected pathsMethodsAndParamsMap: {[path: string]: {
             [method: string]: any[],
         },
@@ -261,12 +265,20 @@ export abstract class CoSAPI {
      * 
      * @param method - The HTTP method to test
      * @param path - The path to test against
-     * 
-     * @return - True if the path accepts the method according to schema
-     *     otherwise false.
      */
-     public isMethodAssigned(method: string, path: string) {
-         return !!this.pathsMethodsAndParamsMap[path][method];
+     public isMethodAssigned(method: string, path: string): void {
+         // If the method doesn't exist on the schema throw error
+         if (!this.pathsMethodsAndParamsMap[path]) {
+            const error = new Error("Path does not exist");
+            error.name = this.PATH_ERROR;
+            throw error;
+         }
+
+         if (!this.pathsMethodsAndParamsMap[path][method]) {
+            const error = new Error("Path does not accept that method");
+            error.name = this.METHOD_ERROR;
+            throw error;             
+         }
      };
 
     /**

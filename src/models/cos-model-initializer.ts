@@ -6,19 +6,7 @@ import { UserModel } from "./user/user-model";
  * initialization.
  */
 export class CoSModelInitializer {
-    private static isInitialized: boolean = false;
     private models: CoSAbstractModel[] = [];
-    /**
-     * Constrain the class as a singleton to ensure that models aren't
-     * reinitialized.
-     */
-    constructor() {
-        if (CoSModelInitializer.isInitialized) {
-            throw new Error("Model initializer already instantiated");
-        }
-
-        CoSModelInitializer.isInitialized = true;
-    }
 
     /**
      * Initializes all of the models and saves them to an array.

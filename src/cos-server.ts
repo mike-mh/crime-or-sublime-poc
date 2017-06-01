@@ -4,7 +4,6 @@ import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";
 import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
-import {CoSAPI} from "../configurations/cos-api";
 
 /**
  * The main server for CoS. Make all calls to intialize components of backend
@@ -13,30 +12,30 @@ import {CoSAPI} from "../configurations/cos-api";
 export class CoSServer {
     private app: Express;
     private router: CoSRouter;
+    private modelInitializer: CoSModelInitializer;
 
     /**
-     * Initializes the router and express application.
+     * Initializes the router and express application. Create as a singleton
+     * to guarentee that the server only has a single running instance.
      */
     public constructor() {
         this.app = express();
         this.router = new CoSRouter();
+        this.modelInitializer = new CoSModelInitializer();
+        mongoose.Promise = global.Promise;
     }
 
     /**
      * Initializes the server to run forever on port 8000, initializes
      * middleware and database.
      */
-    public initalizeServer(): void {
-        mongoose.Promise = global.Promise;
+    public initializeServer(): void {
         mongoose.connect("mongodb://localhost/cos")
             .then(() => {
                 this.configureExpressApp();
                 this.intializeMiddleware();
                 this.app.use("/", this.router.getRouter());
-                this.app.listen(8000, () => {
-                    process.stdout.write("Server initialized\n");
-                });
-
+                this.listenToSocket(8000);
             }, (error) => {
                 process.stderr.write("MongoDB connection error. Please make sure MongoDB is running.\n");
             });
@@ -47,11 +46,7 @@ export class CoSServer {
      */
     private configureExpressApp(): void {
         this.app.use(SessionManager.getSessionConfiguration());
-        this.app.use(express.static("dist/public", {
-            setHeaders: (res: Response) => {
-                //res.setHeader("Content-Type", "application/json");
-            },
-        }));
+        this.app.use(express.static("dist/public"));
     }
 
     /**
@@ -61,8 +56,17 @@ export class CoSServer {
     private intializeMiddleware(): void {
         this.router.initializeStaticRoutes();
         this.router.intializeRouteHandlers();
-        const modelInitializer = new CoSModelInitializer();
-        modelInitializer.initiaizeModels();
+        this.modelInitializer.initiaizeModels();
+    }
 
+    /**
+     * Listens to specified socket.
+     * 
+     * @param socket - The socket to listen to.
+     */
+    private listenToSocket(socket: (string | number)): void {
+        this.app.listen(8000, () => {
+            process.stdout.write("Server initialized\n");
+        });
     }
 }

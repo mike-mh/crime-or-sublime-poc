@@ -7,17 +7,13 @@ import { CoSAbstractRouteHandler } from "./../cos-abstract-route-handler";
  * This will handle all login requests
  */
 export class SessionRouter extends CoSAbstractRouteHandler {
-    private static isInstantiated: boolean = false;
     public static sessionAPI: SessionAPI = new SessionAPI();
 
     /**
-     * Initializes all handlers for login requests and keeps singleton pattern.
+     * Initializes all handlers for login requests.
      */
     public constructor(protected router: Router) {
         super(router);
-        if (SessionRouter.isInstantiated) {
-            throw new Error("Session router already instantiated");
-        }
 
         this.installRequestHandlers([
             ["post", SessionRouter.sessionAPI.SESSION_CREATE_USER_PATH, this.sessionCreateUser],
@@ -25,7 +21,6 @@ export class SessionRouter extends CoSAbstractRouteHandler {
             ["get", SessionRouter.sessionAPI.SESSION_END_USER_PATH, this.sessionEndUser],
         ], SessionRouter.sessionAPI);
 
-        SessionRouter.isInstantiated = true;
     }
 
     /**

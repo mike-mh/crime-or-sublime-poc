@@ -62,8 +62,11 @@ export abstract class CoSAbstractRouteHandler {
             const path = tuple[RequestPathTupleIndices.Path];
             const handler = tuple[RequestPathTupleIndices.Handler];
 
-            if (!api.isMethodAssigned(method, path)) {
-                throw new Error(path + " does not have a function assigned with " + method + " method.");
+            // Ensure the method is allowed to be installed.
+            try {
+                !api.isMethodAssigned(method, path)
+            } catch (error) {
+                throw error;
             }
 
             // Install the handler on the router.

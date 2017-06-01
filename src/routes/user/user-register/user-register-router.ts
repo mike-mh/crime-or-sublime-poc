@@ -9,25 +9,19 @@ import { CoSAbstractRouteHandler } from "../../cos-abstract-route-handler";
  * This will handle all registration requests
  */
 export class UserRegisterRouter extends CoSAbstractRouteHandler {
-    private static isInstantiated: boolean = false;
     private static readonly userRegisterApi: UserRegsiterAPI = new UserRegsiterAPI();
 
     /**
-     * Initializes all handlers for registration requests and keeps singleton
-     * pattern.
+     * Initializes all handlers for registration requests.
      */
     public constructor(protected router: Router) {
         super(router);
-        if (UserRegisterRouter.isInstantiated) {
-            throw new Error("Profile router already instantiated");
-        }
 
         this.installRequestHandlers([
             ["get", UserRegisterRouter.userRegisterApi.USER_REGISTER_CONFIRM_PATH, this.userRegisterConfirm],
             ["post", UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH, this.userRegisterSubmit]
         ], UserRegisterRouter.userRegisterApi);
 
-        UserRegisterRouter.isInstantiated = true;
     }
 
     /**
