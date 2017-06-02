@@ -58,7 +58,7 @@ describe("CoSAbstractRouteHandler", () => {
     // Configure this with any paths from the API you wish.
     const routesToTest: string[] = [
         "/session-create-user",
-        "/user-register-confirm"
+        "/user-register-confirm/:id/:key"
     ];
 
     beforeEach(() => {
@@ -113,7 +113,7 @@ describe("CoSAbstractRouteHandler", () => {
         try {
             sampleRouteHandler.installRequestHandlers([
                 ["post", "/session-create-user", sampleHandler],
-                ["get", "/user-register-confirm", sampleHandler]
+                ["get", "/user-register-confirm/:id/:key", sampleHandler]
             ], sampleAPI);
         } catch (error) {
             expect(true).toEqual(false);

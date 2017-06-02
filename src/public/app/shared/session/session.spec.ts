@@ -79,9 +79,7 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
             const mockResponse = {
-                result: {
-                    email: "test@test.com"
-                }
+                    result: "test@test.com"
             }
 
             mockBackend.connections.subscribe((connection: any) => {
@@ -97,12 +95,14 @@ describe("SessionService", () => {
     it("should broadcast session status after checking when a user is logged out", async(
         inject([SessionService, XHRBackend], (sessionService: SessionService, mockBackend: MockBackend) => {
             emitterSubscription = new SubjectSubscription(SessionService.sessionStatusEmitter,
-                sessionEndEventCallback);
+                serverErrorCallback);
 
-            SessionService.sessionStatusEmitter.subscribe(sessionEndEventCallback);
+            SessionService.sessionStatusEmitter.subscribe(serverErrorCallback);
 
             const mockResponse = {
-                result: {}
+                error: {
+                    message: "There is no session"
+                }
             }
 
             mockBackend.connections.subscribe((connection: any) => {
@@ -123,9 +123,7 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
             const mockResponse = {
-                result: {
-                    email: "test@test.com"
-                }
+                result: "test@test.com"
             }
 
             mockBackend.connections.subscribe((connection: any) => {
@@ -150,7 +148,7 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionEndEventCallback);
 
             const mockResponse = {
-                result: {}
+                result: "test@test.com"
             }
 
             mockBackend.connections.subscribe((connection: any) => {
@@ -173,9 +171,7 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
             const mockResponse = {
-                result: {
-                    email: "test@test.com"
-                }
+                result: "test@test.com"
             }
 
             mockBackend.connections.subscribe((connection: any) => {
