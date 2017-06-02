@@ -67,13 +67,13 @@ describe("NavbarComponent", () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    for (let id of buttonIDs) {
+    buttonIDs.map((id) => {
       let de = fixture.debugElement.query(By.css(id));
 
       htmlElements[id] = (de) ?
         de.nativeElement :
         undefined;
-    }
+    });
   })
 
   it("should check whether or not the user is signed in after initializing", () => {

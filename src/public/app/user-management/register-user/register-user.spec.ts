@@ -66,13 +66,13 @@ describe("RegisterUserComponent", () => {
     let mapChanges: () => void;
     mapChanges = () => {
         fixture.detectChanges();
-        for (let id of buttonIDs) {
+        buttonIDs.map((id) => {
             let de = fixture.debugElement.query(By.css(id));
 
             htmlElements[id] = (de) ?
                 de.nativeElement :
                 undefined;
-        }
+        });
     };
 
     /**

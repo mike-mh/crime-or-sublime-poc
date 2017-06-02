@@ -73,7 +73,7 @@ export abstract class CoSAPI {
         }
 
         // Verify input against schema for any possible inconsistancy.
-        for (const param of Object.keys(inputParameters)) {
+        Object.keys(inputParameters).map((param) => {
             const paramMatches = schemaConstraints.filter((schemaParam) => {
                 return param === schemaParam.name;
             });
@@ -82,9 +82,9 @@ export abstract class CoSAPI {
                 error.name = this.NO_SUCH_PARAMETER_ERROR;
                 throw error;
             }
-        }
+        });
 
-        for (const constraint of schemaConstraints) {
+        schemaConstraints.map((constraint) => {
 
             if (!constraint.name) {
                 error = new Error("Critical - Schema has unnamed parameter.");
@@ -102,7 +102,7 @@ export abstract class CoSAPI {
 
             // Don't validate an unset parameter if it isn't required.
             if (!constraint.required && !inputParameterValue) {
-                continue;
+                return;
             }
 
             if (constraint.schema.type !== typeof(inputParameterValue) && constraint.schema.type !== "array") {
@@ -223,7 +223,7 @@ export abstract class CoSAPI {
             if (constraint.schema.enum) {
                 return;
             }
-        }
+        });
     }
 
     /**
@@ -293,13 +293,13 @@ export abstract class CoSAPI {
         // Iterate through the API schema for all methods associated with paths
         // and get all parameters associated with that path. If there are no
         // parameters assign an empty array instead
-        for (const path of paths) {
+        paths.map((path) => {
             this.pathsMethodsAndParamsMap[path] = {};
-            for (const method of Object.keys(cosAPI.paths[path])) {
+            Object.keys(cosAPI.paths[path]).map((method) => {
                 this.pathsMethodsAndParamsMap[path][method] = (cosAPI.paths[path][method].parameters) ?
                     cosAPI.paths[path][method].parameters : [ ];
-            }
-        }
+            });
+        });
     }
 }
 

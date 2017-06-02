@@ -57,7 +57,7 @@ export abstract class CoSAbstractRouteHandler {
      */
     protected installRequestHandlers(requestPathHandlerTuples: Array<[string, string, RequestHandler]>, api: CoSAPI): void {
         // Verify that each meet constraints
-        for (const tuple of requestPathHandlerTuples) {
+        requestPathHandlerTuples.map((tuple) => {
             const method = tuple[RequestPathTupleIndices.Method];
             const path = tuple[RequestPathTupleIndices.Path];
             const handler = tuple[RequestPathTupleIndices.Handler];
@@ -71,7 +71,7 @@ export abstract class CoSAbstractRouteHandler {
 
             // Install the handler on the router.
             this.routerRequestMatcherMap[method].call(this.router, path, json(), handler);
-        }
+        });
     }
 
 }

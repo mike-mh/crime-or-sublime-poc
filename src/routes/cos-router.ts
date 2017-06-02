@@ -24,14 +24,14 @@ export class CoSRouter {
      * Initializes all static routes.
      */
     public initializeStaticRoutes(): void {
-        for (const feRoute of CoSRouteConstants.COS_CLIENT_PATHS) {
+        CoSRouteConstants.COS_CLIENT_PATHS.map((feRoute) => {
             const indexPath = resolve(__dirname + "/../../public/index.html");
             // Wanted to define function as method but instance gets lost and
             // there's not access to the CLIENT_INDEX_PATH field.
             this.getRouter().get(feRoute, (req: Request, res: Response) => {
                 res.sendFile(indexPath);
             });
-        }
+        });
     }
 
     /**
