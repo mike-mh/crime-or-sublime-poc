@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { request } from "https";
 import { SessionAPI } from "./../../../configurations/session/session-api";
-import { TempUserModel } from "../../models/user/temp-user-model";
 import { UserModel } from "../../models/user/user-model";
 import { CoSServer } from "../../cos-server";
 import { SessionRouter } from "./session-router";

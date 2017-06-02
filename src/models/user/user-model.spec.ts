@@ -32,8 +32,6 @@ beforeAll((done) => {
     connect("mongodb://localhost/cos").then(done);
 });
 
-afterAll(() => { })
-
 /**
  * Should consider add tests to see that schemas in each model match
  * constraints that are set else where.
@@ -61,7 +59,6 @@ describe("TempUserModel", () => {
                         tempUserModel.getModel().remove(
                             { email: "santa@claus.com", registrationKey: "theKey" }, (error: any) => {
                                 if (error) {
-                                    console.log(error);
                                     expect(true).toBe(false);
                                     done();
                                 }
@@ -74,7 +71,6 @@ describe("TempUserModel", () => {
                 });
         })
             .catch((error: any) => {
-                console.log(error)
                 expect(true).toBe(false)
             });
     });
@@ -96,7 +92,6 @@ describe("TempUserModel", () => {
                         newUser.getModel().remove(
                             { email: "santa@claus.com", salt: "salty" }, (error: any) => {
                                 if (error) {
-                                    console.log(error);
                                     expect(true).toBe(false);
                                     done();
                                 }
@@ -109,7 +104,6 @@ describe("TempUserModel", () => {
                 });
         })
             .catch((error: any) => {
-                console.log(error)
                 expect(true).toBe(false)
             });
     });
@@ -158,12 +152,10 @@ describe("TempUserModel", () => {
         tempUserModel.createTempUser("test", "test@test.com", "testings")
             .then(() => {
                 expect(true).toBe(false);
-                passwordHashSpy.and.stub();
                 done();
             })
             .catch((error: Error) => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
-                passwordHashSpy.and.stub();
                 done();
             })
     });
@@ -570,7 +562,7 @@ describe("UserModel", () => {
                 return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
-                passwordSpy.and.stub();
+                passwordSpy.and.returnValue(Promise.resolve('HASH'));
                 done();
             })
             .catch((error: any) => {
@@ -578,7 +570,7 @@ describe("UserModel", () => {
                 return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
-                passwordSpy.and.stub();
+                passwordSpy.and.returnValue(Promise.resolve('HASH'));
                 done();
             });
     });

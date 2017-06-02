@@ -45,7 +45,6 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH,
                 params, req.method);
         } catch (error) {
-            console.log(error.message)
             res.json(UserRegisterRouter.userRegisterApi.responses.InvalidParametersError)
             return;
         }
@@ -59,8 +58,8 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 res.json({ result: { email, username } });
             })
             .catch((error) => {
-                console.log(error.message);
-                if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE) {
+                console.log(error);
+                if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.code) {
                     res.json(UserRegisterRouter.userRegisterApi.responses.InvalidRegistrationError);
                 }
                 res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
@@ -80,9 +79,6 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
 
         new TempUserModel().registerUser(username, registrationKey)
             .then(() => {
-          //      res.redirect("https://crime-or-sublime.herokuapp.com");
-            })
-            .then(() => {
                 req.session.username = username;
                 req.session.save((error) => { 
                     if (error) {
@@ -94,6 +90,11 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 });
             })
             .catch((err) => {
+                if (err.code === CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code) {
+                    res.json(UserRegisterRouter.userRegisterApi.responses.InvalidRegistrationError);
+                    return;
+                }
+
                 res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
             });
     }
