@@ -34,51 +34,9 @@ export abstract class CoSAPI {
     public readonly PATH_ERROR = "APIPathError";
     public readonly METHOD_ERROR = "APIMethodError";
 
-    public readonly responses: {[response: string]: object} = {
-        AlreadyActiveSession: {
-            error: {
-                message: "Session is already active.",
-                name: "AlreadyActiveSession",
-            }
-        },
-        InternalServerError: {
-            error: {
-                message: "Internal server error occured.",
-                name: "InternalServerError",
-            }
-        },
-        InvalidRegistrationError: {
-            error: {
-                message: "The registration data sent was invalid.",
-                name: "InvalidRegistrationError",
-            }
-        },
-        InvalidParameterError: {
-            error: {
-                message: "The registration data sent was invalid.",
-                name: "InvalidParameterError"
-            }
-        },
-        MissingParamater: {
-            error: {
-                message: "Parameter(s) missing in request.",
-                name: "MissingParamater"
-            }
-        },
-        NoActiveSession: {
-            error: {
-                message: "No active session was found for this request.",
-                name: "NoActiveSession",
-            }
-        },
-        UserNotFound: {
-            error: {
-                message: "No active session was found for this request.",
-                name: "NoActiveSession",
-            }
-        },
-
-    }
+    // This map contains all of the responses for each API. Just hard code
+    // these for now so that they're readily available on an IDE.
+    public responses: {[response: string]: object} = {};
 
     // This map has a paths for indices which dereferance to another map
     // containg all methods associated with that path. Those methods

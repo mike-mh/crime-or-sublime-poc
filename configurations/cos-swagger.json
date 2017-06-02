@@ -60,7 +60,10 @@
                     "AlreadyActiveSessionError": {
                         "$ref": "#/responses/AlreadyActiveSession"
                     },
-                    "InvalidParameters": {
+                    "InvalidCredentialsError": {
+                        "$ref": "#/responses/InvalidCredentials"
+                    },
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
                     "InternalServerError": {
@@ -118,14 +121,14 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParameters": {
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
-                    },
-                    "NoActiveSession": {
-                        "$ref": "#/responses/NoActiveSession"
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSessionError": {
+                        "$ref": "#/responses/NoActiveSession"
                     }
                 },
                 "parameters": [],
@@ -165,7 +168,7 @@
                 "summarry": "This is responsible for registering new users."
             }
         },
-        "/user-register-confirm": {
+        "/user-register-confirm/:id/:key": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -178,10 +181,10 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParameters": {
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
-                    "InvalidRegistration": {
+                    "InvalidRegistrationError": {
                         "$ref": "#/responses/InvalidRegistration"
                     },
                     "InternalServerError": {
@@ -229,10 +232,10 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParameters": {
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
-                    "InvalidRegistration": {
+                    "InvalidRegistrationError": {
                         "$ref": "#/responses/InvalidRegistration"
                     },
                     "InternalServerError": {

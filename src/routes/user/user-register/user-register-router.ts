@@ -1,6 +1,7 @@
 import { validate } from "email-validator";
 import { Request, Response, Router } from "express";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";
+import { CoSServerConstants } from "./../../../cos-server-constants";
 import { ReCaptchaHelper } from "../../../libs/authentication/recaptcha-helper";
 import { TempUserModel } from "../../../models/user/temp-user-model";
 import { CoSAbstractRouteHandler } from "../../cos-abstract-route-handler";
@@ -39,17 +40,15 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
         const password = params.password;
         const reCaptchaResponse = params.captcha;
 
-        console.log(params);
         try {
-            UserRegisterRouter.userRegisterApi.validateParams(UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH,
+            UserRegisterRouter.userRegisterApi.validateParams(
+                UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH,
                 params, req.method);
         } catch (error) {
             console.log(error.message)
-            res.json(UserRegisterRouter.userRegisterApi.responses.InvalidParameterError)
+            res.json(UserRegisterRouter.userRegisterApi.responses.InvalidParametersError)
             return;
         }
-    
-        console.log(reCaptchaResponse);
 
         ReCaptchaHelper.verifyRecaptchaSuccess(reCaptchaResponse)
             .then(() => {
@@ -60,7 +59,10 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 res.json({ result: { email, username } });
             })
             .catch((error) => {
-                console.log(error);
+                console.log(error.message);
+                if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE) {
+                    res.json(UserRegisterRouter.userRegisterApi.responses.InvalidRegistrationError);
+                }
                 res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
             });
     }
@@ -73,17 +75,23 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
      * @param res - Server response
      */
     private userRegisterConfirm(req: Request, res: Response): void {
-        const username = req.params.username;
-        const registrationKey = req.params.registrationKey;
+        const username = req.params.id;
+        const registrationKey = req.params.key;
 
         new TempUserModel().registerUser(username, registrationKey)
             .then(() => {
-                res.redirect("https://crime-or-sublime.herokuapp.com");
+          //      res.redirect("https://crime-or-sublime.herokuapp.com");
             })
             .then(() => {
                 req.session.username = username;
-                req.session.save((error) => { throw new Error("Failed to save session"); });
-                res.json({ result: username });
+                req.session.save((error) => { 
+                    if (error) {
+                        console.log(error.message);
+                        res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
+                        return;
+                    }
+                    res.json({ result: username });
+                });
             })
             .catch((err) => {
                 res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);

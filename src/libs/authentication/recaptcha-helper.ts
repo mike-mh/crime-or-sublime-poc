@@ -43,13 +43,11 @@ export class ReCaptchaHelper {
                     if (responseJson.success) {
                         resolve();
                     }
-                console.log("ff");
                     reject(CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE);
                 });
             });
 
             reCaptchaRequest.on("error", (error) => {
-                console.log("gg");
                 reject(CoSServerConstants.HTTP_SEND_ERROR);
             });
 

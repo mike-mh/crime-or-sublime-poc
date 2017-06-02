@@ -22,11 +22,17 @@ export class AuthenticationEmailer {
     public static sendAuthenticationEmail(toEmail: string, username: string, registrationKey: string): Promise<void> {
         return new Promise((resolve, reject) => {
             // Use pug to compile the email and set values in its delimiters.
-            // ... God I love pug.
-            const responseEmail = AuthenticationEmailer.compileEmail({
+            //
+            // TO-DO: Unfortunately, Pug stopped interpolation with attributes.
+            //     need to manually add the link to the HTML string. If anyone
+            //     finds a solution to this, remind me to buy you ice cream.
+            const url = "https://crime-or-sublime.herokuapp.com/user-register-confirm/" +
+                username + "/" + registrationKey;
+            let responseEmail = AuthenticationEmailer.compileEmail({
                 username,
-                registrationKey,
             });
+
+            responseEmail += "<a href=" + url + ">Register here!</a>"
 
             const options = {
                 headers: {

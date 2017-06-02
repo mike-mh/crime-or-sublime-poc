@@ -1,8 +1,8 @@
 import { Request, RequestHandler, Response, Router } from "express";
 import { SessionAPI } from "./../../../configurations/session/session-api"; 
+import { CoSServerConstants } from "./../../cos-server-constants";
 import { UserModel } from "./../../models/user/user-model";
 import { CoSAbstractRouteHandler } from "./../cos-abstract-route-handler";
-
 /**
  * This will handle all login requests
  */
@@ -32,27 +32,39 @@ export class SessionRouter extends CoSAbstractRouteHandler {
     private sessionCreateUser(req: Request, res: Response): void {
 
         try {
-            SessionRouter.sessionAPI.validateParams(SessionRouter.sessionAPI.SESSION_CREATE_USER_PATH, req.body, req.method);
+            SessionRouter.sessionAPI.validateParams(
+                SessionRouter.sessionAPI.SESSION_CREATE_USER_PATH, req.body, req.method);
         } catch (error) {
-            res.json(SessionRouter.sessionAPI.responses.InvalidParameterError)
+            res.json(SessionRouter.sessionAPI.responses.InvalidParametersError)
             return;
         }
 
-        const email = req.body.email
-        const password = req.body.password
+        const email = req.body.identifier;
+        const password = req.body.password;
+
+        console.log(email);
+        console.log(password);
 
         const User = new UserModel();
         User.authenticate(email, password)
             .then((messsage) => {
                 if (req.session.email === email) {
-                    res.json(SessionRouter.sessionAPI.responses.AlreadyActiveSession);
+                    res.json(SessionRouter.sessionAPI.responses.AlreadyActiveSessionError);
                     return;
                 }
                 req.session.email = email;
                 res.json({ result: email });
             })
             .catch((err) => {
+                console.log(err.message);
                 if (!res.headersSent) {
+                    if (err.code === CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR ||
+                        err.code === CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR) {
+                        res.json(SessionRouter.sessionAPI.responses.InvalidCredentialsError);
+
+                        return;
+                    }
+
                     res.json(SessionRouter.sessionAPI.responses.InternalServerError);
                 }
             });
@@ -66,7 +78,12 @@ export class SessionRouter extends CoSAbstractRouteHandler {
      */
     private sessionVerifyUser(req: Request, res: Response): void {
         if (!req.session.email) {
-            res.json(SessionRouter.sessionAPI.responses.NoActiveSession);
+            res.json(SessionRouter.sessionAPI.responses.NoActiveSessionError);
+            return;
+        }
+
+        if (!req.session.email) {
+            res.json(SessionRouter.sessionAPI.responses.NoActiveSessionError);
             return;
         }
 
@@ -75,7 +92,7 @@ export class SessionRouter extends CoSAbstractRouteHandler {
                 res.json({ result: req.session.email });
             })
             .catch((error) => {
-                res.json(SessionRouter.sessionAPI.responses.UserNotFound);
+                res.json(SessionRouter.sessionAPI.responses.InternalServerError);
             });
 
     }
@@ -87,6 +104,11 @@ export class SessionRouter extends CoSAbstractRouteHandler {
      * @param rest - Server response
      */
     private sessionEndUser = (req: Request, res: Response): void => {
+        if (!req.session.email) {
+            res.json(SessionRouter.sessionAPI.responses.NoActiveSessionError);
+            return;
+        }
+
         req.session.destroy((error) => {
             error ?
                 res.json(SessionRouter.sessionAPI.responses.InternalServerError) :

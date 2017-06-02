@@ -192,7 +192,7 @@ export const cosAPI: any = {
                 "summarry": "This is responsible for registering new users."
             }
         },
-        "/user-register-confirm": {
+        "/user-register-confirm/:id/:key": {
             "get": {
                 "consumes": [
                     "application/json"

@@ -6,8 +6,22 @@ import { CoSAPI } from "../../cos-api";
  */
 export class UserRegsiterAPI extends CoSAPI {
 
-    public readonly USER_REGISTER_CONFIRM_PATH: string = "/user-register-confirm";
+    public readonly USER_REGISTER_CONFIRM_PATH: string = "/user-register-confirm/:id/:key";
     public readonly USER_REGISTER_SUBMIT_PATH: string = "/user-register-submit";
+    public readonly responses = {
+        InvalidParametersError: {
+            name: "InvalidParametersError",
+            message: "Parameters provided are incorrect"
+        },
+        InvalidRegistrationError: {
+            name: "InvalidRegistrationError",
+            message: "Data provided for registration is incorrect"
+        },
+        InternalServerError: {
+            name: "InternalServerError",
+            message: "Internal server error occured"
+        },
+    };
 
     constructor() {
         super();

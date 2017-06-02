@@ -51,7 +51,7 @@ export class SessionService {
                 if (res.json().error || !res.json().result) {
                     details.error = true;
                 } else {
-                    details.email = res.json().result.email;
+                    details.email = res.json().result;
                 }
                 SessionService.sessionIsActive = !!details.email;
                 SessionService.sessionStatusEmitter.emit(details);
@@ -122,7 +122,7 @@ export class SessionService {
                 if (res.json().error || !res.json().result) {
                     details.error = true;
                 } else {
-                    details.email = res.json().result.email;
+                    details.email = res.json().result;
                 }
 
                 SessionService.sessionIsActive = !!details.email;

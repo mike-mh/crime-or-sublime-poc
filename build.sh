@@ -131,7 +131,7 @@ build_front_end () {
   echo "Extracting HTML, CSS and .pug files..."
   find ./src/public -name \*.html -exec cp {} dist/public \;
   find ./src/public -name \*.css -exec cp {} dist/public \;
-  cp ./src/views/email-templates/registration-email.pug ./dist/libs/authentication/
+  cp ./src/views/email-templates/registration-email.pug ./dist/src/libs/authentication/
 
   echo "Success. You should now be able"
 

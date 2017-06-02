@@ -17,7 +17,8 @@ enum ErrrorCodes {
     HTTP_SEND_ERROR,
     PBKDF2_HASH_ERROR,
     RECAPTCHA_RESPONSE_FAILURE,
-    SALT_GENERATION_ERROR
+    SALT_GENERATION_ERROR,
+    SESSION_CREATE_FAILURE
 }
 
 export class CoSServerConstants {
@@ -70,5 +71,10 @@ export class CoSServerConstants {
         "RecaptchaResponseError",
         "ReCaptcha source responded with failure.",
         ErrrorCodes.RECAPTCHA_RESPONSE_FAILURE);
+
+    public static readonly SESSION_CREATE_FAILURE_ERROR = new CoSError(
+        "SessionCreateFailureError",
+        "Failed to create a new session.",
+        ErrrorCodes.SESSION_CREATE_FAILURE);
 
 }
