@@ -1,5 +1,5 @@
 import { Request, RequestHandler, Response, Router } from "express";
-import { SessionAPI } from "./../../../configurations/session/session-api"; 
+import { SessionAPI } from "./../../../configurations/session/session-api";
 import { CoSServerConstants } from "./../../cos-server-constants";
 import { UserModel } from "./../../models/user/user-model";
 import { CoSAbstractRouteHandler } from "./../cos-abstract-route-handler";
@@ -42,9 +42,6 @@ export class SessionRouter extends CoSAbstractRouteHandler {
         const email = req.body.identifier;
         const password = req.body.password;
 
-        console.log(email);
-        console.log(password);
-
         const User = new UserModel();
         User.authenticate(email, password)
             .then((messsage) => {
@@ -56,10 +53,9 @@ export class SessionRouter extends CoSAbstractRouteHandler {
                 res.json({ result: email });
             })
             .catch((err) => {
-                console.log(err.message);
                 if (!res.headersSent) {
-                    if (err.code === CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR ||
-                        err.code === CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR) {
+                    if (err.code === CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code ||
+                        err.code === CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.code) {
                         res.json(SessionRouter.sessionAPI.responses.InvalidCredentialsError);
 
                         return;
