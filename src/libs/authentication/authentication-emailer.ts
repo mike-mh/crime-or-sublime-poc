@@ -1,5 +1,6 @@
 import { request } from "https";
 import { compileFile } from "pug";
+import { CoSServerConstants } from "./../../cos-server-constants";
 
 /**
  * Utility class to send emails to users after they have registered with CoS.
@@ -42,7 +43,11 @@ export class AuthenticationEmailer {
             const postMarkRequest = request(options);
 
             postMarkRequest.on("error", (error) => {
-                reject(error);
+                reject(CoSServerConstants.HTTP_SEND_ERROR);
+            });
+
+            postMarkRequest.on("end", () => {
+                resolve();
             });
 
             // Need to remake the HTML file for the email to make it look nicer.
@@ -53,7 +58,6 @@ export class AuthenticationEmailer {
                 To: toEmail,
             }), () => {
                 postMarkRequest.end();
-                resolve();
             });
 
         }).then(() => {

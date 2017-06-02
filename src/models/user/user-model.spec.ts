@@ -25,18 +25,14 @@ let confirmPasswordsMatchSpy: jasmine.Spy;
 // Need to establish a connection a MongoDB and create spies.
 beforeAll((done) => {
     mongoose.Promise = global.Promise;
-    emailSpy = spyOn(AuthenticationEmailer, "sendAuthenticationEmail");
-    emailSpy.and.returnValue(Promise.resolve());
-
-
-    registrationSpy = spyOn(RegistrationHelper, "generateRegistrationKey");
-    registrationHashSpy = spyOn(RegistrationHelper, "generateSalt");
 
     passwordSpy = spyOn(PasswordHelper, "hashPassword");
     passwordHashSpy = spyOn(PasswordHelper, "generateSalt");
 
     connect("mongodb://localhost/cos").then(done);
 });
+
+afterAll(() => { })
 
 /**
  * Should consider add tests to see that schemas in each model match
@@ -120,6 +116,9 @@ describe("TempUserModel", () => {
 
 
     it("should throw error when generating a registration salt fails", (done) => {
+        registrationSpy = spyOn(RegistrationHelper, "generateRegistrationKey");
+        registrationHashSpy = spyOn(RegistrationHelper, "generateSalt");
+
         registrationSpy.and.throwError(CoSServerConstants.SALT_GENERATION_ERROR.message);
         tempUserModel.createTempUser("test", "test@test.com", "testings")
             .then(() => {
@@ -135,6 +134,9 @@ describe("TempUserModel", () => {
     });
 
     it("should throw error when generating a salt for a password fails", (done) => {
+        registrationSpy = spyOn(RegistrationHelper, "generateRegistrationKey");
+        registrationHashSpy = spyOn(RegistrationHelper, "generateSalt");
+
         registrationSpy.and.returnValue(Promise.resolve("AKEY"));
         passwordHashSpy.and.throwError(CoSServerConstants.SALT_GENERATION_ERROR.message);
         tempUserModel.createTempUser("test", "test@test.com", "testings")
@@ -167,16 +169,23 @@ describe("TempUserModel", () => {
     });
 
     it("after a temp user is created, an email should be sent to that user", (done) => {
+        emailSpy = spyOn(AuthenticationEmailer, "sendAuthenticationEmail");
+        emailSpy.calls.reset();
+        emailSpy.and.returnValue(Promise.resolve());
+
         tempUserCommitSpy = spyOn(tempUserModel, "commitTempUserData");
         passwordSpy.and.returnValue("HASHY");
         tempUserCommitSpy.and.returnValue(Promise.resolve());
+        emailSpy.calls.reset();
 
         tempUserModel.createTempUser("test", "test@test.com", "testings")
             .then(() => {
                 expect(emailSpy).toHaveBeenCalledTimes(1);
+                emailSpy.and.callThrough();
                 done();
             })
             .catch((error: Error) => {
+                emailSpy.and.callThrough();
                 expect(true).toEqual(false);
                 done();
             })
@@ -298,15 +307,21 @@ describe("TempUserModel", () => {
             })
             .then(() => {
                 expect(true).toBe(false);
+                registrationSpy.and.callThrough();
+                registrationHashSpy.and.callThrough();
                 done();
             })
             .catch((error: any) => {
+                registrationSpy.and.callThrough();
+                registrationHashSpy.and.callThrough();
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
             })
             .then(() => {
                 return userModel.getModel().remove({ username: "testing" })
             })
             .then(() => {
+                registrationSpy.and.callThrough();
+                registrationHashSpy.and.callThrough();
                 done();
             });
     });

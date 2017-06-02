@@ -14,7 +14,9 @@ enum ErrrorCodes {
     DATABASE_USER_IDENTIFIER_TAKEN_ERROR,
     DATABASE_USER_INVALID_PASSWORD_ERROR,
     DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR,
+    HTTP_SEND_ERROR,
     PBKDF2_HASH_ERROR,
+    RECAPTCHA_RESPONSE_FAILURE,
     SALT_GENERATION_ERROR
 }
 
@@ -56,7 +58,17 @@ export class CoSServerConstants {
 
     public static readonly PBKDF2_HASH_ERROR = new CoSError(
         "PBKDF2HashError",
-        "An error occured PBKDF2 hash.",
+        "An error occured performing a PBKDF2 hash.",
         ErrrorCodes.PBKDF2_HASH_ERROR);
+
+    public static readonly HTTP_SEND_ERROR = new CoSError(
+        "HttpSendError",
+        "Unable to complete HTTP request.",
+        ErrrorCodes.HTTP_SEND_ERROR);
+
+    public static readonly RECAPTCHA_RESPONSE_FAILURE = new CoSError(
+        "RecaptchaResponseError",
+        "ReCaptcha source responded with failure.",
+        ErrrorCodes.RECAPTCHA_RESPONSE_FAILURE);
 
 }

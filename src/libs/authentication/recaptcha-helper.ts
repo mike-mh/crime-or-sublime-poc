@@ -1,5 +1,6 @@
 import { request } from "https";
 import { stringify } from "query-string";
+import { CoSServerConstants } from "./../../cos-server-constants";
 
 /**
  * Basic helper class for dealing with reCaptcha payloads.
@@ -42,12 +43,14 @@ export class ReCaptchaHelper {
                     if (responseJson.success) {
                         resolve();
                     }
-                    reject("Failed to verify user.");
+                console.log("ff");
+                    reject(CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE);
                 });
             });
 
             reCaptchaRequest.on("error", (error) => {
-                reject(error);
+                console.log("gg");
+                reject(CoSServerConstants.HTTP_SEND_ERROR);
             });
 
             reCaptchaRequest.end();

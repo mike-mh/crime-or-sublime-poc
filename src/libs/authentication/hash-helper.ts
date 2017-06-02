@@ -46,7 +46,7 @@ export abstract class HashHelper {
                 process.env.PBKDF2_HMAC,
                 (err, key) => {
                     if (err) {
-                        reject(err);
+                        reject(CoSServerConstants.PBKDF2_HASH_ERROR);
                     }
                     resolve(key.toString("hex"));
                 });
