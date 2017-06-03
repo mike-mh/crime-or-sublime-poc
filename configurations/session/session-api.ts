@@ -13,23 +13,27 @@ export class SessionAPI extends CoSAPI {
     public readonly responses = {
         AlreadyActiveSessionError: {
             name: "AlreadyActiveSessionError",
-            message: "Session is already active sesison"
+            message: "Session is already active sesison",
         },
         InvalidCredentialsError: {
             name: "InvalidCredentialsError",
-            message: "Credentials provided are incorrect"
+            message: "Credentials provided are incorrect",
         },
         InvalidParametersError: {
             name: "InvalidParametersError",
-            message: "Parameters provided are incorrect"
+            message: "Parameters provided are incorrect",
         },
         InternalServerError: {
             name: "InternalServerError",
-            message: "Internal server error occured"
+            message: "Internal server error occured",
         },
         NoActiveSessionError: {
             name: "NoActiveSessionError",
-            message: "There is no active session"
+            message: "There is no active session",
+        },
+        SessionLockoutError: {
+            name: "SessionLockoutError",
+            message: "You have tried to login over a thousand times... Nice try asshole.",
         }
 
     }

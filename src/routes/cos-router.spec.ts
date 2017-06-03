@@ -116,6 +116,7 @@ describe("CoSAbstractRouteHandler", () => {
                 ["get", "/user-register-confirm/:id/:key", sampleHandler]
             ], sampleAPI);
         } catch (error) {
+            console.log(error.message)
             expect(true).toEqual(false);
         }
 

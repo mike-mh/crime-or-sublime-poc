@@ -179,6 +179,7 @@ export class TempUserModel extends CoSAbstractModel {
                 username,
             }).save((error) => {
                 if (error) {
+                    console.log(error);
                     throw CoSServerConstants.DATABASE_SAVE_ERROR;
                 }
             });

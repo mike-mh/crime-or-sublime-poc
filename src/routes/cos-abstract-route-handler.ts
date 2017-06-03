@@ -1,7 +1,7 @@
 import { json } from "body-parser";
 import { IRouterMatcher, Request, RequestHandler, RequestParamHandler, Response, Router } from "express";
 import { CoSAPI } from "../../configurations/cos-api";
-import { CoSRouteConstants, RequestPathTupleIndices } from "./cos-route-constants";
+import { CoSRouteConstants, IRouteHandler, RequestPathTupleIndices } from "./cos-route-constants";
 
 /**
  * Super class for all classes responsible for installing handlers to
@@ -21,7 +21,7 @@ export abstract class CoSAbstractRouteHandler {
     //
     // See the 'installRequestHandlers' method for a deeper understanding of
     // how this is used.
-    protected routerRequestMatcherMap: {[method: string]: IRouterMatcher<Router>} = {};
+    protected routerRequestMatcherMap: { [method: string]: IRouterMatcher<Router> } = {};
 
     /**
      * Initializes memory for the methodPathRequestHandlerMap and
@@ -55,23 +55,43 @@ export abstract class CoSAbstractRouteHandler {
      * Installs all request handlers stored in methodPathRequestHandlerMap into
      * the express router and associating them with the proper HTTP method.
      */
-    protected installRequestHandlers(requestPathHandlerTuples: Array<[string, string, RequestHandler]>, api: CoSAPI): void {
+    protected installRequestHandlers(requestPathHandlerTuples: IRouteHandler[], api: CoSAPI): void {
         // Verify that each meet constraints
-        requestPathHandlerTuples.map((tuple) => {
-            const method = tuple[RequestPathTupleIndices.Method];
-            const path = tuple[RequestPathTupleIndices.Path];
-            const handler = tuple[RequestPathTupleIndices.Handler];
+        requestPathHandlerTuples.map((handlerTuple) => {
+            const method = handlerTuple[RequestPathTupleIndices.Method];
+            const path = handlerTuple[RequestPathTupleIndices.Path];
 
-            // Ensure the method is allowed to be installed.
+            // Ensure the path allows a handler for the given method is allowed
+            // to be installed.
             try {
-                !api.isMethodAssigned(method, path)
+                api.isMethodAssigned(method, path)
             } catch (error) {
                 throw error;
             }
 
+            // Add JSON parser and remove the method from the tuple
+            handlerTuple.splice(RequestPathTupleIndices.Handler, 0, json());
+            handlerTuple.shift();
+
             // Install the handler on the router.
-            this.routerRequestMatcherMap[method].call(this.router, path, json(), handler);
+            this.routerRequestMatcherMap[method].apply(this.router, handlerTuple);
         });
+    }
+
+    /**
+     * Use this method to handle internal errors stemming from added request
+     * handlers.
+     * 
+     * TO-DO: After we configure logging with the host, come back to this to
+     *     ensure that errors are logged correctly.
+     * 
+     * @param req - Client request
+     * @param res - Server response
+     */
+    protected handleMiddlewareError(req: Request, res: Response) {
+        res.type('text/plain');
+        res.status(500);
+        res.send('500 Server Error');
     }
 
 }

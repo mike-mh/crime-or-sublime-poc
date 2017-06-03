@@ -11,6 +11,7 @@ import { CoSAbstractRouteHandler } from "../../cos-abstract-route-handler";
  */
 export class UserRegisterRouter extends CoSAbstractRouteHandler {
     private static readonly userRegisterApi: UserRegsiterAPI = new UserRegsiterAPI();
+    private static readonly responses: any = UserRegisterRouter.userRegisterApi.responses;
 
     /**
      * Initializes all handlers for registration requests.
@@ -45,7 +46,7 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH,
                 params, req.method);
         } catch (error) {
-            res.json(UserRegisterRouter.userRegisterApi.responses.InvalidParametersError)
+            res.json(UserRegisterRouter.responses.InvalidParametersError)
             return;
         }
 
@@ -60,9 +61,9 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
             .catch((error) => {
                 console.log(error);
                 if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.code) {
-                    res.json(UserRegisterRouter.userRegisterApi.responses.InvalidRegistrationError);
+                    res.json(UserRegisterRouter.responses.InvalidRegistrationError);
                 }
-                res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
+                res.json(UserRegisterRouter.responses.InternalServerError);
             });
     }
 
@@ -83,7 +84,7 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 req.session.save((error) => { 
                     if (error) {
                         console.log(error.message);
-                        res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
+                        res.json(UserRegisterRouter.responses.InternalServerError);
                         return;
                     }
                     res.json({ result: username });
@@ -91,11 +92,11 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
             })
             .catch((err) => {
                 if (err.code === CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code) {
-                    res.json(UserRegisterRouter.userRegisterApi.responses.InvalidRegistrationError);
+                    res.json(UserRegisterRouter.responses.InvalidRegistrationError);
                     return;
                 }
 
-                res.json(UserRegisterRouter.userRegisterApi.responses.InternalServerError);
+                res.json(UserRegisterRouter.responses.InternalServerError);
             });
     }
 

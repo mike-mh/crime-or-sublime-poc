@@ -92,8 +92,10 @@ export const cosAPI: any = {
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
-                    }
-                },
+                    },
+                    "SessionLockoutError": {
+                      "$ref": "#/responses/SessionLockout"
+                    }                },
                 "parameters": [
                     {
                         "description": "A user's username or email.",
@@ -358,6 +360,12 @@ export const cosAPI: any = {
         },
         "NoActiveSession": {
             "description": "An call was made requiring an active session when none was found.",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "SessionLockout": {
+            "description": "A user has been locked out for attempting to login to many times. This should only be triggered after a client fails to sign on over 1000 times",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }
