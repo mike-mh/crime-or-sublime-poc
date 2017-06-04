@@ -6,7 +6,7 @@ import { SessionAPI } from "../../../../../configurations/session/session-api";
 
 /**
  * Use this to store data from server responses.
- * 
+ *
  * TO-DO: Include username.
  */
 export interface ISessionDetails {
@@ -24,8 +24,6 @@ export interface ISessionDetails {
 export class SessionService {
     // Use these to store session data and emit that data.
     public static sessionStatusEmitter: EventEmitter<ISessionDetails> = new EventEmitter();
-    private static sessionIsActive: boolean = false;
-    private readonly sessionAPI = new SessionAPI();
 
     /**
      * Simple getter method to determine if session is active.
@@ -35,6 +33,9 @@ export class SessionService {
     public static isSessionActive(): boolean {
         return SessionService.sessionIsActive;
     }
+
+    private static sessionIsActive: boolean = false;
+    private readonly sessionAPI = new SessionAPI();
 
     constructor(private http: Http) { }
 
@@ -83,12 +84,12 @@ export class SessionService {
     /**
      * Use this method to log a user in with the given credentials. Will
      * emit results whether successful or not.
-     * 
+     *
      * TO-DO: Add option to login with username
-     * 
+     *
      * @param email - User email
      * @param password - User password
-     * 
+     *
      * @returns - Promise that resolves to response JSON
      */
     public beginSession(email: string, password: string): Promise<JSON> {
@@ -101,14 +102,13 @@ export class SessionService {
         const credentialsPayload: {} = {
                 identifier: email,
                 password,
-        }
+        };
 
         try {
             this.sessionAPI.validateParams(this.sessionAPI.SESSION_CREATE_USER_PATH,
                                            credentialsPayload,
                                            "post");
-        } catch(error) {
-            console.log(error);
+        } catch (error) {
             return Promise.reject(error);
         }
 
@@ -116,7 +116,6 @@ export class SessionService {
             .toPromise()
             .then((res) => {
                 const details: ISessionDetails = {};
-                let validCredentials;
                 if (res.json().error || !res.json().result) {
                     details.error = true;
                 } else {

@@ -17,7 +17,7 @@ export enum MethodTupleIndices {
 }
 
 /**
- * Use this to contain all 
+ * Use this to contain all schemas for needed models.
  */
 export const UserModelSchema: Schema = new Schema(
     {

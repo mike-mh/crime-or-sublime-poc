@@ -1,15 +1,15 @@
-import { async, ComponentFixture, TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { DebugElement } from "@angular/core";
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormsModule } from "@angular/forms";
 import { HttpModule } from "@angular/http";
-import { RouterTestingModule } from '@angular/router/testing';
+import { By } from "@angular/platform-browser";
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from "@angular/platform-browser-dynamic/testing";
+import { RouterTestingModule } from "@angular/router/testing";
 import { CoSComponent } from "./cos.component";
-import { LoginModule } from "./user-management/login/login.module";
 import { NavbarModule } from "./navbar/navbar.module";
-import { RegisterUserModule } from "./user-management/register-user/register-user.module";
 import { SessionService } from "./shared/session/session.service";
+import { LoginModule } from "./user-management/login/login.module";
+import { RegisterUserModule } from "./user-management/register-user/register-user.module";
 
 TestBed.initTestEnvironment(
   BrowserDynamicTestingModule, platformBrowserDynamicTesting());
@@ -23,18 +23,16 @@ describe("CoSComponent", () => {
   let elRouterOutlet: HTMLElement;
 
   let spy: jasmine.Spy;
-  let sessionServiceStub: {
-    checkUserIsActive: () => void;
-  }
 
   beforeEach(async(() => {
-    let sessionServiceStub = {
+    const sessionServiceStub = {
       // Spoof the checkUserIsActive as an empty function. Only need to test that
       // it is called during initialization.
       checkUserIsActive: () => {
         return;
-      }
-    }
+      },
+    };
+
     spy = spyOn(sessionServiceStub, "checkUserIsActive").and.returnValue(undefined);
 
     TestBed.configureTestingModule({
@@ -46,16 +44,16 @@ describe("CoSComponent", () => {
         RouterTestingModule,
         FormsModule,
         HttpModule],
-    })
+    });
 
     TestBed.overrideComponent(CoSComponent, {
       set: {
-        providers: [{ provide: SessionService, useValue: sessionServiceStub }]
-      }
+        providers: [{ provide: SessionService, useValue: sessionServiceStub }],
+      },
     }).compileComponents()
       .catch((error) => {
-        console.log(error);
-      })
+        process.stderr.write(error.message);
+      });
 
   }));
 
@@ -66,11 +64,11 @@ describe("CoSComponent", () => {
     deRouterOutlet = fixture.debugElement.query(By.css("router-outlet"));
     elNavbar = deNavbar.nativeElement;
     elRouterOutlet = deRouterOutlet.nativeElement;
-  })
+  });
 
   it("should call session service to get current user only once.", () => {
     expect(spy).toHaveBeenCalledTimes(1);
-  })
+  });
 
   it("should have a navbar", () => {
     fixture.detectChanges();

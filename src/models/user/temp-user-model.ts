@@ -5,7 +5,7 @@ import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { RegistrationHelper } from "./../../libs/authentication/registration-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
 import { TempUserModelSchema } from "./../cos-model-constants";
-import { UserModel, IUserDocument } from "./user-model";
+import { IUserDocument, UserModel } from "./user-model";
 
 /**
  * Document implementation for TempUser.
@@ -67,7 +67,7 @@ export class TempUserModel extends CoSAbstractModel {
                     hashedPassword,
                     registrationKey,
                     generatedSalt,
-                    username
+                    username,
                 );
             })
             .then((model) => {
@@ -109,7 +109,7 @@ export class TempUserModel extends CoSAbstractModel {
                     tempUser.email,
                     tempUser.password,
                     tempUser.salt,
-                    tempUser.username
+                    tempUser.username,
                 );
             })
             .then(() => {
@@ -154,13 +154,13 @@ export class TempUserModel extends CoSAbstractModel {
 
     /**
      * Use this function to save temp user data to the database.
-     * 
+     *
      * @param email - The email of the user to save.
      * @param hashedPassword - The hashed password of the user to save.
      * @param registrationKey - The registration key of the user to save.
      * @param salt - The salt of the user to save.
      * @param username - The username of the user to save.
-     * 
+     *
      * @return - Promise that resolves to the data saved.
      */
     private commitTempUserData(
@@ -179,7 +179,6 @@ export class TempUserModel extends CoSAbstractModel {
                 username,
             }).save((error) => {
                 if (error) {
-                    console.log(error);
                     throw CoSServerConstants.DATABASE_SAVE_ERROR;
                 }
             });
@@ -188,13 +187,13 @@ export class TempUserModel extends CoSAbstractModel {
     /**
      * Use this function to save permenant user data to the database. This is
      * usually called after a user confirms their registration.
-     * 
+     *
      * @param email - The email of the user to save.
      * @param hashedPassword - The hashed password of the user to save.
      * @param registrationKey - The registration key of the user to save.
      * @param salt - The salt of the user to save.
      * @param username - The username of the user to save.
-     * 
+     *
      * @return - Promise that resolves to the data saved.
      */
     private commitUserData(

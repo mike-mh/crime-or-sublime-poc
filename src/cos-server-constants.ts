@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 class CoSError extends Error {
     public code: number;
     constructor(name: string, message: string, code: number) {
@@ -18,7 +20,7 @@ enum ErrrorCodes {
     PBKDF2_HASH_ERROR,
     RECAPTCHA_RESPONSE_FAILURE,
     SALT_GENERATION_ERROR,
-    SESSION_CREATE_FAILURE
+    SESSION_CREATE_FAILURE,
 }
 
 export class CoSServerConstants {
@@ -36,7 +38,7 @@ export class CoSServerConstants {
         "DatabaseUserDoesNotExistError",
         "The user queried does not exist in database.",
         ErrrorCodes.DATABASE_USER_DOES_NOT_EXIST_ERROR);
-    
+
     public static readonly DATABASE_USER_IDENTIFIER_TAKEN_ERROR = new CoSError(
         "DatabaseUserIdentifierTakenError",
         "Another user has already taken the identifier given.",

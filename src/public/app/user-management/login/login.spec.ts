@@ -1,68 +1,60 @@
 import { CommonModule } from "@angular/common";
-import { EventEmitter } from "@angular/core";
-import { async, inject, ComponentFixture, TestBed } from "@angular/core/testing";
+import { DebugElement, EventEmitter } from "@angular/core";
+import { async, ComponentFixture, inject, TestBed } from "@angular/core/testing";
 import { ReactiveFormsModule } from "@angular/forms";
-import { HttpModule } from '@angular/http';
+import { HttpModule } from "@angular/http";
 import { By } from "@angular/platform-browser";
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { DebugElement } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { RouterTestingModule } from '@angular/router/testing';
-import { SessionService, ISessionDetails } from "./../../shared/session/session.service";
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from "@angular/platform-browser-dynamic/testing";
+import { RouterTestingModule } from "@angular/router/testing";
+import { ISessionDetails , SessionService } from "./../../shared/session/session.service";
 import { LoginComponent } from "./login.component";
 import { LoginService } from "./login.service";
 
 describe("LoginComponent", () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
-    let loginServiceSpy: jasmine.Spy;
     let isLocked: boolean = false;
 
-    let htmlElements: {} = {};
-    let buttonIDs: string[] = [
+    const htmlElements: {} = {};
+    const buttonIDs: string[] = [
         "#cos-login-form",
         "#cos-login-name-field",
         "#cos-login-password-field",
         "#cos-login-submit-button",
-        "#cos-login-lockout-message"
+        "#cos-login-lockout-message",
     ];
-
-    let sessionServiceStub: {
-        sessionIsActive: boolean;
-    }
 
     let userIsSignedOn = false;
 
     beforeEach(async(() => {
-        let sessionServiceStub = {
+        const sessionServiceStub = {
             sessionIsActive: userIsSignedOn,
-        }
+        };
 
         let spy: jasmine.Spy;
 
         // Spy on the actual static class since the method is static.
         spy = spyOn(SessionService, "isSessionActive").and.returnValue(userIsSignedOn);
 
-
         TestBed.configureTestingModule({
             declarations: [LoginComponent],
             imports: [
                 CommonModule,
                 ReactiveFormsModule,
-                HttpModule
+                HttpModule,
             ],
-        })
+        });
 
         TestBed.overrideComponent(LoginComponent, {
             set: {
                 providers: [
                     LoginService,
-                    { provide: SessionService, useValue: sessionServiceStub }]
-            }
+                    { provide: SessionService, useValue: sessionServiceStub }],
+            },
         }).compileComponents()
             .catch((error) => {
-                console.log(error);
-            })
+                return;
+            });
 
     }));
 
@@ -72,13 +64,13 @@ describe("LoginComponent", () => {
         component.isLocked = isLocked;
         fixture.detectChanges();
 
-        for (let id of buttonIDs) {
-            let de = fixture.debugElement.query(By.css(id));
+        buttonIDs.map((id) => {
+            const de = fixture.debugElement.query(By.css(id));
 
             htmlElements[id] = (de) ?
                 de.nativeElement :
                 undefined;
-        }
+        });
     });
 
     it("should have a form", () => {
@@ -111,15 +103,15 @@ describe("LoginComponent", () => {
 
         expect(htmlElements["#cos-login-submit-button"].disabled).toBe(true);
         htmlElements["#cos-login-name-field"].value = "test";
-        htmlElements["#cos-login-name-field"].dispatchEvent(new Event('input'));
+        htmlElements["#cos-login-name-field"].dispatchEvent(new Event("input"));
         fixture.detectChanges();
 
         expect(htmlElements["#cos-login-submit-button"].disabled).toBe(true);
 
         htmlElements["#cos-login-name-field"].value = "";
-        htmlElements["#cos-login-name-field"].dispatchEvent(new Event('input'));
+        htmlElements["#cos-login-name-field"].dispatchEvent(new Event("input"));
         htmlElements["#cos-login-password-field"].value = "test";
-        htmlElements["#cos-login-password-field"].dispatchEvent(new Event('input'));
+        htmlElements["#cos-login-password-field"].dispatchEvent(new Event("input"));
         fixture.detectChanges();
 
         expect(htmlElements["#cos-login-submit-button"].disabled).toBe(true);
@@ -128,9 +120,9 @@ describe("LoginComponent", () => {
 
     it("the submit button should be enabled if the email and password fields are filled", () => {
         htmlElements["#cos-login-name-field"].value = "test";
-        htmlElements["#cos-login-name-field"].dispatchEvent(new Event('input'));
+        htmlElements["#cos-login-name-field"].dispatchEvent(new Event("input"));
         htmlElements["#cos-login-password-field"].value = "test";
-        htmlElements["#cos-login-password-field"].dispatchEvent(new Event('input'));
+        htmlElements["#cos-login-password-field"].dispatchEvent(new Event("input"));
         fixture.detectChanges();
         expect(htmlElements["#cos-login-submit-button"].disabled).toBe(false);
 
@@ -153,7 +145,7 @@ describe("LoginComponent", () => {
     });
 
     // TO-DO write tests for how to handle login success and failure. Still
-    // haven't fully worked out what we want to do.
+    // haven"t fully worked out what we want to do.
 });
 
 /**
@@ -162,14 +154,13 @@ describe("LoginComponent", () => {
  */
 describe("LoginService", () => {
     let spy: jasmine.Spy;
-    let userIsSignedOn: boolean = false;
-    const dummyPromise = new Promise((resolve) => { resolve(true) });
+    const dummyPromise = new Promise((resolve) => { resolve(true); });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpModule],
-            providers: [LoginService, SessionService]
-        })
+            providers: [LoginService, SessionService],
+        });
     });
 
     it("should call SessionService to verify a user's provided credentials.", () => {

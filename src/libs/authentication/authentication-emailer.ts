@@ -32,7 +32,7 @@ export class AuthenticationEmailer {
                 username,
             });
 
-            responseEmail += "<a href=" + url + ">Register here!</a>"
+            responseEmail += "<a href=" + url + ">Register here!</a>";
 
             const options = {
                 headers: {

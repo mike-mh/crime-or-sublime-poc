@@ -18,7 +18,6 @@ let passwordSpy: jasmine.Spy;
 let passwordHashSpy: jasmine.Spy;
 
 let tempUserCommitSpy: jasmine.Spy;
-let userCommitSpy: jasmine.Spy;
 
 let confirmPasswordsMatchSpy: jasmine.Spy;
 
@@ -49,7 +48,7 @@ describe("TempUserModel", () => {
             "canada",
             "theKey",
             "salty",
-            "fattycakes"
+            "fattycakes",
         ).then((error: any) => {
             // Now check if it committed
             tempUserModel.getModel().find({ email: "santa@claus.com", registrationKey: "theKey" })
@@ -57,8 +56,8 @@ describe("TempUserModel", () => {
                     if (users.length) {
                         // Now remove fake user.
                         tempUserModel.getModel().remove(
-                            { email: "santa@claus.com", registrationKey: "theKey" }, (error: any) => {
-                                if (error) {
+                            { email: "santa@claus.com", registrationKey: "theKey" }, (saveError: any) => {
+                                if (saveError) {
                                     expect(true).toBe(false);
                                     done();
                                 }
@@ -71,7 +70,7 @@ describe("TempUserModel", () => {
                 });
         })
             .catch((error: any) => {
-                expect(true).toBe(false)
+                expect(true).toBe(false);
             });
     });
 
@@ -82,7 +81,7 @@ describe("TempUserModel", () => {
             "santa@claus.com",
             "canada",
             "salty",
-            "fattycakes"
+            "fattycakes",
         ).then((error: any) => {
             // Now check if it committed
             newUser.getModel().find({ email: "santa@claus.com", salt: "salty" })
@@ -90,8 +89,8 @@ describe("TempUserModel", () => {
                     if (users.length) {
                         // Now remove fake user.
                         newUser.getModel().remove(
-                            { email: "santa@claus.com", salt: "salty" }, (error: any) => {
-                                if (error) {
+                            { email: "santa@claus.com", salt: "salty" }, (findError: any) => {
+                                if (findError) {
                                     expect(true).toBe(false);
                                     done();
                                 }
@@ -104,10 +103,9 @@ describe("TempUserModel", () => {
                 });
         })
             .catch((error: any) => {
-                expect(true).toBe(false)
+                expect(true).toBe(false);
             });
     });
-
 
     it("should throw error when generating a registration salt fails", (done) => {
         registrationSpy = spyOn(RegistrationHelper, "generateRegistrationKey");
@@ -124,7 +122,7 @@ describe("TempUserModel", () => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
                 registrationSpy.and.stub();
                 done();
-            })
+            });
     });
 
     it("should throw error when generating a salt for a password fails", (done) => {
@@ -143,7 +141,7 @@ describe("TempUserModel", () => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
                 passwordHashSpy.and.stub();
                 done();
-            })
+            });
     });
 
     it("should throw error when generating a password hash fails", (done) => {
@@ -157,7 +155,7 @@ describe("TempUserModel", () => {
             .catch((error: Error) => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
                 done();
-            })
+            });
     });
 
     it("after a temp user is created, an email should be sent to that user", (done) => {
@@ -180,7 +178,7 @@ describe("TempUserModel", () => {
                 emailSpy.and.callThrough();
                 expect(true).toEqual(false);
                 done();
-            })
+            });
     });
 
     it("should throw an error if a request is made to register a user that doesn't exist", (done) => {
@@ -198,7 +196,7 @@ describe("TempUserModel", () => {
     it("should create a new user after confirmation and delete old temp user data", (done) => {
         tempUserModel.commitTempUserData("gg", "gg", "gg", "gg", "gg")
             .then(() => {
-                return tempUserModel.registerUser("gg", "gg")
+                return tempUserModel.registerUser("gg", "gg");
             })
             .then(() => {
                 return tempUserModel.getModel().find({ email: "gg" });
@@ -209,7 +207,7 @@ describe("TempUserModel", () => {
                     done();
                 }
 
-                return new UserModel().getModel().find({ email: "gg" })
+                return new UserModel().getModel().find({ email: "gg" });
             })
             .then((users: any) => {
                 if (!users.length) {
@@ -219,7 +217,6 @@ describe("TempUserModel", () => {
                 new UserModel().getModel().remove({ email: "gg" }).then(done);
             })
             .catch((error: any) => {
-                console.log(error.message);
                 expect(true).toBe(false);
                 done();
             });
@@ -237,7 +234,7 @@ describe("TempUserModel", () => {
             })
             // This promise chain should never execute.
             .then(() => {
-                return tempUserModel.getModel().remove({ email: "test@test.com" })
+                return tempUserModel.getModel().remove({ email: "test@test.com" });
             })
             .then(() => {
                 expect(true).toBe(false);
@@ -247,11 +244,11 @@ describe("TempUserModel", () => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
             })
             .then(() => {
-                return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com")
+                return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com");
             })
             // This promise chain should never execute.
             .then(() => {
-                return tempUserModel.getModel().remove({ username: "testing" })
+                return tempUserModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
                 expect(true).toBe(false);
@@ -261,7 +258,7 @@ describe("TempUserModel", () => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
             })
             .then(() => {
-                return tempUserModel.getModel().remove({ username: "testing" })
+                return tempUserModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
                 done();
@@ -281,7 +278,7 @@ describe("TempUserModel", () => {
             })
             // This promise chain should never execute.
             .then(() => {
-                return userModel.getModel().remove({ email: "test@test.com" })
+                return userModel.getModel().remove({ email: "test@test.com" });
             })
             .then(() => {
                 expect(true).toBe(false);
@@ -291,11 +288,11 @@ describe("TempUserModel", () => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
             })
             .then(() => {
-                return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com")
+                return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com");
             })
             // This promise chain should never execute.
             .then(() => {
-                return userModel.getModel().remove({ username: "testing" })
+                return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
                 expect(true).toBe(false);
@@ -309,7 +306,7 @@ describe("TempUserModel", () => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
             })
             .then(() => {
-                return userModel.getModel().remove({ username: "testing" })
+                return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
                 registrationSpy.and.callThrough();
@@ -348,22 +345,21 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
-                return userModel.getUserSalt("test@test.com")
+                return userModel.getUserSalt("test@test.com");
             })
             .then((salt: string) => {
                 returnedSalt = salt;
 
-                return userModel.getModel().remove({ username: "testing" })
+                return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
                 expect(returnedSalt).toBe("deadbeef");
                 done();
             })
             .catch((error: any) => {
-                console.log(error.message);
                 expect(error).toBeFalsy();
                 return userModel.getModel().remove({ username: "testing" });
             })
@@ -381,7 +377,7 @@ describe("UserModel", () => {
             .catch((error: any) => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
                 done();
-            })
+            });
     });
 
     it("should be able to check an existing user exists", (done) => {
@@ -390,13 +386,13 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
-                return userModel.checkUserExists("test@test.com")
+                return userModel.checkUserExists("test@test.com");
             })
             .then(() => {
-                return userModel.getModel().remove({ username: "testing" })
+                return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
                 done();
@@ -420,7 +416,7 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
                 return userModel.confirmPasswordsMatch("test@test.com", "password");
@@ -454,7 +450,7 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
                 return userModel.confirmPasswordsMatch("test@test.com", "passwor");
@@ -488,7 +484,7 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
                 return userModel.confirmPasswordsMatch("test@test.com", "passwor");
@@ -519,7 +515,7 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
                 return userModel.authenticate("test@test.com", "passwor");
@@ -553,7 +549,7 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing"
+            "testing",
         )
             .then(() => {
                 return userModel.authenticate("test@test.com", "password");
@@ -562,7 +558,7 @@ describe("UserModel", () => {
                 return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
-                passwordSpy.and.returnValue(Promise.resolve('HASH'));
+                passwordSpy.and.returnValue(Promise.resolve("HASH"));
                 done();
             })
             .catch((error: any) => {
@@ -570,10 +566,9 @@ describe("UserModel", () => {
                 return userModel.getModel().remove({ username: "testing" });
             })
             .then(() => {
-                passwordSpy.and.returnValue(Promise.resolve('HASH'));
+                passwordSpy.and.returnValue(Promise.resolve("HASH"));
                 done();
             });
     });
-
 
 });

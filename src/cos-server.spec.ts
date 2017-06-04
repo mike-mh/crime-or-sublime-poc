@@ -2,7 +2,6 @@ import { CoSServer } from "./cos-server";
 import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";
 
-const express = require('express');
 /**
  * Should come back to this later as the application has more configurations
  * set. Right now all this can really test for is that all of the necessarry
@@ -23,7 +22,7 @@ describe("CoSServer", () => {
     it("should add session configurations to the express application", () => {
         cosServer.configureExpressApp();
         // Unfortunately, this is the tidiest way to get individual comoponents
-        // of an Express application. It's still posisble to test
+        // of an Express application. It"s still posisble to test
         // configurations by ensuring that their pointer values are equal to
         // what is expected such as here.
         expect(cosServer.app._router.stack[2].handle).toEqual(SessionManager.getSessionConfiguration());

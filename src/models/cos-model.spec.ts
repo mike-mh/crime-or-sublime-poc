@@ -30,7 +30,7 @@ describe("CoSAbstractModel", () => {
     it("generating a model without a schema should not cause an error.", () => {
         try {
             sampleModel.generateModel();
-        } catch(error) {
+        } catch (error) {
             expect(error).toBeFalsy();
         }
     });
@@ -39,7 +39,7 @@ describe("CoSAbstractModel", () => {
 
         try {
             sampleModel.generateModel();
-        } catch(error) {
+        } catch (error) {
             expect(error).toBeFalsy();
         }
     });

@@ -1,41 +1,35 @@
 import { CommonModule } from "@angular/common";
-import { EventEmitter } from "@angular/core";
+import { DebugElement, EventEmitter } from "@angular/core";
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { DebugElement } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterTestingModule } from '@angular/router/testing';
+import { By } from "@angular/platform-browser";
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from "@angular/platform-browser-dynamic/testing";
+import { RouterTestingModule } from "@angular/router/testing";
+import { ISessionDetails, SessionService } from "./../shared/session/session.service";
 import { LoginModule } from "./../user-management/login/login.module";
-import { NavbarComponent } from "./navbar.component";
 import { RegisterUserModule } from "./../user-management/register-user/register-user.module";
-import { SessionService, ISessionDetails } from "./../shared/session/session.service";
+import { NavbarComponent } from "./navbar.component";
 
 describe("NavbarComponent", () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  let elNavbar: HTMLElement;
 
-
-  let htmlElements: {} = {};
-  let buttonIDs: string[] = [
+  const htmlElements: {} = {};
+  const buttonIDs: string[] = [
     "#cos-navbar-nav",
     "#cos-navbar-login-button",
     "#cos-navbar-logout-button",
-    "#cos-navbar-register-button"
+    "#cos-navbar-register-button",
   ];
 
   let spy: jasmine.Spy;
-  let sessionServiceStub: {
-    sessionIsActive: boolean;
-  }
 
   let userIsSignedOn = false;
 
   beforeEach(async(() => {
-    let sessionServiceStub = {
+    const sessionServiceStub = {
       sessionIsActive: userIsSignedOn,
-    }
+    };
 
     // Spy on the actual static class since the method is static.
     spy = spyOn(SessionService, "isSessionActive").and.returnValue(userIsSignedOn);
@@ -47,18 +41,18 @@ describe("NavbarComponent", () => {
         RegisterUserModule,
         RouterTestingModule,
         FormsModule,
-        CommonModule
+        CommonModule,
       ],
-    })
+    });
 
     TestBed.overrideComponent(NavbarComponent, {
       set: {
-        providers: [{ provide: SessionService, useValue: sessionServiceStub }]
-      }
+        providers: [{ provide: SessionService, useValue: sessionServiceStub }],
+      },
     }).compileComponents()
       .catch((error) => {
-        console.log(error);
-      })
+        process.stderr.write(error.message);
+      });
 
   }));
 
@@ -68,13 +62,13 @@ describe("NavbarComponent", () => {
     fixture.detectChanges();
 
     buttonIDs.map((id) => {
-      let de = fixture.debugElement.query(By.css(id));
+      const de = fixture.debugElement.query(By.css(id));
 
       htmlElements[id] = (de) ?
         de.nativeElement :
         undefined;
     });
-  })
+  });
 
   it("should check whether or not the user is signed in after initializing", () => {
     expect(spy).toHaveBeenCalledTimes(1);
@@ -137,8 +131,8 @@ describe("NavbarComponent", () => {
   });
 
   it("should unsubscribe from the session service when destroyed", () => {
-    expect(SessionService.sessionStatusEmitter.observers.length).toEqual(1)
+    expect(SessionService.sessionStatusEmitter.observers.length).toEqual(1);
     component.ngOnDestroy();
-    expect(SessionService.sessionStatusEmitter.observers.length).toEqual(0)
-  })
+    expect(SessionService.sessionStatusEmitter.observers.length).toEqual(0);
+  });
 });

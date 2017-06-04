@@ -21,10 +21,10 @@ export class LoginService {
    * Executes call to session service to validate credentials. May seem
    * needlessly modular but we should keep this class in case we need to
    * trigger more complex events through login.
-   * 
+   *
    * @param email - User email.
    * @param password - User password.
-   * 
+   *
    * @return - Promise that resolves to boolean. True if given credentials are
    *     correct, otherwise false.
    */

@@ -1,7 +1,7 @@
 import { pbkdf2, randomBytes } from "crypto";
+import { ClientRequest, request } from "http";
 import * as https from "https";
 import * as pug from "pug";
-import { ClientRequest, request } from "http";
 import { CoSServerConstants } from "./../../cos-server-constants";
 import { AuthenticationEmailer } from "./authentication-emailer";
 import { HashHelper } from "./hash-helper";
@@ -10,7 +10,6 @@ import { ReCaptchaHelper } from "./recaptcha-helper";
 import { RegistrationHelper } from "./registration-helper";
 
 let httpsSpy: jasmine.Spy;
-let requestSpy: jasmine.Spy;
 let pugSpy: jasmine.Spy;
 let genSaltSpy: jasmine.Spy;
 let pbkdf2Spy: jasmine.Spy;
@@ -18,7 +17,7 @@ let pbkdf2Spy: jasmine.Spy;
 describe("AuthenticationEmailHelper", () => {
     beforeAll(() => {
         // Do this to have access to private methods
-        let authenticationEmailer: any = AuthenticationEmailer;
+        const authenticationEmailer: any = AuthenticationEmailer;
         httpsSpy = spyOn(https, "request");
         pugSpy = spyOn(authenticationEmailer, "compileEmail");
     });
@@ -29,9 +28,8 @@ describe("AuthenticationEmailHelper", () => {
         httpsSpy.and.returnValue(clientRequest);
         pugSpy.and.returnValue("the email");
         clientRequest.write = () => {
-            clientRequest.emit('end');
+            clientRequest.emit("end");
         };
-
 
         AuthenticationEmailer.sendAuthenticationEmail(
             "test@test.com",
@@ -42,10 +40,10 @@ describe("AuthenticationEmailHelper", () => {
                 done();
             })
             .catch((error) => {
-                console.log(error.message);
+                process.stderr.write(error.message);
                 expect(true).toBe(false);
                 done();
-            })
+            });
     });
 
     it("should throw error if attempt to send email is unsuccessful", (done) => {
@@ -55,9 +53,8 @@ describe("AuthenticationEmailHelper", () => {
         pugSpy.and.returnValue("the email");
 
         clientRequest.write = () => {
-            clientRequest.emit('error');
+            clientRequest.emit("error");
         };
-
 
         AuthenticationEmailer.sendAuthenticationEmail(
             "test@test.com",
@@ -80,9 +77,8 @@ describe("AuthenticationEmailHelper", () => {
         pugSpy.and.returnValue("the email");
 
         clientRequest.write = () => {
-            clientRequest.emit('end');
+            clientRequest.emit("end");
         };
-
 
         AuthenticationEmailer.sendAuthenticationEmail(
             "test@test.com",
@@ -101,7 +97,7 @@ describe("AuthenticationEmailHelper", () => {
 });
 
 /**
- * Unfortunately can't find a way to test failures. Should come back to this if
+ * Unfortunately can"t find a way to test failures. Should come back to this if
  * a solution is found.
  */
 describe("HashHelper", () => {
@@ -119,7 +115,6 @@ describe("HashHelper", () => {
                 expect(true).toBe(false);
             });
     });
-
 
     it("should generate a promise that produces a pbkdf2 hash", (done) => {
         SampleHelper.generatePbkdf2Hash("input", "deadbeef")
@@ -150,7 +145,6 @@ describe("PasswordHelper", () => {
             });
     });
 });
-
 
 describe("RegistrationHelper", () => {
     it("should throw an error if pbkdf2 hashing fails", (done) => {
@@ -207,14 +201,13 @@ describe("RegistrationHelper", () => {
             });
     });
 
-
     it("should generate a registration key if all hashing succeeds", (done) => {
         genSaltSpy.and.returnValue(Promise.resolve("salt"));
         pbkdf2Spy.and.returnValue(Promise.resolve("saltier"));
 
         RegistrationHelper.generateRegistrationKey("input", "deadbeef")
             .then((output: string) => {
-                expect(typeof(output)).toBe("string");
+                expect(typeof (output)).toBe("string");
                 done();
             })
             .catch((error) => {
@@ -223,9 +216,8 @@ describe("RegistrationHelper", () => {
             });
     });
 
-
 });
 
 /**
- * Should come back to a tester for reCaptcha in the future.
+ * Should write tests for for reCaptcha in the future.
  */

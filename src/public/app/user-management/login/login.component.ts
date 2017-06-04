@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from "@angular/core";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
 import { SessionAPI } from "../../../../../configurations/session/session-api";
@@ -21,8 +21,6 @@ export class LoginComponent implements OnDestroy {
   public isLoggedIn: boolean = false;
   public form: FormGroup;
   public isLocked: boolean = false;
-  private sessionAPI: SessionAPI = new SessionAPI();
-  private responses = this.sessionAPI.responses;
 
   public sessionStatus: SubjectSubscription<ISessionDetails>;
   public sessionUpdateCallback: Observer<ISessionDetails> = {
@@ -36,12 +34,16 @@ export class LoginComponent implements OnDestroy {
     },
   };
 
-  constructor(private formBuilder: FormBuilder,
+  private sessionAPI: SessionAPI = new SessionAPI();
+  private responses = this.sessionAPI.responses;
+
+  constructor(
+    private formBuilder: FormBuilder,
     private loginService: LoginService,
     private sessionService: SessionService) {
     this.form = formBuilder.group({
-      "email": [null, Validators.required],
-      "password": [null, Validators.required],
+      email: [null, Validators.required],
+      password: [null, Validators.required],
     });
 
     this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
@@ -51,9 +53,9 @@ export class LoginComponent implements OnDestroy {
 
   /**
    * Handler after login form is submitted.
-   * 
+   *
    * TO-DO: Add on handlers for server error and unsuccessful login.
-   * 
+   *
    * @param form - The form submitted from the loging component html.
    */
   public onSubmit(form: any): void {
@@ -65,16 +67,12 @@ export class LoginComponent implements OnDestroy {
           this.form.reset();
         }
 
-        console.log(response);
-
         this.isLocked = (response.error.name === this.responses.TemporarySessionLockoutError.error.name ||
           response.error.name === this.responses.SessionLockoutError.error.name);
-
-        console.log(response);
       })
       .catch((error) => {
-        console.log(error.message);
-      })
+        return;
+      });
   }
 
   /**

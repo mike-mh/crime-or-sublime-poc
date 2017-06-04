@@ -1,5 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
-import { FormControl, FormGroup, FormBuilder, ValidatorFn, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
 import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
@@ -43,15 +43,12 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
    * @param registerUserService - Service to handle interfacing with server and
    *     business logic.
    */
-  constructor(private formBuilder: FormBuilder,
+  constructor(
+    private formBuilder: FormBuilder,
     private registerUserService: RegisterUserService,
     private zone: NgZone,
     private sessionService: SessionService) {
     this.form = formBuilder.group({
-      username: [null, Validators.compose([
-        Validators.required,
-        Validators.maxLength(10),
-        Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
       email: [null, Validators.compose([Validators.required, Validators.email])],
       password: [null, Validators.compose([
         Validators.required,
@@ -59,6 +56,10 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
         Validators.minLength(8),
         Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
       passwordVerify: [null, [Validators.required]],
+      username: [null, Validators.compose([
+        Validators.required,
+        Validators.maxLength(10),
+        Validators.pattern(/^[a-zA-Z0-9_]+$/)])],
     });
 
     // These initialize recaptcha widget in window.
@@ -101,12 +102,12 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
   /**
    * Submit handler for registration form. Gathers data from form and if valid
    * submits registration request to the server as per JSON-RPC schema.
-   * 
+   *
    * @param form - The data input into the registration form by the user.
    */
   public onSubmit(form: any): void {
     this.formSubmitted = true;
-    this.passwordsMatch = (form.passwordVerify === form.password)
+    this.passwordsMatch = (form.passwordVerify === form.password);
 
     if (!this.form.valid || !this.passwordsMatch) {
       return;
@@ -115,9 +116,9 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
     this.registerUserService
       .registerUser(form.username, form.email, form.password, this.captchaResponse)
       .then((response) => {
-//        alert(JSON.stringify(response));
+        //        alert(JSON.stringify(response));
       }, (err) => {
-//        alert(JSON.stringify(err));
+        //        alert(JSON.stringify(err));
       });
   }
 
@@ -136,6 +137,7 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
     // work around for bug where 'createElement' leaves a dead script tag in
     // the head after this component is destroyed. Come back to this later and
     // try to find a better solution.
+    /* tslint:disable */
     for (let index = 0; index < document.getElementsByTagName('script').length; index++) {
       const script = document.getElementsByTagName('script')[index]
       if (script.async) {
@@ -143,6 +145,8 @@ export class RegisterUserComponent implements OnInit, OnDestroy {
         break;
       }
     }
+    /* tslint:enable */
+
     // Manually remove observer from event emitter. Unsubscribe doesn't work.
     // Will need to come back to this and fix it.
     const observerIndex = SessionService.sessionStatusEmitter.observers.indexOf(this.sessionUpdateCallback);

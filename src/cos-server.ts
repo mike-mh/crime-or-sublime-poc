@@ -62,7 +62,7 @@ export class CoSServer {
 
     /**
      * Listens to specified socket.
-     * 
+     *
      * @param socket - The socket to listen to.
      */
     private listenToSocket(socket: (string | number)): Server {

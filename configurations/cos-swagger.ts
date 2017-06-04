@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 /**
  * Have to define the schema as an interface for importing issues. Should
  * consider sharing this as a library later.

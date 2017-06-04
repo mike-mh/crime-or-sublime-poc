@@ -1,8 +1,8 @@
 import { async, inject, TestBed } from "@angular/core/testing";
-import { HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { HttpModule, Response, ResponseOptions, XHRBackend } from "@angular/http";
+import { MockBackend } from "@angular/http/testing";
 import { By } from "@angular/platform-browser";
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from "@angular/platform-browser-dynamic/testing";
 import { Observable } from "rxjs/Observable";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
@@ -10,7 +10,9 @@ import { ISessionDetails, SessionService } from "./session.service";
 
 let emitterSubscription: SubjectSubscription<ISessionDetails>;
 
-let sessionEndEventCallback: Observer<ISessionDetails> = {
+const sessionEndEventCallback: Observer<ISessionDetails> = {
+    complete: null,
+    error: null,
     next: (details) => {
         expect(details.email).toBeFalsy();
         expect(details.error).toBeFalsy();
@@ -23,12 +25,12 @@ let sessionEndEventCallback: Observer<ISessionDetails> = {
         SessionService.sessionStatusEmitter.observers.splice(index, 1);
         emitterSubscription.unsubscribe();
     },
-    error: null,
+
+};
+
+const sessionStartEventCallback: Observer<ISessionDetails> = {
     complete: null,
-
-}
-
-let sessionStartEventCallback: Observer<ISessionDetails> = {
+    error: null,
     next: (details) => {
         expect(details.email).toBeTruthy();
         expect(details.error).toBeFalsy();
@@ -41,11 +43,11 @@ let sessionStartEventCallback: Observer<ISessionDetails> = {
         SessionService.sessionStatusEmitter.observers.splice(index, 1);
         emitterSubscription.unsubscribe();
     },
-    error: null,
-    complete: null,
-}
+};
 
-let serverErrorCallback: Observer<ISessionDetails> = {
+const serverErrorCallback: Observer<ISessionDetails> = {
+    complete: null,
+    error: null,
     next: (details) => {
         expect(details.email).toBeFalsy();
         expect(details.error).toBeTruthy();
@@ -56,10 +58,7 @@ let serverErrorCallback: Observer<ISessionDetails> = {
         emitterSubscription.unsubscribe();
 
     },
-    error: null,
-    complete: null,
-}
-
+};
 
 describe("SessionService", () => {
     beforeEach(() => {
@@ -67,8 +66,8 @@ describe("SessionService", () => {
             imports: [HttpModule],
             providers: [
                 SessionService,
-                { provide: XHRBackend, useClass: MockBackend }]
-        })
+                { provide: XHRBackend, useClass: MockBackend }],
+        });
     });
 
     it("should broadcast session status after checking when a user is logged in", async(
@@ -79,12 +78,12 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
             const mockResponse = {
-                    result: "test@test.com"
-            }
+                result: "test@test.com",
+            };
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.stringify(mockResponse),
                 })));
             });
 
@@ -101,13 +100,13 @@ describe("SessionService", () => {
 
             const mockResponse = {
                 error: {
-                    message: "There is no session"
-                }
-            }
+                    message: "There is no session",
+                },
+            };
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.stringify(mockResponse),
                 })));
             });
 
@@ -123,12 +122,12 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
             const mockResponse = JSON.stringify({
-                result: "test@test.com"
+                result: "test@test.com",
             });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.parse(mockResponse)
+                    body: JSON.parse(mockResponse),
                 })));
             });
 
@@ -148,12 +147,12 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionEndEventCallback);
 
             const mockResponse = JSON.stringify({
-                result: "test@test.com"
+                result: "test@test.com",
             });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.parse(mockResponse)
+                    body: JSON.parse(mockResponse),
                 })));
             });
 
@@ -171,12 +170,12 @@ describe("SessionService", () => {
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
             const mockResponse = {
-                result: "test@test.com"
-            }
+                result: "test@test.com",
+            };
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.stringify(mockResponse),
                 })));
             });
 
@@ -185,7 +184,7 @@ describe("SessionService", () => {
                     // Should not make HTTP calls when there is an active session.
                     expect(true).toBe(false);
                 });
-                sessionService.beginSession("test@test.com", "password")
+                sessionService.beginSession("test@test.com", "password");
             });
         })));
 
@@ -198,13 +197,13 @@ describe("SessionService", () => {
 
             const mockResponse = JSON.stringify({
                 error: {
-                    message: "Test error."
-                }
+                    message: "Test error.",
+                },
             });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.parse(mockResponse)
+                    body: JSON.parse(mockResponse),
                 })));
             });
 
@@ -221,13 +220,13 @@ describe("SessionService", () => {
 
             const mockResponse = JSON.stringify({
                 error: {
-                    message: "Test error."
-                }
+                    message: "Test error.",
+                },
             });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.parse(mockResponse)
+                    body: JSON.parse(mockResponse),
                 })));
             });
 
@@ -248,13 +247,13 @@ describe("SessionService", () => {
 
             const mockResponse = {
                 error: {
-                    message: "Test error."
-                }
-            }
+                    message: "Test error.",
+                },
+            };
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.stringify(mockResponse),
                 })));
             });
 
