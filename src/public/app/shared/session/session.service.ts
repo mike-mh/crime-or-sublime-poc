@@ -89,11 +89,9 @@ export class SessionService {
      * @param email - User email
      * @param password - User password
      * 
-     * @returns - Promise that resolves to boolean for whether or not
-     *     credentials were correct. This promise needs to resolve so that
-     *     modules that use this method can execute conditionals.
+     * @returns - Promise that resolves to response JSON
      */
-    public beginSession(email: string, password: string): Promise<boolean> {
+    public beginSession(email: string, password: string): Promise<JSON> {
         if (SessionService.isSessionActive()) {
             return;
         }
@@ -128,7 +126,7 @@ export class SessionService {
                 SessionService.sessionIsActive = !!details.email;
                 SessionService.sessionStatusEmitter.emit(details);
 
-                return SessionService.sessionIsActive;
+                return res.json();
             });
 
     }

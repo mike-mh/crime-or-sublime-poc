@@ -28,7 +28,7 @@ export class LoginService {
    * @return - Promise that resolves to boolean. True if given credentials are
    *     correct, otherwise false.
    */
-  public loginUser(email: string, password: string): Promise<boolean> {
+  public loginUser(email: string, password: string): Promise<JSON> {
     return this.sessionService.beginSession(email, password);
   }
 

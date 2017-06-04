@@ -15,13 +15,16 @@ import { LoginService } from "./login.service";
 describe("LoginComponent", () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
+    let loginServiceSpy: jasmine.Spy;
+    let isLocked: boolean = false;
 
     let htmlElements: {} = {};
     let buttonIDs: string[] = [
         "#cos-login-form",
         "#cos-login-name-field",
         "#cos-login-password-field",
-        "#cos-login-submit-button"
+        "#cos-login-submit-button",
+        "#cos-login-lockout-message"
     ];
 
     let sessionServiceStub: {
@@ -66,6 +69,7 @@ describe("LoginComponent", () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(LoginComponent);
         component = fixture.componentInstance;
+        component.isLocked = isLocked;
         fixture.detectChanges();
 
         for (let id of buttonIDs) {
@@ -130,9 +134,18 @@ describe("LoginComponent", () => {
         fixture.detectChanges();
         expect(htmlElements["#cos-login-submit-button"].disabled).toBe(false);
 
+        // Get ready for next test.
+        isLocked = true;
+    });
+
+    it("should disable the form when the user fails to login too many times.", async(() => {
+        fixture.detectChanges();
+        expect(htmlElements["#cos-login-lockout-message"]).toBeTruthy();
+        expect(htmlElements["#cos-login-submit-button"].disabled).toBe(true);
+
         // Now configure as if user was signed on.
         userIsSignedOn = true;
-    });
+    }));
 
     it("should hide the form when there is an active user session", () => {
         fixture.detectChanges();

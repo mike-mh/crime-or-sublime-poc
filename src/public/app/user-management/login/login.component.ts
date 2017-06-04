@@ -2,6 +2,7 @@ import { Component, OnDestroy } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
+import { SessionAPI } from "../../../../../configurations/session/session-api";
 import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
 import { LoginService } from "./login.service";
 
@@ -19,6 +20,9 @@ export class LoginComponent implements OnDestroy {
   public userPassword: string;
   public isLoggedIn: boolean = false;
   public form: FormGroup;
+  public isLocked: boolean = false;
+  private sessionAPI: SessionAPI = new SessionAPI();
+  private responses = this.sessionAPI.responses;
 
   public sessionStatus: SubjectSubscription<ISessionDetails>;
   public sessionUpdateCallback: Observer<ISessionDetails> = {
@@ -55,12 +59,18 @@ export class LoginComponent implements OnDestroy {
   public onSubmit(form: any): void {
     this.loginService
       .loginUser(form.email, form.password)
-      .then((result) => {
+      .then((response: any) => {
         // Reset the form if successful
-        if (result) {
+        if (response.result) {
           this.form.reset();
         }
-        console.log(result);
+
+        console.log(response);
+
+        this.isLocked = (response.error.name === this.responses.TemporarySessionLockoutError.error.name ||
+          response.error.name === this.responses.SessionLockoutError.error.name);
+
+        console.log(response);
       })
       .catch((error) => {
         console.log(error.message);

@@ -10,14 +10,14 @@ interface ISwaggerAPI {
     schemes?: string[],
     consumes?: string[],
     produces?: string[],
-    paths: {[path: string]: any},
+    paths: { [path: string]: any },
     definitions?: any,
     parameters?: any,
     responses?: any,
     securityDefinitions?: any,
     security?: any[],
     tags?: any[],
-    externalDocs?:any,
+    externalDocs?: any,
 }
 
 /**
@@ -94,8 +94,12 @@ export const cosAPI: any = {
                         "$ref": "#/responses/InternalServerError"
                     },
                     "SessionLockoutError": {
-                      "$ref": "#/responses/SessionLockout"
-                    }                },
+                        "$ref": "#/responses/SessionLockout"
+                    },
+                    "TemporarySessionLockoutError": {
+                        "$ref": "#/responses/TemporarySessionLockout"
+                    }
+                },
                 "parameters": [
                     {
                         "description": "A user's username or email.",
@@ -366,6 +370,12 @@ export const cosAPI: any = {
         },
         "SessionLockout": {
             "description": "A user has been locked out for attempting to login to many times. This should only be triggered after a client fails to sign on over 1000 times",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "TemporarySessionLockout": {
+            "description": "A user failed to login five times consecutively but hasn't trigged the larger lockout.",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }

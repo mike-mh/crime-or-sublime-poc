@@ -78,7 +78,7 @@ describe("UserRegisterRouter", () => {
     it("should reject new submissions without parameters", (done) => {
         req.method = "post"
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.InvalidParametersError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset response function
             res.json = () => { };
             done();
@@ -96,7 +96,7 @@ describe("UserRegisterRouter", () => {
         req.body.captcha = "ahctpac";
 
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.InvalidParametersError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset response function
             res.json = () => { };
             done();
@@ -125,7 +125,7 @@ describe("UserRegisterRouter", () => {
         req.session.save = () => { };
 
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.InvalidRegistrationError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.InvalidRegistrationError.error.name);
             // Reset response function
             res.json = () => { };
             done();

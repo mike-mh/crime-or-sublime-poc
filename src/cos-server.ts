@@ -1,5 +1,6 @@
 import * as express from "express";
 import { Express, Response, Router } from "express";
+import { Server } from "http";
 import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";
 import { CoSModelInitializer } from "./models/cos-model-initializer";
@@ -64,8 +65,8 @@ export class CoSServer {
      * 
      * @param socket - The socket to listen to.
      */
-    private listenToSocket(socket: (string | number)): void {
-        this.app.listen(8000, () => {
+    private listenToSocket(socket: (string | number)): Server {
+        return this.app.listen(8000, () => {
             process.stdout.write("Server initialized\n");
         });
     }

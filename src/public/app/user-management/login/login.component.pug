@@ -8,13 +8,17 @@
       label(for="email")
         | Email
       input#cos-login-name-field.form-control([formControl]="form.controls['email']",
-                              type="text",
-                              name="email")
+                                              type="text",
+                                              name="email",
+                                              [disabled]="isLocked")
     .form-group
       label(for="password")
         | Password
       input#cos-login-password-field.form-control([formControl]="form.controls['password']",
-                                  type="password",
-                                  name="password")
-    button.btn.btn-default#cos-login-submit-button([disabled]="!form.valid")
+                                                  type="password",
+                                                  name="password",
+                                                  [disabled]="isLocked")
+      .alert.alert-danger#cos-login-lockout-message(*ngIf="isLocked")
+          | You tried to log in too many times. Wait for a few minutes then try again.
+    button.btn.btn-default#cos-login-submit-button([disabled]="!form.valid || isLocked")
       | Submit

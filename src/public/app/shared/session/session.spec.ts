@@ -122,20 +122,20 @@ describe("SessionService", () => {
 
             SessionService.sessionStatusEmitter.subscribe(sessionStartEventCallback);
 
-            const mockResponse = {
+            const mockResponse = JSON.stringify({
                 result: "test@test.com"
-            }
+            });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.parse(mockResponse)
                 })));
             });
 
-            sessionService.beginSession("test@test.com", "password").then((result) => {
+            sessionService.beginSession("test@test.com", "password").then((result: any) => {
                 // Promise should resolve to true for components that run on
                 // login conditionals.
-                expect(result).toBe(true);
+                expect(result.result).toBe(JSON.parse(mockResponse).result);
             });
 
         })));
@@ -147,13 +147,13 @@ describe("SessionService", () => {
 
             SessionService.sessionStatusEmitter.subscribe(sessionEndEventCallback);
 
-            const mockResponse = {
+            const mockResponse = JSON.stringify({
                 result: "test@test.com"
-            }
+            });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.parse(mockResponse)
                 })));
             });
 
@@ -196,15 +196,15 @@ describe("SessionService", () => {
 
             SessionService.sessionStatusEmitter.subscribe(serverErrorCallback);
 
-            const mockResponse = {
+            const mockResponse = JSON.stringify({
                 error: {
                     message: "Test error."
                 }
-            }
+            });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.parse(mockResponse)
                 })));
             });
 
@@ -219,22 +219,22 @@ describe("SessionService", () => {
 
             SessionService.sessionStatusEmitter.subscribe(serverErrorCallback);
 
-            const mockResponse = {
+            const mockResponse = JSON.stringify({
                 error: {
                     message: "Test error."
                 }
-            }
+            });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.stringify(mockResponse)
+                    body: JSON.parse(mockResponse)
                 })));
             });
 
-            sessionService.beginSession("test@test.com", "password").then((result) => {
+            sessionService.beginSession("test@test.com", "password").then((result: any) => {
                 // Need to be sure that components relying on this resolution
                 // get the correct response.
-                expect(result).toBe(false);
+                expect(result.error.message).toBe(JSON.parse(mockResponse).error.message);
             });
 
         })));

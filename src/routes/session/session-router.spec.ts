@@ -86,7 +86,7 @@ describe("SessionRouter", () => {
     it("handler for session-create-user should respond with an error when parameters are missing", (done) => {
         req.method = "post"
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.InvalidParametersError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset response function
             res.json = () => { };
             done();
@@ -99,7 +99,7 @@ describe("SessionRouter", () => {
         req.body.identifier = "test@test.com";
 
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.InvalidParametersError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset parameters
             res.json = () => { };
             req.body.identifier = null;
@@ -116,7 +116,7 @@ describe("SessionRouter", () => {
         req.body.password = "raboofing";
 
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.InvalidCredentialsError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.InvalidCredentialsError.error.name);
             // Reset parameters
             res.json = () => { };
             req.body.identifier = null;
@@ -133,7 +133,7 @@ describe("SessionRouter", () => {
         req.method = "get";
 
         res.json = (res: any) => {
-            expect(res.name).toEqual(sessionAPI.responses.NoActiveSessionError.name);
+            expect(res.error.name).toEqual(sessionAPI.responses.NoActiveSessionError.error.name);
             // Reset parameters
             res.json = () => { };
 

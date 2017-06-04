@@ -89,9 +89,9 @@ export abstract class CoSAbstractRouteHandler {
      * @param res - Server response
      */
     protected handleMiddlewareError(req: Request, res: Response) {
-        res.type('text/plain');
+        res.type('application/json');
         res.status(500);
-        res.send('500 Server Error');
+        res.json({error: {message: '500 Server Error'}});
     }
 
 }
