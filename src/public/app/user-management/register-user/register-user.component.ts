@@ -1,5 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
-import { FormGroup, FormBuilder, ValidatorFn, Validators } from "@angular/forms";
+import { FormControl, FormGroup, FormBuilder, ValidatorFn, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
 import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
