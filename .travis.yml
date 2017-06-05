@@ -29,6 +29,8 @@ install:
 
 # Run the tests
 script:
+    - tslint -c ./tslint.json "configurations/**/*.ts"
+    - tslint -c ./tslint.json "src/**/*.ts"
     - ./node_modules/.bin/karma start --single-run
     - cp ./src/views/email-templates/registration-email.pug ./src/libs/authentication
     - ./node_modules/.bin/jasmine-ts

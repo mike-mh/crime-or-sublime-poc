@@ -1,55 +1,54 @@
 import { Router } from "express";
 import { request } from "https";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";
+import { CoSServer } from "../../../cos-server";
 import { CoSServerConstants } from "../../../cos-server-constants";
 import { PasswordHelper } from "../../../libs/authentication/password-helper";
 import { ReCaptchaHelper } from "../../../libs/authentication/recaptcha-helper";
 import { TempUserModel } from "../../../models/user/temp-user-model";
 import { UserModel } from "../../../models/user/user-model";
-import { CoSServer } from "../../../cos-server";
 import { UserRegisterRouter } from "./user-register-router";
 
-
 describe("UserRegisterRouter", () => {
-    let reCaptchaSpy: jasmine.Spy;
+    // Keep this. It may be needed later.
+    // let reCaptchaSpy: jasmine.Spy;
 
-    let registerUserRouter: any = new UserRegisterRouter(Router());
-    let sessionAPI: UserRegsiterAPI = new UserRegsiterAPI();
+    const registerUserRouter: any = new UserRegisterRouter(Router());
+    const sessionAPI: UserRegsiterAPI = new UserRegsiterAPI();
 
-    let userModel = new UserModel();
-    let tempUserModel = new TempUserModel();
+    const userModel = new UserModel();
+    const tempUserModel = new TempUserModel();
 
     // Use spoofed res and req objects to make calls to the backend instead of
     // launching HTTP calls at the server itself. It's a cool idea for later
     // and it should be done when the time is right.
-    let req: any = {
-        params: {},
+    const req: any = {
         body: {},
         method: "get",
+        params: {},
         session: {
-            destroy: () => { },
+            destroy: () => { return; },
         },
     };
 
-    let res: any = {
-        json: () => { },
+    const res: any = {
+        json: () => { return; },
     };
 
     afterAll((done) => {
         tempUserModel.getModel().remove({
             email: "beh@beh.com",
         })
-            .then(() => { })
-            .catch((error) => { console.log(error) });
+            .then(() => { return; })
+            .catch((error) => { return; });
 
         userModel.getModel().remove({
             email: "beh@beh.com",
         })
             .then(() => { done(); })
-            .catch((error) => { console.log(error) });
+            .catch((error) => { return; });
 
     });
-
 
     it("should have a handler installed for the register-user-confirm path", () => {
         let found = false;
@@ -76,11 +75,11 @@ describe("UserRegisterRouter", () => {
     });
 
     it("should reject new submissions without parameters", (done) => {
-        req.method = "post"
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
+        req.method = "post";
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset response function
-            res.json = () => { };
+            res.json = () => { return; };
             done();
         };
 
@@ -95,10 +94,10 @@ describe("UserRegisterRouter", () => {
         req.body.password = "canadian";
         req.body.captcha = "ahctpac";
 
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset response function
-            res.json = () => { };
+            res.json = () => { return; };
             done();
         };
 
@@ -109,7 +108,7 @@ describe("UserRegisterRouter", () => {
        This is a good test to write, but unfortunately there's no way to include
        error codes when throwing an error with jasmine so there's no way for the
        router to determine that the error was actually a reCaptcha error.
-    
+
         it("should reject new submissions with invalid reCaptcha responses", () => {
             reCaptchaSpy = spyOn(ReCaptchaHelper, "verifyRecaptchaSuccess");
             reCaptchaSpy.and.throwError(CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.message);
@@ -122,12 +121,12 @@ describe("UserRegisterRouter", () => {
         req.params.id = "testing";
         req.params.key = "feebdaed";
 
-        req.session.save = () => { };
+        req.session.save = () => { return; };
 
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.InvalidRegistrationError.error.name);
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.InvalidRegistrationError.error.name);
             // Reset response function
-            res.json = () => { };
+            res.json = () => { return; };
             done();
         };
 

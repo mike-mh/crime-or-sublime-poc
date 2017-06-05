@@ -1,29 +1,29 @@
 import { Router } from "express";
 import { request } from "https";
-import { SessionAPI } from "./../../../configurations/session/session-api";
-import { UserModel } from "../../models/user/user-model";
+import { SessionAPI } from "../../../configurations/session/session-api";
 import { CoSServer } from "../../cos-server";
+import { UserModel } from "../../models/user/user-model";
 import { SessionRouter } from "./session-router";
 
 describe("SessionRouter", () => {
-    let sessionRouter: any = new SessionRouter(Router());
-    let sessionAPI: SessionAPI = new SessionAPI();
+    const sessionRouter: any = new SessionRouter(Router());
+    const sessionAPI: SessionAPI = new SessionAPI();
 
-    let userModel = new UserModel();
+    const userModel = new UserModel();
 
     // Use spoofed res and req objects to make calls to the backend instead of
     // launching HTTP calls at the server itself. It's a cool idea for later
     // and it should be done when the time is right.
-    let req: any = {
+    const req: any = {
         body: {},
         method: "get",
         session: {
-            destroy: () => { },
+            destroy: () => { return; },
         },
     };
 
-    let res: any = {
-        json: () => { },
+    const res: any = {
+        json: () => { return; },
     };
 
     // Spoof a user in the database.
@@ -35,7 +35,7 @@ describe("SessionRouter", () => {
             salt: "deadbeef",
             username: "testing",
         }).save()
-            .then(() => { done(); })
+            .then(() => { done(); });
     });
 
     afterAll((done) => {
@@ -43,7 +43,7 @@ describe("SessionRouter", () => {
             email: "test@test.com",
         })
             .then(() => { done(); })
-            .catch((error) => { console.log(error) })
+            .catch((error) => { return; });
 
     });
 
@@ -84,11 +84,11 @@ describe("SessionRouter", () => {
     });
 
     it("handler for session-create-user should respond with an error when parameters are missing", (done) => {
-        req.method = "post"
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
+        req.method = "post";
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset response function
-            res.json = () => { };
+            res.json = () => { return; };
             done();
         };
 
@@ -98,10 +98,10 @@ describe("SessionRouter", () => {
     it("handler for session-create-user should respond with an error when invalid parameters are given", (done) => {
         req.body.identifier = "test@test.com";
 
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.InvalidParametersError.error.name);
             // Reset parameters
-            res.json = () => { };
+            res.json = () => { return; };
             req.body.identifier = null;
 
             done();
@@ -115,10 +115,10 @@ describe("SessionRouter", () => {
         req.body.identifier = "test@test.com";
         req.body.password = "raboofing";
 
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.InvalidCredentialsError.error.name);
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.InvalidCredentialsError.error.name);
             // Reset parameters
-            res.json = () => { };
+            res.json = () => { return; };
             req.body.identifier = null;
             req.body.password = null;
 
@@ -132,10 +132,10 @@ describe("SessionRouter", () => {
     it("handler for session-verify-user should respond with an error when there is no active session", (done) => {
         req.method = "get";
 
-        res.json = (res: any) => {
-            expect(res.error.name).toEqual(sessionAPI.responses.NoActiveSessionError.error.name);
+        res.json = (response: any) => {
+            expect(response.error.name).toEqual(sessionAPI.responses.NoActiveSessionError.error.name);
             // Reset parameters
-            res.json = () => { };
+            res.json = () => { return; };
 
             done();
         };
@@ -146,13 +146,13 @@ describe("SessionRouter", () => {
 
     it("handler for session-create-user should respond with success message when credentials are valid", (done) => {
         req.method = "get";
-        req.session.email = "test@test.com"
-        req.session.password = "password"
+        req.session.email = "test@test.com";
+        req.session.password = "password";
 
-        res.json = (res: any) => {
-            expect(res.result).toEqual(req.session.email);
+        res.json = (response: any) => {
+            expect(response.result).toEqual(req.session.email);
             // Reset parameters
-            res.json = () => { };
+            res.json = () => { return; };
 
             done();
         };
@@ -160,14 +160,14 @@ describe("SessionRouter", () => {
         sessionRouter.sessionVerifyUser(req, res);
     });
 
-    it("handler for session-verify-user should respond with success message when there is an active session", (done) => {
+    it("handler for session-verify-user should respond with success when there is an active session", (done) => {
         req.method = "get";
-        req.session.email = "test@test.com"
+        req.session.email = "test@test.com";
 
-        res.json = (res: any) => {
-            expect(res.result).toEqual(req.session.email);
+        res.json = (response: any) => {
+            expect(response.result).toEqual(req.session.email);
             // Reset parameters
-            res.json = () => { };
+            res.json = () => { return; };
 
             done();
         };

@@ -13,47 +13,47 @@ export class SessionAPI extends CoSAPI {
     public readonly responses = {
         AlreadyActiveSessionError: {
             error: {
-                name: "AlreadyActiveSessionError",
                 message: "Session is already active sesison",
-            }
-        },
-        InvalidCredentialsError: {
-            error: {
-                name: "InvalidCredentialsError",
-                message: "Credentials provided are incorrect",
-            }
-        },
-        InvalidParametersError: {
-            error: {
-                name: "InvalidParametersError",
-                message: "Parameters provided are incorrect",
-            }
+                name: "AlreadyActiveSessionError",
+            },
         },
         InternalServerError: {
             error: {
-                name: "InternalServerError",
                 message: "Internal server error occured",
-            }
+                name: "InternalServerError",
+            },
+        },
+        InvalidCredentialsError: {
+            error: {
+                message: "Credentials provided are incorrect",
+                name: "InvalidCredentialsError",
+            },
+        },
+        InvalidParametersError: {
+            error: {
+                message: "Parameters provided are incorrect",
+                name: "InvalidParametersError",
+            },
         },
         NoActiveSessionError: {
             error: {
-                name: "NoActiveSessionError",
                 message: "There is no active session",
-            }
+                name: "NoActiveSessionError",
+            },
         },
         SessionLockoutError: {
             error: {
-                name: "SessionLockoutError",
                 message: "You have tried to login over a thousand times... Nice try asshole.",
-            }
+                name: "SessionLockoutError",
+            },
         },
         TemporarySessionLockoutError: {
             error: {
-                name: "TemporarySessionLockoutError",
                 message: "You've been temporarly locked out of your account. Wait a few minutes and try again.",
-            }
+                name: "TemporarySessionLockoutError",
+            },
         },
-    }
+    };
 
     constructor() {
         super();

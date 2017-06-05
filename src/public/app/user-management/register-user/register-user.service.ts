@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Headers, Http, RequestOptions, Response } from "@angular/http";
-import { Observable } from "rxjs/Observable";
 import "rxjs/add/operator/toPromise";
+import { Observable } from "rxjs/Observable";
 import { UserRegsiterAPI } from "../../../../../configurations/user/user-register/user-register-api";
-
 
 @Injectable()
 export class RegisterUserService {
@@ -28,8 +27,7 @@ export class RegisterUserService {
     try {
         this.userRegsiterAPI.validateParams(this.userRegsiterAPI.USER_REGISTER_SUBMIT_PATH,
                                             registrationPayload, "post");
-    } catch(error) {
-      console.log(error.message);
+    } catch (error) {
       return Promise.reject(error);
     }
 

@@ -6,7 +6,6 @@
  */
 import * as API from "./cos-swagger";
 
-
 const cosAPI = (API.cosAPI) ?
     API.cosAPI :
     API;
@@ -68,7 +67,7 @@ export abstract class CoSAPI {
 
         if (typeof(inputParameters) !== "object" || schemaConstraints.constructor !== Array) {
             error = new Error("Critical Error - One of the inputs is of incorrect type.");
-            error.name = this.CRITICAL_ERROR;;
+            error.name = this.CRITICAL_ERROR;
             throw error;
         }
 
@@ -229,7 +228,7 @@ export abstract class CoSAPI {
     /**
      * Use this to determine if a HTTP method is assoicated with a path in the
      * pathsMethodsAndParamsMap.
-     * 
+     *
      * @param method - The HTTP method to test
      * @param path - The path to test against
      */
@@ -244,9 +243,9 @@ export abstract class CoSAPI {
          if (!this.pathsMethodsAndParamsMap[path][method]) {
             const error = new Error("Path does not accept that method");
             error.name = this.METHOD_ERROR;
-            throw error;             
+            throw error;
          }
-     };
+     }
 
     /**
      * Use this to verify all params for paths and the methods they are called
@@ -303,6 +302,7 @@ export abstract class CoSAPI {
     }
 }
 
+/* tslint:disable */
 /**
  * CODE BELOW IS IMPORTED FROM 'email-validation' MODULE. TEMPORARY WORKAROUND
  * FOR ROLLUP NOT RECOGNIZING VALIDATE FUNCTION FROM MODULE.

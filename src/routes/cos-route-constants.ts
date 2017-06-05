@@ -11,7 +11,7 @@ export class CoSRouteConstants {
 }
 
 // Use these to configure data types for call backs to be installed to the
-// express router. 
+// express router.
 type IRouteOneCallback = [string, string, RequestHandler];
 type IRouteTwoCallbacks = [string, string, RequestHandler, RequestHandler];
 type IRouteThreeCallbacks = [string, string, RequestHandler, RequestHandler, RequestHandler];

@@ -19,7 +19,7 @@ export abstract class CoSAbstractRouteHandler {
     // functions. This is used as a work around for some of the restrictions
     // in Typescript.
     //
-    // See the 'installRequestHandlers' method for a deeper understanding of
+    // See the "installRequestHandlers" method for a deeper understanding of
     // how this is used.
     protected routerRequestMatcherMap: { [method: string]: IRouterMatcher<Router> } = {};
 
@@ -64,7 +64,7 @@ export abstract class CoSAbstractRouteHandler {
             // Ensure the path allows a handler for the given method is allowed
             // to be installed.
             try {
-                api.isMethodAssigned(method, path)
+                api.isMethodAssigned(method, path);
             } catch (error) {
                 throw error;
             }
@@ -81,17 +81,17 @@ export abstract class CoSAbstractRouteHandler {
     /**
      * Use this method to handle internal errors stemming from added request
      * handlers.
-     * 
+     *
      * TO-DO: After we configure logging with the host, come back to this to
      *     ensure that errors are logged correctly.
-     * 
+     *
      * @param req - Client request
      * @param res - Server response
      */
     protected handleMiddlewareError(req: Request, res: Response) {
-        res.type('application/json');
+        res.type("application/json");
         res.status(500);
-        res.json({error: {message: '500 Server Error'}});
+        res.json({error: {message: "500 Server Error"}});
     }
 
 }

@@ -1,7 +1,7 @@
 import { validate } from "email-validator";
 import { Request, Response, Router } from "express";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";
-import { CoSServerConstants } from "./../../../cos-server-constants";
+import { CoSServerConstants } from "../../../cos-server-constants";
 import { ReCaptchaHelper } from "../../../libs/authentication/recaptcha-helper";
 import { TempUserModel } from "../../../models/user/temp-user-model";
 import { CoSAbstractRouteHandler } from "../../cos-abstract-route-handler";
@@ -21,7 +21,7 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
 
         this.installRequestHandlers([
             ["get", UserRegisterRouter.userRegisterApi.USER_REGISTER_CONFIRM_PATH, this.userRegisterConfirm],
-            ["post", UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH, this.userRegisterSubmit]
+            ["post", UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH, this.userRegisterSubmit],
         ], UserRegisterRouter.userRegisterApi);
 
     }
@@ -46,7 +46,7 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH,
                 params, req.method);
         } catch (error) {
-            res.json(UserRegisterRouter.responses.InvalidParametersError)
+            res.json(UserRegisterRouter.responses.InvalidParametersError);
             return;
         }
 
@@ -59,7 +59,6 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 res.json({ result: { email, username } });
             })
             .catch((error) => {
-                console.log(error);
                 if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.code) {
                     res.json(UserRegisterRouter.responses.InvalidRegistrationError);
                 }
@@ -81,9 +80,8 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
         new TempUserModel().registerUser(username, registrationKey)
             .then(() => {
                 req.session.username = username;
-                req.session.save((error) => { 
+                req.session.save((error) => {
                     if (error) {
-                        console.log(error.message);
                         res.json(UserRegisterRouter.responses.InternalServerError);
                         return;
                     }

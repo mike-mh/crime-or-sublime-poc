@@ -34,15 +34,14 @@ export class SessionRouter extends CoSAbstractRouteHandler {
      *
      * @param req - Incoming request
      * @param res - Server response
-     * 
-     * NOTE: Need to configure req as 'any' for compatibility with express-brute.
+     *
+     * NOTE: Need to configure req as "any" for compatibility with express-brute.
      */
     private sessionCreateUser(req: any, res: Response): void {
         try {
             SessionRouter.sessionAPI.validateParams(
                 SessionRouter.sessionAPI.SESSION_CREATE_USER_PATH, req.body, req.method);
         } catch (error) {
-            console.log(error.message);
             res.json(SessionRouter.responses.InvalidParametersError);
             return;
         }
@@ -57,7 +56,7 @@ export class SessionRouter extends CoSAbstractRouteHandler {
                     res.json(SessionRouter.responses.AlreadyActiveSessionError);
                     return;
                 }
-                req.brute.reset(function () {
+                req.brute.reset(() => {
                     req.session.email = email;
                     res.json({ result: email });
                 });
@@ -122,34 +121,33 @@ export class SessionRouter extends CoSAbstractRouteHandler {
         });
     }
 
-
     /**
      * This handler sets timed delays when the user has too many failed login
      * attempts occur. Delays can last between 5 and 15 minutes
-     * 
+     *
      * @return - Express brute configuration to create temporary lockout.
      */
     private temporarySessionLockout(): RequestHandler {
-        const ExpressBrute = require('express-brute');
-        const MongooseStore = require('express-brute-mongoose');
-        const bruteForceSchema = require('express-brute-mongoose/dist/schema');
+        const ExpressBrute = require("express-brute");
+        const MongooseStore = require("express-brute-mongoose");
+        const bruteForceSchema = require("express-brute-mongoose/dist/schema");
 
         const bruteForceModel = model("BruteForce", bruteForceSchema);
         const store = new MongooseStore(bruteForceModel);
 
         const bruteforce = new ExpressBrute(store, {
-            freeRetries: 5,
-            minWait: 5 * 60 * 1000,
-            maxWait: 15 * 60 * 1000,
             failCallback: this.temporarySessionLockoutHandler,
+            freeRetries: 5,
             handleStoreError: this.handleMiddlewareError,
+            maxWait: 15 * 60 * 1000,
+            minWait: 5 * 60 * 1000,
         });
 
         return bruteforce.getMiddleware({
-            key: function (req: Request, res: Response, next: NextFunction) {
-                // prevent too many attempts for the same username
+            key(req: Request, res: Response, next: NextFunction) {
+                // prevent too many attempts for the same email
                 next(req.body.identifier);
-            }
+            },
         });
     }
 
@@ -157,26 +155,26 @@ export class SessionRouter extends CoSAbstractRouteHandler {
      * This handler forces a day long lock out of users who make invalid login
      * requests 1000 times or more in succession. Lockout lasts for 25 hours
      * before reset.
-     * 
+     *
      * @return - Express brute configuration to create the lockout.
      */
     private sessionLockout(): RequestHandler {
-        const ExpressBrute = require('express-brute');
-        const MongooseStore = require('express-brute-mongoose');
-        const bruteForceSchema = require('express-brute-mongoose/dist/schema');
+        const ExpressBrute = require("express-brute");
+        const MongooseStore = require("express-brute-mongoose");
+        const bruteForceSchema = require("express-brute-mongoose/dist/schema");
 
         const bruteForceModel = model("BruteForce", bruteForceSchema);
         const store = new MongooseStore(bruteForceModel);
 
         const bruteForce = new ExpressBrute(store, {
-            freeRetries: 1000,
             attachResetToRequest: false,
-            refreshTimeoutOnRequest: false,
-            minWait: 25 * 60 * 60 * 1000,
-            maxWait: 25 * 60 * 60 * 1000,
-            lifetime: 24 * 60 * 60,
             failCallback: this.sessionLockoutHandler,
+            freeRetries: 1000,
             handleStoreError: this.handleMiddlewareError,
+            lifetime: 24 * 60 * 60,
+            maxWait: 25 * 60 * 60 * 1000,
+            minWait: 25 * 60 * 60 * 1000,
+            refreshTimeoutOnRequest: false,
         });
 
         return bruteForce.prevent;
@@ -184,7 +182,7 @@ export class SessionRouter extends CoSAbstractRouteHandler {
 
     /**
      * This function handles temporarySessionLockout callbacks.
-     * 
+     *
      * @param req - Client request
      * @param res - Server response
      * @param next - Express next function
@@ -193,10 +191,9 @@ export class SessionRouter extends CoSAbstractRouteHandler {
         res.json(SessionRouter.responses.TemporarySessionLockoutError);
     }
 
-
     /**
      * This function handles sessionLockout callbacks.
-     * 
+     *
      * @param req - Client request
      * @param res - Server response
      * @param next - Express next function

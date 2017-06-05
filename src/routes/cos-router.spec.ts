@@ -1,8 +1,8 @@
 import { RequestHandler, Router } from "express";
 import { CoSAPI } from "../../configurations/cos-api";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
-import { CoSRouter } from "./cos-router";
 import { CoSRouteConstants } from "./cos-route-constants";
+import { CoSRouter } from "./cos-router";
 
 /**
  * Should come back to this later to find a more robust way of ensuring
@@ -14,7 +14,7 @@ import { CoSRouteConstants } from "./cos-route-constants";
  */
 describe("CoSRouter", () => {
     let cosRouter: CoSRouter;
-    let staticRoutes = CoSRouteConstants.COS_CLIENT_PATHS;
+    const staticRoutes = CoSRouteConstants.COS_CLIENT_PATHS;
 
     beforeEach(() => {
         cosRouter = new CoSRouter();
@@ -31,7 +31,7 @@ describe("CoSRouter", () => {
                     expect(found).toBe(false);
                     found = true;
                 }
-            })
+            });
             expect(found).toBe(true);
         });
     });
@@ -44,21 +44,23 @@ describe("CoSAbstractRouteHandler", () => {
         }
     }
 
+    /* tslint:disable:max-classes-per-file */
     class SampleAPI extends CoSAPI {
 
     }
+    /* tslint:enable:max-classes-per-file */
 
     let sampleRouteHandler: any;
 
     const sampleRouter: Router = Router();
     const sampleAPI: any = new SampleAPI();
     // Don't need this to do anything. Just need a pointer to test against.
-    const sampleHandler: RequestHandler = () => { };
+    const sampleHandler: RequestHandler = () => { return; };
 
     // Configure this with any paths from the API you wish.
     const routesToTest: string[] = [
         "/session-create-user",
-        "/user-register-confirm/:id/:key"
+        "/user-register-confirm/:id/:key",
     ];
 
     beforeEach(() => {
@@ -92,7 +94,7 @@ describe("CoSAbstractRouteHandler", () => {
     it("should reject to install handlers that do not exist on the schema", () => {
         try {
             sampleRouteHandler.installRequestHandlers([
-                ["get", "/raboof", sampleHandler]
+                ["get", "/raboof", sampleHandler],
             ], sampleAPI);
         } catch (error) {
             expect(error.name).toEqual(sampleAPI.PATH_ERROR);
@@ -102,7 +104,7 @@ describe("CoSAbstractRouteHandler", () => {
     it("should reject to install handlers that are assigned to an HTTP method not in their schema", () => {
         try {
             sampleRouteHandler.installRequestHandlers([
-                ["get", "/session-create-user", sampleHandler]
+                ["get", "/session-create-user", sampleHandler],
             ], sampleAPI);
         } catch (error) {
             expect(error.name).toEqual(sampleAPI.METHOD_ERROR);
@@ -113,10 +115,9 @@ describe("CoSAbstractRouteHandler", () => {
         try {
             sampleRouteHandler.installRequestHandlers([
                 ["post", "/session-create-user", sampleHandler],
-                ["get", "/user-register-confirm/:id/:key", sampleHandler]
+                ["get", "/user-register-confirm/:id/:key", sampleHandler],
             ], sampleAPI);
         } catch (error) {
-            console.log(error.message)
             expect(true).toEqual(false);
         }
 
@@ -128,7 +129,7 @@ describe("CoSAbstractRouteHandler", () => {
                     expect(found).toBe(false);
                     found = true;
                 }
-            })
+            });
             expect(found).toBe(true);
         });
     });

@@ -1,15 +1,13 @@
 import { CommonModule } from "@angular/common";
-import { EventEmitter, NgZone } from "@angular/core";
-import { async, inject, ComponentFixture, TestBed } from "@angular/core/testing";
+import { DebugElement, EventEmitter, NgZone } from "@angular/core";
+import { async, ComponentFixture, inject, TestBed } from "@angular/core/testing";
 import { ReactiveFormsModule } from "@angular/forms";
-import { HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { HttpModule, Response, ResponseOptions, XHRBackend } from "@angular/http";
+import { MockBackend } from "@angular/http/testing";
 import { By } from "@angular/platform-browser";
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { DebugElement } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { RouterTestingModule } from '@angular/router/testing';
-import { SessionService, ISessionDetails } from "./../../shared/session/session.service";
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from "@angular/platform-browser-dynamic/testing";
+import { RouterTestingModule } from "@angular/router/testing";
+import { ISessionDetails, SessionService } from "./../../shared/session/session.service";
 import { RegisterUserComponent } from "./register-user.component";
 import { RegisterUserService } from "./register-user.service";
 
@@ -17,8 +15,8 @@ describe("RegisterUserComponent", () => {
     let component: RegisterUserComponent;
     let fixture: ComponentFixture<RegisterUserComponent>;
 
-    let htmlElements: {} = {};
-    let buttonIDs: string[] = [
+    const htmlElements: {} = {};
+    const buttonIDs: string[] = [
         "#cos-register-user-form",
         "#cos-register-user-username-field",
         "#cos-register-user-email-field",
@@ -35,18 +33,12 @@ describe("RegisterUserComponent", () => {
         "#cos-register-user-password-too-short",
         "#cos-register-user-password-invalid",
         "#cos-register-user-password-verify-empty",
-        "#cos-register-user-password-verify-no-match"
+        "#cos-register-user-password-verify-no-match",
     ];
-
-    let sessionServiceStub: {
-        sessionIsActive: boolean;
-    };
-
-    let userIsSignedOn = false;
 
     /**
      * Use this to check all of the necessarry fields of the form have been rendered.
-     * 
+     *
      * @return - True if the whole form is rendered, false otherwise.
      */
     let formFieldsRendered: () => boolean;
@@ -67,7 +59,7 @@ describe("RegisterUserComponent", () => {
     mapChanges = () => {
         fixture.detectChanges();
         buttonIDs.map((id) => {
-            let de = fixture.debugElement.query(By.css(id));
+            const de = fixture.debugElement.query(By.css(id));
 
             htmlElements[id] = (de) ?
                 de.nativeElement :
@@ -78,33 +70,33 @@ describe("RegisterUserComponent", () => {
     /**
      * Use this to check an element is rendered. An element should be
      * rendered if it is mapped in the htmlElements hash.
-     * 
-     * @param - The element's id value
-     * 
+     *
+     * @param - The element"s id value
+     *
      * @return - True if the element is in the htmlElements hash, or else false
      */
     let isElementRendered: (id: string) => boolean;
     isElementRendered = (id: string) => {
         fixture.detectChanges();
         return !!htmlElements[id];
-    }
+    };
 
     /**
      * Use this to fill in a given field with text.
-     * 
+     *
      * @param id - The id of the field to fill
      * @param value - The value to place in the field
      */
     let fillField: (id: string, value: string) => void;
     fillField = (id: string, value: string) => {
         htmlElements[id].value = value;
-        htmlElements[id].dispatchEvent(new Event('input'));
+        htmlElements[id].dispatchEvent(new Event("input"));
         fixture.detectChanges();
-    }
+    };
 
     /**
      * Use this as a helper fucntion to fill out the entire form.
-     * 
+     *
      * @param username - Test username
      * @param email - Test email
      * @param password - Test password
@@ -119,35 +111,34 @@ describe("RegisterUserComponent", () => {
     };
 
     beforeEach(async(() => {
-        sessionServiceStub = {
-            sessionIsActive: userIsSignedOn,
-        }
+        const sessionServiceStub = {
+            sessionIsActive: false,
+        };
 
         let spy: jasmine.Spy;
 
         // Spy on the actual static class since the method is static.
-        spy = spyOn(SessionService, "isSessionActive").and.returnValue(userIsSignedOn);
-
+        spy = spyOn(SessionService, "isSessionActive").and.returnValue(false);
 
         TestBed.configureTestingModule({
             declarations: [RegisterUserComponent],
             imports: [
                 CommonModule,
                 ReactiveFormsModule,
-                HttpModule
+                HttpModule,
             ],
-        })
+        });
 
         TestBed.overrideComponent(RegisterUserComponent, {
             set: {
                 providers: [
                     { provide: SessionService, useValue: sessionServiceStub },
-                    RegisterUserService]
-            }
+                    RegisterUserService],
+            },
         }).compileComponents()
             .catch((error) => {
-                console.log(error);
-            })
+                return;
+            });
 
     }));
 
@@ -161,7 +152,6 @@ describe("RegisterUserComponent", () => {
         fixture.detectChanges();
         mapChanges();
     });
-
 
     it("should have a registration form", () => {
         expect(isElementRendered("#cos-register-user-form")).toBe(true);
@@ -196,7 +186,7 @@ describe("RegisterUserComponent", () => {
 
     it("should have the button disabled when there is no reCaptcha response", () => {
         expect(htmlElements["#cos-register-user-submit-button"].disabled).toBe(true);
-    })
+    });
 
     it("should show an alert when the user doesn't fill in a field", () => {
         component.formSubmitted = true;
@@ -285,7 +275,7 @@ describe("RegisterUserComponent", () => {
     it("should submit valid forms to the RegisterUserService", () => {
         let serviceSpy: jasmine.Spy;
         serviceSpy = spyOn(fixture.debugElement.injector.get(RegisterUserService), "registerUser")
-            .and.returnValue(new Promise((resolve) => { resolve({}) }));
+            .and.returnValue(new Promise((resolve) => { resolve({}); }));
 
         // Need to spoof a recaptcha response
         component.captchaResponse = "response";
@@ -302,7 +292,7 @@ describe("RegisterUserComponent", () => {
     it("should not submit invalid forms to the RegisterUserService", () => {
         let serviceSpy: jasmine.Spy;
         serviceSpy = spyOn(fixture.debugElement.injector.get(RegisterUserService), "registerUser")
-            .and.returnValue(new Promise((resolve) => { resolve({}) }));
+            .and.returnValue(new Promise((resolve) => { resolve({}); }));
 
         fillForm("test",
             "testtest.com",
@@ -321,63 +311,61 @@ describe("RegisterUserComponent", () => {
  * implementation is a bit sloppy.
  */
 describe("RegisterUserService", () => {
-    let spy: jasmine.Spy;
-    let userIsSignedOn: boolean = false;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpModule],
             providers: [
                 RegisterUserService,
-                { provide: XHRBackend, useClass: MockBackend }]
-        })
+                { provide: XHRBackend, useClass: MockBackend }],
+        });
     });
 
     it("should send registration details to the server and return succesful response in a promise", async(
-        inject([RegisterUserService, XHRBackend], (registerUserService: RegisterUserService,
+        inject([RegisterUserService, XHRBackend], (
+            registerUserService: RegisterUserService,
             mockBackend: MockBackend) => {
 
             const mockResponse = JSON.stringify({
                 result: {
                     email: "test@test.com",
                     username: "test",
-                }
+                },
             });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.parse(mockResponse)
+                    body: JSON.parse(mockResponse),
                 })));
             });
 
-            let response = registerUserService.registerUser("test", "test@test.com", "password", "response")
+            registerUserService.registerUser("test", "test@test.com", "password", "response")
                 .then((response) => {
                     expect(JSON.stringify(response)).toEqual(mockResponse);
                 });
 
-
         })));
 
     it("should send registration details to the server and return error response in a promise", async(
-        inject([RegisterUserService, XHRBackend], (registerUserService: RegisterUserService,
+        inject([RegisterUserService, XHRBackend], (
+            registerUserService: RegisterUserService,
             mockBackend: MockBackend) => {
 
             const mockResponse = JSON.stringify({
                 error: {
                     message: "Couldn't register user.",
-                }
+                },
             });
 
             mockBackend.connections.subscribe((connection: any) => {
                 connection.mockRespond(new Response(new ResponseOptions({
-                    body: JSON.parse(mockResponse)
+                    body: JSON.parse(mockResponse),
                 })));
             });
-
-            let response = registerUserService.registerUser("test", "test@test.com", "password", "response")
+            registerUserService.registerUser("test", "test@test.com", "password", "response")
                 .then((response) => {
                     expect(JSON.stringify(response)).toEqual(mockResponse);
-                }).catch(error => {console.log(error.message)});
+                }).catch((error) => { return; });
         })));
 
 });

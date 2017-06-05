@@ -26,7 +26,7 @@ describe("CoS API", () => {
     });
 
     it("should throw a ciritical error when given parameters of the wrong type", () => {
-        let badInput: any = "Die in a lake of fire.";
+        const badInput: any = "Die in a lake of fire.";
         const constraints = [
             {
                 name: "test",
