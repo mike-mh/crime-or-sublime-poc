@@ -3,7 +3,6 @@ import { Express, Response, Router } from "express";
 import { Server } from "http";
 import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";
-import { CoSModelInitializer } from "./models/cos-model-initializer";
 import { CoSRouter } from "./routes/cos-router";
 
 /**
@@ -13,7 +12,6 @@ import { CoSRouter } from "./routes/cos-router";
 export class CoSServer {
     private app: Express;
     private router: CoSRouter;
-    private modelInitializer: CoSModelInitializer;
 
     /**
      * Initializes the router and express application. Create as a singleton
@@ -22,7 +20,6 @@ export class CoSServer {
     public constructor() {
         this.app = express();
         this.router = new CoSRouter();
-        this.modelInitializer = new CoSModelInitializer();
         mongoose.Promise = global.Promise;
     }
 
@@ -57,7 +54,6 @@ export class CoSServer {
     private intializeMiddleware(): void {
         this.router.initializeStaticRoutes();
         this.router.intializeRouteHandlers();
-        this.modelInitializer.initiaizeModels();
     }
 
     /**

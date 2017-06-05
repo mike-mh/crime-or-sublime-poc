@@ -33,19 +33,27 @@ export const cosAPI: any = {
         "application/json"
     ],
     "definitions": {
-        "successResponseString": {
-            "type": "object",
-            "properties": {
-                "result": {
-                    "type": "string"
-                }
-            }
-        },
         "successResponseArray": {
             "type": "object",
             "properties": {
                 "result": {
                     "type": "array"
+                }
+            }
+        },
+        "successResponseObject": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "object"
+                }
+            }
+        },
+        "successResponseString": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "string"
                 }
             }
         },
@@ -73,6 +81,72 @@ export const cosAPI: any = {
     },
     "host": "https://crime-or-sublime.herokuapp.com",
     "paths": {
+        "/graffiti-get": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "This retrieves graffiti data based on the ID (URL) given as a parameter.",
+                "responses": {
+                    "200": {
+                        "description": "The graffiti data associated with the URL given.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseObject"
+                        }
+                    },
+                    "GraffitiDoesNotExistError": {
+                        "$ref": "#/responses/GraffitiDoesNotExist"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the graffiti to retrieve",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
+        "/graffiti-get-random": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "This retrieves a random graffiti.",
+                "responses": {
+                    "200": {
+                        "description": "The graffiti data associated with the random selected graffiti.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseObject"
+                        }
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    }
+                },
+                "parameters": [],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
         "/session-create-user": {
             "post": {
                 "consumes": [
@@ -89,7 +163,10 @@ export const cosAPI: any = {
                     "AlreadyActiveSessionError": {
                         "$ref": "#/responses/AlreadyActiveSession"
                     },
-                    "InvalidParameters": {
+                    "InvalidCredentialsError": {
+                        "$ref": "#/responses/InvalidCredentials"
+                    },
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
                     "InternalServerError": {
@@ -97,9 +174,6 @@ export const cosAPI: any = {
                     },
                     "SessionLockoutError": {
                         "$ref": "#/responses/SessionLockout"
-                    },
-                    "TemporarySessionLockoutError": {
-                        "$ref": "#/responses/TemporarySessionLockout"
                     }
                 },
                 "parameters": [
@@ -153,14 +227,14 @@ export const cosAPI: any = {
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParameters": {
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
-                    },
-                    "NoActiveSession": {
-                        "$ref": "#/responses/NoActiveSession"
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSessionError": {
+                        "$ref": "#/responses/NoActiveSession"
                     }
                 },
                 "parameters": [],
@@ -200,6 +274,61 @@ export const cosAPI: any = {
                 "summarry": "This is responsible for registering new users."
             }
         },
+        "/user-rate": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "User submits a rating to a graffiti tag.",
+                "responses": {
+                    "200": {
+                        "description": "The temp user account has been created and the user sent an email at the address they specified.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseString"
+                        }
+                    },
+                    "AlreadyRatedGraffitiError": {
+                        "$ref": "#/responses/AlreadyRatedGraffiti"
+                    },
+                    "GraffitiDoesNotExistError": {
+                        "$ref": "#/responses/GraffitiDoesNotExist"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSession": {
+                        "$ref": "#/responses/NoActiveSession"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the rated graffiti.",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    },
+                    {
+                        "description": "The rating the user assigned to the graffiti tag.",
+                        "in": "body",
+                        "name": "rating",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
         "/user-register-confirm/:id/:key": {
             "get": {
                 "consumes": [
@@ -213,10 +342,10 @@ export const cosAPI: any = {
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParameters": {
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
-                    "InvalidRegistration": {
+                    "InvalidRegistrationError": {
                         "$ref": "#/responses/InvalidRegistration"
                     },
                     "InternalServerError": {
@@ -264,10 +393,10 @@ export const cosAPI: any = {
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParameters": {
+                    "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
-                    "InvalidRegistration": {
+                    "InvalidRegistrationError": {
                         "$ref": "#/responses/InvalidRegistration"
                     },
                     "InternalServerError": {
@@ -334,6 +463,18 @@ export const cosAPI: any = {
                 "$ref": "#/definitions/errorResponse"
             }
         },
+        "AlreadyRatedGraffiti": {
+            "description": "Someone tried to reassign the same rating to a graffiti.",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "GraffitiDoesNotExist": {
+            "description": "Someone attempted to query a graffiti tag that doesn't exist",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
         "InternalServerError": {
             "description": "An internal server error occured.",
             "schema": {
@@ -376,12 +517,6 @@ export const cosAPI: any = {
                 "$ref": "#/definitions/errorResponse"
             }
         },
-        "TemporarySessionLockout": {
-            "description": "A user failed to login five times consecutively but hasn't trigged the larger lockout.",
-            "schema": {
-                "$ref": "#/definitions/errorResponse"
-            }
-        },
         "UserNotFound": {
             "description": "A query searching for a user returned nothing.",
             "schema": {
@@ -389,7 +524,7 @@ export const cosAPI: any = {
             }
         }
     },
-    "schemes": [
+    "schems": [
         "http",
         "https"
     ],

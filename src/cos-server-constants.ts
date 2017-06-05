@@ -1,5 +1,8 @@
 /* tslint:disable */
 
+export const CRIME: boolean = false;
+export const SUBLIME: boolean = true;
+
 class CoSError extends Error {
     public code: number;
     constructor(name: string, message: string, code: number) {

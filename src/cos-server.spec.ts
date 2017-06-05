@@ -40,12 +40,6 @@ describe("CoSServer", () => {
         expect(methodSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("should intialize all mongoose models", () => {
-        methodSpy = spyOn(cosServer.modelInitializer, "initiaizeModels");
-        cosServer.intializeMiddleware();
-        expect(methodSpy).toHaveBeenCalledTimes(1);
-    });
-
     it("should establish a connection to the database via mongoose after intializing", () => {
         mongooseSpy = spyOn(mongoose, "connect");
         mongooseSpy.and.returnValue(Promise.resolve());

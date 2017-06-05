@@ -53,7 +53,7 @@ export abstract class CoSAPI {
      * @param inputParameters - The object to be validated.
      * @param schemaConstraints - Array of parameter constriants in schema.
      */
-    public validate(inputParameters: { [index: string]: (number | object | any[] | string) },
+    public validate(inputParameters: { [index: string]: (boolean | number | object | any[] | string) },
                     schemaConstraints: any[]) {
 
         let error;
@@ -256,7 +256,7 @@ export abstract class CoSAPI {
      * @param method - The HTTP method used to send data.
      */
     public validateParams(path: string,
-                          inputParams: { [index: string]: string | number | object | any[]; },
+                          inputParams: { [index: string]: boolean | string | number | object | any[]; },
                           method: string): void {
         method = method.toLowerCase();
 

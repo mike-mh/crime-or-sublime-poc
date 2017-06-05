@@ -44,8 +44,3 @@ describe("CoSAbstractModel", () => {
         }
     });
 });
-
-/**
- * There's no testable functionality for the model initalizer but that will
- * probably change in the future.
- */
