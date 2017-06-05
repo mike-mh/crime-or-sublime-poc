@@ -18,9 +18,9 @@ export class RegisterUserService {
     const registrationHeaders: Headers = new Headers({ "Content-Type": "application/json" });
     const registrationOptions = new RequestOptions({ headers: registrationHeaders });
     const registrationPayload: {} = {
+        captcha,
         email,
         password,
-        captcha,
         username,
     };
 
