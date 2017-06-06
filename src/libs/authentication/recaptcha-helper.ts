@@ -1,5 +1,7 @@
 import { request } from "https";
 import { stringify } from "query-string";
+import "rxjs/add/observable/fromPromise";
+import { Observable } from "rxjs/Observable";
 import { CoSServerConstants } from "./../../cos-server-constants";
 
 /**
@@ -11,9 +13,9 @@ export class ReCaptchaHelper {
      *
      * @param recaptchaResponse - Response from reCaptcha server.
      *
-     * @return - Void resolving promise
+     * @return - Observable that either resolves or triggers an error.
      */
-    public static verifyRecaptchaSuccess(recaptchaResponse: string): Promise<void> {
+    public static verifyRecaptchaSuccess(recaptchaResponse: string): Observable<void> {
         let responseData = "";
         const requestParams = stringify({
             response: recaptchaResponse,
@@ -31,31 +33,32 @@ export class ReCaptchaHelper {
             port: 443,
         };
 
-        return new Promise((resolve, reject) => {
+        return Observable.fromPromise(
+            new Promise((resolve, reject) => {
 
-            const reCaptchaRequest = request(options, (response) => {
-                response.on("data", (chunk) => {
-                    responseData += chunk;
+                const reCaptchaRequest = request(options, (response) => {
+                    response.on("data", (chunk) => {
+                        responseData += chunk;
+                    });
+
+                    response.on("end", () => {
+                        const responseJson = JSON.parse(responseData);
+                        if (responseJson.success) {
+                            resolve();
+                        }
+                        reject(CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE);
+                    });
                 });
 
-                response.on("end", () => {
-                    const responseJson = JSON.parse(responseData);
-                    if (responseJson.success) {
-                        resolve();
-                    }
-                    reject(CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE);
+                reCaptchaRequest.on("error", (error) => {
+                    reject(CoSServerConstants.HTTP_SEND_ERROR);
                 });
-            });
 
-            reCaptchaRequest.on("error", (error) => {
-                reject(CoSServerConstants.HTTP_SEND_ERROR);
-            });
+                reCaptchaRequest.end();
 
-            reCaptchaRequest.end();
-
-        }).then(() => {
-            return;
-        });
+            }).then(() => {
+                return;
+            }));
 
     }
 

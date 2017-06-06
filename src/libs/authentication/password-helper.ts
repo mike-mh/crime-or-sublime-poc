@@ -1,4 +1,6 @@
 import { pbkdf2 } from "crypto";
+import "rxjs/add/observable/fromPromise";
+import { Observable } from "rxjs/Observable";
 import { HashHelper } from "./hash-helper";
 
 /**
@@ -12,9 +14,9 @@ export class PasswordHelper extends HashHelper {
      * @param password - Password to hash
      * @param salt - Salt to hash with
      *
-     * @return - Promise that will resolve with the hashed password.
+     * @return - Observable that resolves to the hashed password or to error.
      */
-    public static hashPassword(password: string, salt: string): Promise<string> {
+    public static hashPassword(password: string, salt: string): Observable<string> {
         return this.generatePbkdf2Hash(password, salt);
     }
 

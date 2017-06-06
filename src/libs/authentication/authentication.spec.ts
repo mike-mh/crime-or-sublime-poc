@@ -2,6 +2,7 @@ import { pbkdf2, randomBytes } from "crypto";
 import { ClientRequest, request } from "http";
 import * as https from "https";
 import * as pug from "pug";
+import { Observable } from "rxjs/Observable";
 import { CoSServerConstants } from "./../../cos-server-constants";
 import { AuthenticationEmailer } from "./authentication-emailer";
 import { HashHelper } from "./hash-helper";
@@ -35,11 +36,11 @@ describe("AuthenticationEmailHelper", () => {
             "test@test.com",
             "testing",
             "deadbeef")
-            .then(() => {
+            .subscribe(() => {
                 expect(pugSpy).toHaveBeenCalledTimes(1);
                 done();
-            })
-            .catch((error) => {
+            },
+            (error) => {
                 process.stderr.write(error.message);
                 expect(true).toBe(false);
                 done();
@@ -59,12 +60,12 @@ describe("AuthenticationEmailHelper", () => {
         AuthenticationEmailer.sendAuthenticationEmail(
             "test@test.com",
             "testing",
-            "deadbeef")
-            .then(() => {
+            "deadbeef").subscribe
+            (() => {
                 expect(true).toBe(false);
                 done();
-            })
-            .catch((error: any) => {
+            },
+            (error: any) => {
                 expect(error.code).toBe(CoSServerConstants.HTTP_SEND_ERROR.code);
                 done();
             });
@@ -84,10 +85,10 @@ describe("AuthenticationEmailHelper", () => {
             "test@test.com",
             "testing",
             "deadbeef")
-            .then(() => {
+            .subscribe(() => {
                 done();
-            })
-            .catch((error: any) => {
+            },
+            (error: any) => {
                 expect(error).toBeFalsy();
                 done();
             });
@@ -107,22 +108,22 @@ describe("HashHelper", () => {
 
     it("should generate a promise that produces a salt", (done) => {
         SampleHelper.generateSalt()
-            .then((salt: string) => {
+            .subscribe((salt: string) => {
                 expect(typeof (salt)).toEqual("string");
                 done();
-            })
-            .catch(() => {
+            },
+            () => {
                 expect(true).toBe(false);
             });
     });
 
     it("should generate a promise that produces a pbkdf2 hash", (done) => {
         SampleHelper.generatePbkdf2Hash("input", "deadbeef")
-            .then((salt: string) => {
+            .subscribe((salt: string) => {
                 expect(typeof (salt)).toEqual("string");
                 done();
-            })
-            .catch(() => {
+            },
+            () => {
                 expect(true).toBe(false);
             });
     });
@@ -132,15 +133,17 @@ describe("HashHelper", () => {
 describe("PasswordHelper", () => {
     it("should throw an error if pbkdf2 hashing fails", (done) => {
         pbkdf2Spy = spyOn(HashHelper, "generatePbkdf2Hash");
-        pbkdf2Spy.and.returnValue(Promise.reject(CoSServerConstants.PBKDF2_HASH_ERROR.message));
+        pbkdf2Spy.and.returnValue(Observable.create((observer: any) => {
+            observer.error(CoSServerConstants.PBKDF2_HASH_ERROR);
+        }));
 
         PasswordHelper.generatePbkdf2Hash("input", "deadbeef")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 done();
-            })
-            .catch((error) => {
-                expect(error).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.message);
+            },
+            (error) => {
+                expect(error.code).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.code);
                 done();
             });
     });
@@ -149,16 +152,18 @@ describe("PasswordHelper", () => {
 describe("RegistrationHelper", () => {
     it("should throw an error if pbkdf2 hashing fails", (done) => {
         pbkdf2Spy = spyOn(HashHelper, "generatePbkdf2Hash");
-        pbkdf2Spy.and.returnValue(Promise.reject(CoSServerConstants.PBKDF2_HASH_ERROR.message));
+        pbkdf2Spy.and.returnValue(Observable.create((observer: any) => {
+            observer.error(CoSServerConstants.PBKDF2_HASH_ERROR);
+        }));
 
         RegistrationHelper.generatePbkdf2Hash("input", "deadbeef")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 pbkdf2Spy.and.stub();
                 done();
-            })
-            .catch((error) => {
-                expect(error).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.message);
+            },
+            (error) => {
+                expect(error.code).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.code);
                 pbkdf2Spy.and.stub();
                 done();
             });
@@ -167,16 +172,18 @@ describe("RegistrationHelper", () => {
     it("should fail to generate a registration key if salt generation fails", (done) => {
         pbkdf2Spy = spyOn(HashHelper, "generatePbkdf2Hash");
         genSaltSpy = spyOn(HashHelper, "generateSalt");
-        genSaltSpy.and.returnValue(Promise.reject(CoSServerConstants.SALT_GENERATION_ERROR.message));
+        genSaltSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.error(CoSServerConstants.SALT_GENERATION_ERROR);
+        }));
 
         RegistrationHelper.generateRegistrationKey("input", "deadbeef")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 genSaltSpy.and.stub();
                 done();
-            })
-            .catch((error) => {
-                expect(error).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
+            },
+            (error) => {
+                expect(error.code).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.code);
                 genSaltSpy.and.stub();
                 done();
             });
@@ -185,32 +192,40 @@ describe("RegistrationHelper", () => {
     it("should fail to generate a registration key if pbkdf2 hashing fails", (done) => {
         pbkdf2Spy = spyOn(HashHelper, "generatePbkdf2Hash");
         genSaltSpy = spyOn(HashHelper, "generateSalt");
-        genSaltSpy.and.returnValue(Promise.resolve("salt"));
-        pbkdf2Spy.and.returnValue(Promise.reject(CoSServerConstants.PBKDF2_HASH_ERROR.message));
+        genSaltSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next("salt");
+        }));
+        pbkdf2Spy.and.returnValue(Observable.create((observer: any) => {
+            observer.error(CoSServerConstants.PBKDF2_HASH_ERROR);
+        }));
 
         RegistrationHelper.generateRegistrationKey("input", "deadbeef")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 pbkdf2Spy.and.stub();
                 done();
-            })
-            .catch((error) => {
-                expect(error).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.message);
+            },
+            (error) => {
+                expect(error.code).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.code);
                 pbkdf2Spy.and.stub();
                 done();
             });
     });
 
     it("should generate a registration key if all hashing succeeds", (done) => {
-        genSaltSpy.and.returnValue(Promise.resolve("salt"));
-        pbkdf2Spy.and.returnValue(Promise.resolve("saltier"));
+        genSaltSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next("salt");
+        }));
+        pbkdf2Spy.and.returnValue(Observable.create((observer: any) => {
+            observer.error(CoSServerConstants.PBKDF2_HASH_ERROR);
+        }));
 
         RegistrationHelper.generateRegistrationKey("input", "deadbeef")
-            .then((output: string) => {
+            .subscribe((output: string) => {
                 expect(typeof (output)).toBe("string");
                 done();
-            })
-            .catch((error) => {
+            },
+            (error) => {
                 expect(error).toBeFalsy();
                 done();
             });

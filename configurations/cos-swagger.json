@@ -372,6 +372,9 @@
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
+                    },
+                    "UsernameOrEmailTakenError": {
+                        "$ref": "#/definitions/UsernameOrEmailTaken"
                     }
                 },
                 "parameters": [
@@ -484,6 +487,12 @@
         },
         "SessionLockout": {
             "description": "A user has been locked out for attempting to login to many times. This should only be triggered after a client fails to sign on over 1000 times",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "UsernameOrEmailTaken": {
+            "description": "Someone tried to register with a taken username or email",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }

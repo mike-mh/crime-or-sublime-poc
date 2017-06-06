@@ -28,6 +28,12 @@ export class UserRegsiterAPI extends CoSAPI {
                 name: "InvalidRegistrationError",
             },
         },
+        UsernameOrEmailTakenError: {
+            error: {
+                message: "Someone has alread taken that username or password",
+                name: "UsernameOrEmailTakenError",
+            },
+        },
     };
 
     constructor() {

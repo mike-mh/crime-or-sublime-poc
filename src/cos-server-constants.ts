@@ -14,6 +14,8 @@ class CoSError extends Error {
 
 enum ErrrorCodes {
     DATABASE_DELETION_ERROR = 1,
+    DATABASE_GRAFFITI_DOES_NOT_EXIST,
+    DATABASE_RETRIEVE_ERROR,
     DATABASE_SAVE_ERROR,
     DATABASE_USER_DOES_NOT_EXIST_ERROR,
     DATABASE_USER_IDENTIFIER_TAKEN_ERROR,
@@ -81,5 +83,15 @@ export class CoSServerConstants {
         "SessionCreateFailureError",
         "Failed to create a new session.",
         ErrrorCodes.SESSION_CREATE_FAILURE);
+
+    public static readonly DATABASE_GRAFFITI_DOES_NOT_EXIST = new CoSError(
+        "DatabaseGraffitiDoesNotExists",
+        "The specified graffiti does not exist.",
+        ErrrorCodes.DATABASE_GRAFFITI_DOES_NOT_EXIST);
+
+    public static readonly DATABASE_RETRIEVE_ERROR = new CoSError(
+        "DatabaseRetrieveError",
+        "An error occured retrieving element from the database.",
+        ErrrorCodes.DATABASE_RETRIEVE_ERROR);
 
 }

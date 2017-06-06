@@ -1,19 +1,12 @@
 import { Document, model, Model, Schema } from "mongoose";
+import "rxjs/add/observable/fromPromise";
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/mergeMap";
+import { Observable } from "rxjs/Observable";
 import { CoSServerConstants } from "./../../cos-server-constants";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
-import { UserModelSchema } from "./../cos-model-constants";
-
-/**
- * Document implementation for User.
- */
-export interface IUserDocument extends Document {
-    email: string;
-    favourites: [Schema.Types.ObjectId];
-    password: string;
-    salt: string;
-    username: string;
-}
+import { IUserDocument, UserModelSchema } from "./../cos-model-constants";
 
 /**
  * This model will hold the users information. It is responsible for holding
@@ -47,9 +40,9 @@ export class UserModel extends CoSAbstractModel {
      *
      * @return - Void resolving promise.
      */
-    public authenticate(email: string, password: string): Promise<void> {
+    public authenticate(email: string, password: string): Observable<void> {
         return this.checkUserExists(email)
-            .then(() => {
+            .flatMap(() => {
                 return this.confirmPasswordsMatch(email, password);
             });
     }
@@ -62,19 +55,15 @@ export class UserModel extends CoSAbstractModel {
      *
      * @return - Void resolving promise
      */
-    public confirmPasswordsMatch(email: string, password: string): Promise<void> {
+    public confirmPasswordsMatch(email: string, password: string): Observable<void> {
         return this.getUserSalt(email)
-            .then((salt) => {
+            .flatMap((salt) => {
                 return PasswordHelper.hashPassword(password, salt);
             })
-            .then((hashedPassword) => {
-                return this.getModel()
-                    .find({ email }, { password: 1 })
-                    .then((users) => {
-                        if (!users.length) {
-                            throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
-                        }
-                        if (users.shift().password === hashedPassword) {
+            .flatMap((hashedPassword) => {
+                return this.getUserPassword(email)
+                    .map((userPassword) => {
+                        if (userPassword === hashedPassword) {
                             return;
                         }
                         throw CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR;
@@ -90,15 +79,16 @@ export class UserModel extends CoSAbstractModel {
      *
      * @return - Void resolving promise
      */
-    public checkUserExists(email: string): Promise<void> {
-        return this.getModel()
-            .find({ email })
-            .then((users) => {
-                if (users.length) {
-                    return;
-                }
-                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
-            });
+    public checkUserExists(email: string): Observable<void> {
+        return Observable.fromPromise(
+            this.getModel()
+                .find({ email })
+                .then((users) => {
+                    if (users.length) {
+                        return;
+                    }
+                    throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
+                }));
     }
 
     /**
@@ -108,15 +98,46 @@ export class UserModel extends CoSAbstractModel {
      *
      * @return - Promise resolves to salt
      */
-    private getUserSalt(email: string): Promise<string> {
-        return this.getModel()
-            .find({ email }, { salt: 1 })
-            .then((users) => {
-                if (users.length) {
-                    return users.shift().salt;
-                }
-                throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
-            });
+    private getUserSalt(email: string): Observable<string> {
+        return Observable.fromPromise(
+            new Promise((resolve, reject) => {
+                this.getModel()
+                    .find({ email }, { salt: 1 })
+                    .then((users) => {
+                        if (users.length) {
+                            resolve(users.shift().salt);
+                        }
+                        reject(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR);
+                    })
+                    .catch((error) => {
+                            reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+                    });
+            }));
+    }
+
+    /**
+     * Use this to retrieve a user password from the database using an
+     * observable instead of a promise.
+     *
+     * @param email = The user's email
+     *
+     * @return - Observable that resolves to the targeted user document.
+     */
+    private getUserPassword(email: string): Observable<string> {
+        return Observable.fromPromise(
+            new Promise((resolve, reject) => {
+                this.getModel()
+                    .findOne({ email }, { password: 1 })
+                    .then((user) => {
+                        if (!user) {
+                            reject(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR);
+                        }
+                        resolve(user.password);
+                    })
+                    .catch((error) => {
+                            reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+                    });
+            }));
     }
 
 }

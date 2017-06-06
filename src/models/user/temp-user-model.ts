@@ -1,22 +1,14 @@
 import { Document, model, Model, Schema } from "mongoose";
+import "rxjs/add/observable/fromPromise";
+import "rxjs/add/operator/mergeMap";
+import { Observable } from "rxjs/Observable";
 import { CoSServerConstants } from "./../../cos-server-constants";
 import { AuthenticationEmailer } from "./../../libs/authentication/authentication-emailer";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { RegistrationHelper } from "./../../libs/authentication/registration-helper";
 import { CoSAbstractModel } from "./../cos-abstract-model";
-import { TempUserModelSchema } from "./../cos-model-constants";
-import { IUserDocument, UserModel } from "./user-model";
-
-/**
- * Document implementation for TempUser.
- */
-interface ITempUserDocument extends Document {
-    email: string;
-    password: string;
-    registrationKey: string;
-    salt: string;
-    username: string;
-}
+import { ITempUserDocument, IUserDocument, TempUserModelSchema } from "./../cos-model-constants";
+import { UserModel } from "./user-model";
 
 export class TempUserModel extends CoSAbstractModel {
     protected model: Model<ITempUserDocument>;
@@ -37,41 +29,28 @@ export class TempUserModel extends CoSAbstractModel {
      * @param email - New email.
      * @param password - New password.
      *
-     * @return - Void resolving promise.
+     * @return - Resolving Observable that chains any occuring errors.
      */
-    public createTempUser(username: string, email: string, password: string): Promise<void> {
-
-        let generatedSalt: string;
-        let registrationKey: string;
+    public createTempUser(username: string, email: string, password: string): Observable<void> {
 
         return this.emailAndUsernameAreUnique(username, email)
-            .then(() => {
-                return RegistrationHelper.generateRegistrationKey(
-                    username,
-                    email,
-                );
+            .flatMap(() => {
+                return RegistrationHelper.generateRegistrationKey(username, email);
             })
-            .then((key) => {
-                registrationKey = key;
-            })
-            .then(() => {
-                return PasswordHelper.generateSalt();
-            })
-            .then((salt) => {
-                generatedSalt = salt;
-                return PasswordHelper.hashPassword(password, salt);
-            })
-            .then((hashedPassword) => {
-                return this.commitTempUserData(
-                    email,
-                    hashedPassword,
-                    registrationKey,
-                    generatedSalt,
-                    username,
-                );
-            })
-            .then((model) => {
-                return AuthenticationEmailer.sendAuthenticationEmail(email, username, registrationKey);
+            .flatMap((key: string) => {
+                return PasswordHelper.generateSalt().flatMap((salt) => {
+                    return PasswordHelper.hashPassword(password, salt).flatMap((hashedPassword: string) => {
+                        return this.commitTempUserData(
+                            email,
+                            hashedPassword,
+                            key,
+                            salt,
+                            username).flatMap(() => {
+                                return AuthenticationEmailer
+                                    .sendAuthenticationEmail(email, username, key);
+                            });
+                    });
+                });
             });
     }
 
@@ -91,18 +70,10 @@ export class TempUserModel extends CoSAbstractModel {
      *
      * @return - Void resolving promise.
      */
-    public registerUser(username: string, registrationKey: string): Promise<void> {
+    public registerUser(username: string, registrationKey: string): Observable<void> {
 
-        return this.getModel()
-            .find({ username, registrationKey })
-            .then((users) => {
-                if (users.length) {
-                    return users.shift();
-                }
-
-                throw CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR;
-            })
-            .then((tempUser) => {
+        const registerUserObservable = this.getTempUserObservable(username, registrationKey)
+            .flatMap((tempUser) => {
                 const newUser = new UserModel();
                 return this.commitUserData(
                     newUser,
@@ -111,15 +82,11 @@ export class TempUserModel extends CoSAbstractModel {
                     tempUser.salt,
                     tempUser.username,
                 );
-            })
-            .then(() => {
-                return this.getModel()
-                    .remove({ username, registrationKey }, (error) => {
-                        if (error) {
-                            throw CoSServerConstants.DATABASE_DELETION_ERROR;
-                        }
-                    });
             });
+
+        return registerUserObservable.flatMap(() => {
+            return this.removeTempUserObservable(username, registrationKey);
+        });
 
     }
 
@@ -129,27 +96,70 @@ export class TempUserModel extends CoSAbstractModel {
      * @param username - Username to check.
      * @param email - Email to check.
      *
-     * @return - Void resolving promise. Throws error if username or email are
-     *     taken.
+     * @return - Observable that that triggers error if it occurs. Otherwise
+     *     just resolves.
      */
-    private emailAndUsernameAreUnique(username: string, email: string): Promise<void> {
-        return new UserModel().getModel()
-            .find({ $or: [{ email }, { username }] })
-            .then((users) => {
-                if (users.length) {
-                    throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
-                }
+    private emailAndUsernameAreUnique(username: string, email: string): Observable<void> {
+        return Observable.fromPromise(
+            new UserModel().getModel()
+                .findOne({ $or: [{ email }, { username }] })
+                .then((user) => {
+                    if (user) {
+                        throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
+                    }
+                    // Need to check that another user hasn't submitted a new
+                    // account for registration with provided credentials.
+                    return this.getModel()
+                        .findOne({ $or: [{ email }, { username }] });
+                })
+                .then((user) => {
+                    if (user) {
+                        throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
+                    }
+                }));
+    }
 
-                // Need to check that another user hasn't submitted a new
-                // account for registration with provided credentials.
-                return this.getModel()
-                    .find({ $or: [{ email }, { username }] });
-            })
-            .then((users) => {
-                if (users.length) {
-                    throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
-                }
-            });
+    /**
+     * This function removes a temp user using an observable instead of a
+     * promise
+     *
+     * @param username - Username to check.
+     * @param email - Email to check.
+     *
+     * @return - Observable that that triggers error if it occurs. Otherwise
+     *     just resolves.
+     */
+    private removeTempUserObservable(username: string, registrationKey: string): Observable<void> {
+        return Observable.fromPromise(
+            this.getModel()
+                .remove({ username, registrationKey }, (error) => {
+                    if (error) {
+                        throw CoSServerConstants.DATABASE_DELETION_ERROR;
+                    }
+                }));
+    }
+
+    /**
+     * Use this function to get an observable for finding a temp-user instead
+     * of a promise.
+     *
+     * @param username - The username selected by a user.
+     * @param registrationKey - The registartion key assigned to a user.
+     *
+     * @return - Observable resolving to the intended temp-user document.
+     */
+    private getTempUserObservable(username: string, registrationKey: string): Observable<ITempUserDocument> {
+        return Observable.fromPromise(
+            this.getModel()
+                .findOne({ username, registrationKey })
+                .then((user) => {
+                    if (user) {
+                        return user;
+                    }
+
+                    throw CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR;
+
+                }));
     }
 
     /**
@@ -168,20 +178,21 @@ export class TempUserModel extends CoSAbstractModel {
         password: string,
         registrationKey: string,
         salt: string,
-        username: string): Promise<ITempUserDocument> {
+        username: string): Observable<ITempUserDocument> {
 
-        return new (this.getModel())(
-            {
-                email,
-                password,
-                registrationKey,
-                salt,
-                username,
-            }).save((error) => {
-                if (error) {
-                    throw CoSServerConstants.DATABASE_SAVE_ERROR;
-                }
-            });
+        return Observable.fromPromise(
+            new (this.getModel())(
+                {
+                    email,
+                    password,
+                    registrationKey,
+                    salt,
+                    username,
+                }).save((error) => {
+                    if (error) {
+                        throw CoSServerConstants.DATABASE_SAVE_ERROR;
+                    }
+                }));
     }
 
     /**
@@ -194,27 +205,28 @@ export class TempUserModel extends CoSAbstractModel {
      * @param salt - The salt of the user to save.
      * @param username - The username of the user to save.
      *
-     * @return - Promise that resolves to the data saved.
+     * @return - Observable that resolves to the user document.
      */
     private commitUserData(
         user: UserModel,
         email: string,
         password: string,
         salt: string,
-        username: string): Promise<IUserDocument> {
+        username: string): Observable<IUserDocument> {
 
-        return new (user.getModel())(
-            {
-                email,
-                lastLogin: new Date(),
-                password,
-                salt,
-                username,
-            }).save((error) => {
-                if (error) {
-                    throw CoSServerConstants.DATABASE_SAVE_ERROR;
-                }
-            });
+        return Observable.fromPromise(
+            new (user.getModel())(
+                {
+                    email,
+                    lastLogin: new Date(),
+                    password,
+                    salt,
+                    username,
+                }).save((error) => {
+                    if (error) {
+                        throw CoSServerConstants.DATABASE_SAVE_ERROR;
+                    }
+                }));
 
     }
 }

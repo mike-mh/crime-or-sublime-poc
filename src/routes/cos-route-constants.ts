@@ -7,6 +7,7 @@ export class CoSRouteConstants {
     public static readonly COS_CLIENT_PATHS: string[] = [
         "/cos-login",
         "/cos-register",
+        "/cos-rate",
     ];
 }
 

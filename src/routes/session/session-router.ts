@@ -49,19 +49,14 @@ export class SessionRouter extends CoSAbstractRouteHandler {
         const email = req.body.identifier;
         const password = req.body.password;
 
-        const User = new UserModel();
-        User.authenticate(email, password)
-            .then((messsage) => {
-                if (req.session.email === email) {
-                    res.json(SessionRouter.responses.AlreadyActiveSessionError);
-                    return;
-                }
+        new UserModel().authenticate(email, password).subscribe(
+            () => {
                 req.brute.reset(() => {
                     req.session.email = email;
                     res.json({ result: email });
                 });
-            })
-            .catch((err) => {
+            },
+            (err) => {
                 if (!res.headersSent) {
                     if (err.code === CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code ||
                         err.code === CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.code) {
@@ -87,19 +82,13 @@ export class SessionRouter extends CoSAbstractRouteHandler {
             return;
         }
 
-        if (!req.session.email) {
-            res.json(SessionRouter.responses.NoActiveSessionError);
-            return;
-        }
-
-        new UserModel().checkUserExists(req.session.email)
-            .then(() => {
+        new UserModel().checkUserExists(req.session.email).subscribe(
+            () => {
                 res.json({ result: req.session.email });
-            })
-            .catch((error) => {
+            },
+            () => {
                 res.json(SessionRouter.responses.InternalServerError);
             });
-
     }
 
     /**

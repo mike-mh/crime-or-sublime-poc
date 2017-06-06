@@ -50,19 +50,29 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
             return;
         }
 
-        ReCaptchaHelper.verifyRecaptchaSuccess(reCaptchaResponse)
-            .then(() => {
-                return new TempUserModel()
-                    .createTempUser(username, email, password);
-            })
-            .then(() => {
-                res.json({ result: { email, username } });
-            })
-            .catch((error) => {
-                if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.code) {
-                    res.json(UserRegisterRouter.responses.InvalidRegistrationError);
+        ReCaptchaHelper.verifyRecaptchaSuccess(reCaptchaResponse).subscribe(
+            () => {
+                new TempUserModel().createTempUser(username, email, password).subscribe(
+                    () => {
+                        res.json({ result: { email, username } });
+                    },
+                    (error) => {
+                        if (error.code === CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code) {
+                            res.json(UserRegisterRouter.responses.UsernameOrEmailTakenError);
+                            return;
+                        }
+
+                        res.json(UserRegisterRouter.responses.InternalServerError);
+                    });
+            },
+            (error) => {
+                if (!res.headersSent) {
+                    if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.code) {
+                        res.json(UserRegisterRouter.responses.InvalidRegistrationError);
+                        return;
+                    }
+                    res.json(UserRegisterRouter.responses.InternalServerError);
                 }
-                res.json(UserRegisterRouter.responses.InternalServerError);
             });
     }
 
@@ -77,8 +87,8 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
         const username = req.params.id;
         const registrationKey = req.params.key;
 
-        new TempUserModel().registerUser(username, registrationKey)
-            .then(() => {
+        new TempUserModel().registerUser(username, registrationKey).subscribe(
+            () => {
                 req.session.username = username;
                 req.session.save((error) => {
                     if (error) {
@@ -87,14 +97,15 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                     }
                     res.json({ result: username });
                 });
-            })
-            .catch((err) => {
-                if (err.code === CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code) {
+            },
+            (error) => {
+                if (error.code === CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code) {
                     res.json(UserRegisterRouter.responses.InvalidRegistrationError);
                     return;
                 }
 
                 res.json(UserRegisterRouter.responses.InternalServerError);
+
             });
     }
 

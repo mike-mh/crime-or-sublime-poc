@@ -5,6 +5,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { CoSComponent } from "./cos.component";
 import { CoSRouter } from "./cos.routing.module";
 import { NavbarModule } from "./navbar/navbar.module";
+import { RateModule } from "./rate/rate.module";
 import { UserManagementModule } from "./user-management/user-management.module";
 
 @NgModule({
@@ -16,6 +17,7 @@ import { UserManagementModule } from "./user-management/user-management.module";
     FormsModule,
     HttpModule,
     NavbarModule,
+    RateModule,
     UserManagementModule,
   ],
 })

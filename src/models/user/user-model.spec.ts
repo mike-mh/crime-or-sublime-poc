@@ -1,5 +1,8 @@
 import { connect, Document, model, Model, Schema } from "mongoose";
 import mongoose = require("mongoose");
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/mergeMap";
+import { Observable } from "rxjs/Observable";
 import { CoSServerConstants } from "./../../cos-server-constants";
 import { AuthenticationEmailer } from "./../../libs/authentication/authentication-emailer";
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
@@ -49,7 +52,7 @@ describe("TempUserModel", () => {
             "theKey",
             "salty",
             "fattycakes",
-        ).then((error: any) => {
+        ).subscribe((error: any) => {
             // Now check if it committed
             tempUserModel.getModel().find({ email: "santa@claus.com", registrationKey: "theKey" })
                 .then((users: any) => {
@@ -68,8 +71,8 @@ describe("TempUserModel", () => {
                         done();
                     }
                 });
-        })
-            .catch((error: any) => {
+        },
+            () => {
                 expect(true).toBe(false);
             });
     });
@@ -82,7 +85,7 @@ describe("TempUserModel", () => {
             "canada",
             "salty",
             "fattycakes",
-        ).then((error: any) => {
+        ).subscribe((error: any) => {
             // Now check if it committed
             newUser.getModel().find({ email: "santa@claus.com", salt: "salty" })
                 .then((users: any) => {
@@ -101,8 +104,8 @@ describe("TempUserModel", () => {
                         done();
                     }
                 });
-        })
-            .catch((error: any) => {
+        },
+            () => {
                 expect(true).toBe(false);
             });
     });
@@ -113,12 +116,12 @@ describe("TempUserModel", () => {
 
         registrationSpy.and.throwError(CoSServerConstants.SALT_GENERATION_ERROR.message);
         tempUserModel.createTempUser("test", "test@test.com", "testings")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 registrationSpy.and.stub();
                 done();
-            })
-            .catch((error: Error) => {
+            },
+            (error: Error) => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
                 registrationSpy.and.stub();
                 done();
@@ -129,15 +132,17 @@ describe("TempUserModel", () => {
         registrationSpy = spyOn(RegistrationHelper, "generateRegistrationKey");
         registrationHashSpy = spyOn(RegistrationHelper, "generateSalt");
 
-        registrationSpy.and.returnValue(Promise.resolve("AKEY"));
+        registrationSpy.and.returnValue(Observable.create((observable: any) => {
+            observable.next("AKEY");
+        }));
         passwordHashSpy.and.throwError(CoSServerConstants.SALT_GENERATION_ERROR.message);
         tempUserModel.createTempUser("test", "test@test.com", "testings")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 passwordHashSpy.and.stub();
                 done();
-            })
-            .catch((error: Error) => {
+            },
+            (error: Error) => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
                 passwordHashSpy.and.stub();
                 done();
@@ -145,14 +150,16 @@ describe("TempUserModel", () => {
     });
 
     it("should throw error when generating a password hash fails", (done) => {
-        passwordHashSpy.and.returnValue(Promise.resolve("AHASH"));
+        passwordHashSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next("AHASH");
+        }));
         passwordSpy.and.throwError(CoSServerConstants.SALT_GENERATION_ERROR.message);
         tempUserModel.createTempUser("test", "test@test.com", "testings")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 done();
-            })
-            .catch((error: Error) => {
+            },
+            (error: Error) => {
                 expect(error.message).toEqual(CoSServerConstants.SALT_GENERATION_ERROR.message);
                 done();
             });
@@ -161,20 +168,28 @@ describe("TempUserModel", () => {
     it("after a temp user is created, an email should be sent to that user", (done) => {
         emailSpy = spyOn(AuthenticationEmailer, "sendAuthenticationEmail");
         emailSpy.calls.reset();
-        emailSpy.and.returnValue(Promise.resolve());
+        emailSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next();
+        }));
 
         tempUserCommitSpy = spyOn(tempUserModel, "commitTempUserData");
-        passwordSpy.and.returnValue("HASHY");
-        tempUserCommitSpy.and.returnValue(Promise.resolve());
+
+        passwordSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next("HASHY");
+        }));
+
+        tempUserCommitSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next();
+        }));
         emailSpy.calls.reset();
 
         tempUserModel.createTempUser("test", "test@test.com", "testings")
-            .then(() => {
+            .subscribe(() => {
                 expect(emailSpy).toHaveBeenCalledTimes(1);
                 emailSpy.and.callThrough();
                 done();
-            })
-            .catch((error: Error) => {
+            },
+            (error: Error) => {
                 emailSpy.and.callThrough();
                 expect(true).toEqual(false);
                 done();
@@ -183,11 +198,11 @@ describe("TempUserModel", () => {
 
     it("should throw an error if a request is made to register a user that doesn't exist", (done) => {
         tempUserModel.registerUser("Fake", "Dudes")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 done();
-            })
-            .catch((error: any) => {
+            },
+            (error: any) => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code);
                 done();
             });
@@ -195,77 +210,88 @@ describe("TempUserModel", () => {
 
     it("should create a new user after confirmation and delete old temp user data", (done) => {
         tempUserModel.commitTempUserData("gg", "gg", "gg", "gg", "gg")
-            .then(() => {
+            .flatMap(() => {
                 return tempUserModel.registerUser("gg", "gg");
             })
-            .then(() => {
-                return tempUserModel.getModel().find({ email: "gg" });
-            })
-            .then((docs: any) => {
-                if (docs.length) {
-                    expect(true).toBe(false);
-                    done();
-                }
+            .subscribe(() => {
+                tempUserModel.getModel().find({ email: "gg" })
+                    .then((docs: any) => {
+                        if (docs.length) {
+                            expect(true).toBe(false);
+                            done();
+                        }
 
-                return new UserModel().getModel().find({ email: "gg" });
-            })
-            .then((users: any) => {
-                if (!users.length) {
-                    expect(true).toBe(false);
-                    done();
-                }
-                new UserModel().getModel().remove({ email: "gg" }).then(done);
-            })
-            .catch((error: any) => {
+                        return new UserModel().getModel().find({ email: "gg" });
+                    })
+                    .then((users: any) => {
+                        if (!users.length) {
+                            expect(true).toBe(false);
+                            done();
+                        }
+                        new UserModel().getModel().remove({ email: "gg" }).then(done);
+                    });
+            },
+            (error: any) => {
                 expect(true).toBe(false);
                 done();
             });
     });
 
-    it("should know when a username or email is already taken in temp users", (done) => {
+    it("should know when a username is already taken in temp users", (done) => {
         tempUserModel.commitTempUserData(
             "test@test.com",
             "password",
             "deadbeef",
             "deadbeef",
             "testing")
-            .then(() => {
-                return tempUserModel.emailAndUsernameAreUnique("uniqueAlias", "test@test.com");
-            })
-            // This promise chain should never execute.
-            .then(() => {
-                return tempUserModel.getModel().remove({ email: "test@test.com" });
-            })
-            .then(() => {
-                expect(true).toBe(false);
-                done();
-            })
-            .catch((error: any) => {
-                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
-            })
-            .then(() => {
+            .flatMap(() => {
                 return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com");
             })
-            // This promise chain should never execute.
-            .then(() => {
-                return tempUserModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                expect(true).toBe(false);
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(
+            () => {
+                tempUserModel.getModel().remove({ email: "test@test.com" })
+                    .then(() => {
+                        expect(true).toBe(false);
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
-            })
-            .then(() => {
-                return tempUserModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                done();
+                tempUserModel.getModel().remove({ email: "test@test.com" })
+                    .then(() => {
+                        done();
+                    });
             });
     });
 
-    it("should know when a username or email is already taken in users", (done) => {
+    it("should know when an email is already taken in temp users", (done) => {
+        tempUserModel.commitTempUserData(
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "deadbeef",
+            "testing")
+            .flatMap(() => {
+                return tempUserModel.emailAndUsernameAreUnique("uniqueAlias", "test@test.com");
+            })
+            .subscribe(
+            () => {
+                tempUserModel.getModel().remove({ email: "test@test.com" })
+                    .then(() => {
+                        expect(true).toBe(false);
+                        done();
+                    });
+            },
+            (error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+                tempUserModel.getModel().remove({ email: "test@test.com" })
+                    .then(() => {
+                        done();
+                    });
+            });
+    });
+
+    it("should know when a username is already taken in users", (done) => {
         const userModel = new UserModel();
         tempUserModel.commitUserData(
             userModel,
@@ -273,45 +299,47 @@ describe("TempUserModel", () => {
             "password",
             "deadbeef",
             "testing")
-            .then(() => {
-                return tempUserModel.emailAndUsernameAreUnique("uniqueAlias", "test@test.com");
-            })
-            // This promise chain should never execute.
-            .then(() => {
-                return userModel.getModel().remove({ email: "test@test.com" });
-            })
-            .then(() => {
-                expect(true).toBe(false);
-                done();
-            })
-            .catch((error: any) => {
-                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
-            })
-            .then(() => {
+            .flatMap(() => {
                 return tempUserModel.emailAndUsernameAreUnique("testing", "unique@unique.com");
             })
-            // This promise chain should never execute.
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                expect(true).toBe(false);
-                registrationSpy.and.callThrough();
-                registrationHashSpy.and.callThrough();
-                done();
-            })
-            .catch((error: any) => {
-                registrationSpy.and.callThrough();
-                registrationHashSpy.and.callThrough();
+            .subscribe(
+            () => {
+                userModel.getModel().remove({ email: "test@test.com" }, () => {
+                    expect(true).toBe(false);
+                    done();
+                });
+            },
+            (error: any) => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+                userModel.getModel().remove({ email: "test@test.com" }, () => {
+                    done();
+                });
+            });
+    });
+
+    it("should know when an email is already taken in users", (done) => {
+        const userModel = new UserModel();
+        tempUserModel.commitUserData(
+            userModel,
+            "test@test.com",
+            "password",
+            "deadbeef",
+            "testing")
+            .flatMap(() => {
+                return tempUserModel.emailAndUsernameAreUnique("uniqueAlias", "test@test.com");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                registrationSpy.and.callThrough();
-                registrationHashSpy.and.callThrough();
-                done();
+            .subscribe(
+            () => {
+                userModel.getModel().remove({ email: "test@test.com" }, () => {
+                    expect(true).toBe(false);
+                    done();
+                });
+            },
+            (error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR.code);
+                userModel.getModel().remove({ email: "test@test.com" }, () => {
+                    done();
+                });
             });
     });
 
@@ -328,53 +356,50 @@ describe("UserModel", () => {
 
     it("should throw an error when fetching a salt for a non-existant user", (done) => {
         userModel.getUserSalt("fakedude")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 done();
-            })
-            .catch((error: any) => {
+            },
+            (error: any) => {
                 expect(error.code).toBe(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
                 done();
             });
     });
 
     it("should be able to get the salt of a registered user", (done) => {
-        let returnedSalt: string;
+
         tempUserModel.commitUserData(
             userModel,
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
+            "testing")
+            .flatMap(() => {
                 return userModel.getUserSalt("test@test.com");
             })
-            .then((salt: string) => {
-                returnedSalt = salt;
-
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                expect(returnedSalt).toBe("deadbeef");
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe((salt: string) => {
+                expect(salt).toBe("deadbeef");
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error).toBeFalsy();
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        done();
+                    });
             });
     });
 
     it("should throw an error when checking for a user that doesn't exist", (done) => {
         userModel.checkUserExists("test@test.com")
-            .then(() => {
+            .subscribe(() => {
                 expect(true).toBe(false);
                 done();
-            })
-            .catch((error: any) => {
+            },
+            (error: any) => {
                 expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
                 done();
             });
@@ -386,23 +411,22 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
+            "testing")
+            .flatMap(() => {
                 return userModel.checkUserExists("test@test.com");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(() => {
+                return userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error).toBeFalsy();
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        done();
+                    });
             });
     });
 
@@ -416,28 +440,28 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
+            "testing")
+            .flatMap(() => {
                 return userModel.confirmPasswordsMatch("test@test.com", "password");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.stub();
-                expect(true).toBe(false);
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(() => {
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.stub();
+                        expect(true).toBe(false);
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error.message).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.message);
                 expect(passwordSpy).toHaveBeenCalledTimes(1);
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.stub();
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.stub();
+                        done();
+                    });
             });
+
     });
 
     it("should detect when passwords don't match", (done) => {
@@ -450,60 +474,61 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
+            "testing")
+            .flatMap(() => {
                 return userModel.confirmPasswordsMatch("test@test.com", "passwor");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.stub();
-                expect(true).toBe(false);
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(() => {
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.stub();
+                        expect(true).toBe(false);
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(passwordSpy).toHaveBeenCalledTimes(1);
                 expect(error.message).toEqual(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.stub();
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.stub();
+                        done();
+                    });
             });
     });
 
     it("should detect when passwords match", (done) => {
         passwordSpy.calls.reset();
         passwordSpy.and.stub();
-        passwordSpy.and.returnValue("password");
+        passwordSpy.and.returnValue(Observable.create((observer: any) => {
+            observer.next("password");
+        }));
 
         tempUserModel.commitUserData(
             userModel,
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
-                return userModel.confirmPasswordsMatch("test@test.com", "passwor");
+            "testing")
+            .flatMap(() => {
+                return userModel.confirmPasswordsMatch("test@test.com", "password");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.stub();
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(() => {
+                return userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.stub();
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error).toBeFalsy();
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.stub();
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.stub();
+                        done();
+                    });
             });
+
     });
 
     it("should know when user credentials are invalid", (done) => {
@@ -515,28 +540,27 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
+            "testing")
+            .flatMap(() => {
                 return userModel.authenticate("test@test.com", "passwor");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                confirmPasswordsMatchSpy.and.stub();
-                passwordSpy.and.stub();
-                expect(true).toBe(false);
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(() => {
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        confirmPasswordsMatchSpy.and.stub();
+                        passwordSpy.and.stub();
+                        expect(true).toBe(false);
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error.message).toEqual(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                confirmPasswordsMatchSpy.and.stub();
-                passwordSpy.and.stub();
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        confirmPasswordsMatchSpy.and.stub();
+                        passwordSpy.and.stub();
+                        done();
+                    });
             });
     });
 
@@ -549,26 +573,30 @@ describe("UserModel", () => {
             "test@test.com",
             "password",
             "deadbeef",
-            "testing",
-        )
-            .then(() => {
+            "testing")
+            .flatMap(() => {
                 return userModel.authenticate("test@test.com", "password");
             })
-            .then(() => {
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.returnValue(Promise.resolve("HASH"));
-                done();
-            })
-            .catch((error: any) => {
+            .subscribe(() => {
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.returnValue(Observable.create((observable: any) => {
+                            observable.next("HASH");
+                        }));
+                        done();
+                    });
+            },
+            (error: any) => {
                 expect(error).toBeFalsy();
-                return userModel.getModel().remove({ username: "testing" });
-            })
-            .then(() => {
-                passwordSpy.and.returnValue(Promise.resolve("HASH"));
-                done();
+                userModel.getModel().remove({ username: "testing" })
+                    .then(() => {
+                        passwordSpy.and.returnValue(Observable.create((observable: any) => {
+                            observable.next("HASH");
+                        }));
+                        done();
+                    });
             });
+
     });
 
 });
