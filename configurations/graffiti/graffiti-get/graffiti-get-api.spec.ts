@@ -1,7 +1,7 @@
-import { GraffitiGetAPi } from "./graffiti-get-api";
+import { GraffitiGetAPI } from "./graffiti-get-api";
 
-describe("GraffitiGetAPI", () => {
-    const graffitiGetAPi = new GraffitiGetAPi();
+describe("graffitiGetAPI", () => {
+    const graffitiGetAPI = new GraffitiGetAPI();
 
     it("should reject graffiti-get call that wasn't made with GET", () => {
         const input = {
@@ -9,9 +9,9 @@ describe("GraffitiGetAPI", () => {
         };
 
         try {
-            graffitiGetAPi.validateParams(graffitiGetAPi.GRAFFITI_GET, input, "post");
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET, input, "post");
         } catch (e) {
-            expect(e.name).toEqual(graffitiGetAPi.METHOD_ERROR);
+            expect(e.name).toEqual(graffitiGetAPI.METHOD_ERROR);
         }
     });
 
@@ -19,18 +19,18 @@ describe("GraffitiGetAPI", () => {
         const input = {};
 
         try {
-            graffitiGetAPi.validateParams(graffitiGetAPi.GRAFFITI_GET_RANDOM, input, "post");
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_RANDOM, input, "post");
         } catch (e) {
-            expect(e.name).toEqual(graffitiGetAPi.METHOD_ERROR);
+            expect(e.name).toEqual(graffitiGetAPI.METHOD_ERROR);
         }
     });
 
     it("should reject a call to get-graffiti without parameters", () => {
         try {
-            graffitiGetAPi.validateParams(graffitiGetAPi.GRAFFITI_GET, {}, "get");
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET, {}, "get");
             expect(true).toBe(false);
         } catch (e) {
-            expect(e.name).toEqual(graffitiGetAPi.MISSING_PARAMETER_ERROR);
+            expect(e.name).toEqual(graffitiGetAPI.MISSING_PARAMETER_ERROR);
         }
     });
 
@@ -40,10 +40,10 @@ describe("GraffitiGetAPI", () => {
         };
 
         try {
-            graffitiGetAPi.validateParams(graffitiGetAPi.GRAFFITI_GET, input, "get");
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET, input, "get");
             expect(true).toBe(false);
         } catch (e) {
-            expect(e.name).toEqual(graffitiGetAPi.PARAMETER_TYPE_ERROR);
+            expect(e.name).toEqual(graffitiGetAPI.PARAMETER_TYPE_ERROR);
         }
     });
 
@@ -53,10 +53,10 @@ describe("GraffitiGetAPI", () => {
         };
 
         try {
-            graffitiGetAPi.validateParams(graffitiGetAPi.GRAFFITI_GET, input, "get");
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET, input, "get");
             expect(true).toBe(false);
         } catch (e) {
-            expect(e.name).toEqual(graffitiGetAPi.PARAMETER_REGEX_ERROR);
+            expect(e.name).toEqual(graffitiGetAPI.PARAMETER_REGEX_ERROR);
         }
     });
 
@@ -66,9 +66,9 @@ describe("GraffitiGetAPI", () => {
         };
 
         try {
-            graffitiGetAPi.validateParams(graffitiGetAPi.GRAFFITI_GET_RANDOM, input, "get");
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_RANDOM, input, "get");
         } catch (e) {
-            expect(e.name).toEqual(graffitiGetAPi.NO_SUCH_PARAMETER_ERROR);
+            expect(e.name).toEqual(graffitiGetAPI.NO_SUCH_PARAMETER_ERROR);
         }
     });
 

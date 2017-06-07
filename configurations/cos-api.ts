@@ -93,7 +93,9 @@ export abstract class CoSAPI {
 
             const inputParameterValue: any = inputParameters[constraint.name];
 
-            if (constraint.required && !inputParameterValue) {
+            // Need to skip this validation if the parameter is a boolean due
+            // to possible 'false' value
+            if (constraint.required && !inputParameterValue && constraint.schema.type !== "boolean") {
                 error = new Error("Parameter '" + constraint.name + "' is required.");
                 error.name = this.MISSING_PARAMETER_ERROR;
                 throw error;

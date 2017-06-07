@@ -5,6 +5,10 @@ import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";
 import { CoSRouter } from "./routes/cos-router";
 
+// These are temporary
+import { GraffitiModel } from "./models/graffiti/graffiti-model";
+import { UserModel } from "./models/user/user-model";
+
 /**
  * The main server for CoS. Make all calls to intialize components of backend
  * including the database and middleware.
@@ -34,6 +38,7 @@ export class CoSServer {
                 this.intializeMiddleware();
                 this.app.use("/", this.router.getRouter());
                 this.listenToSocket(8000);
+
             }, (error) => {
                 process.stderr.write("MongoDB connection error. Please make sure MongoDB is running.\n");
             });

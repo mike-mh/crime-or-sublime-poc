@@ -37,19 +37,6 @@ describe("UserRateAPI", () => {
         }
     });
 
-    it("should reject a call to user-rate without a rating", () => {
-        const input = {
-            id: "deadbeef",
-        };
-
-        try {
-            userRateAPI.validateParams(userRateAPI.USER_RATE, input, "post");
-            expect(true).toBe(false);
-        } catch (e) {
-            expect(e.name).toEqual(userRateAPI.MISSING_PARAMETER_ERROR);
-        }
-    });
-
     it("should reject a call to user-rate with an id that is not a string", () => {
         const input = {
             id: {},

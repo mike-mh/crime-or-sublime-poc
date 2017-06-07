@@ -3,6 +3,8 @@
 export const CRIME: boolean = false;
 export const SUBLIME: boolean = true;
 
+export type CrimeOrSublimeRaitng = boolean;
+
 class CoSError extends Error {
     public code: number;
     constructor(name: string, message: string, code: number) {
@@ -15,17 +17,21 @@ class CoSError extends Error {
 enum ErrrorCodes {
     DATABASE_DELETION_ERROR = 1,
     DATABASE_GRAFFITI_DOES_NOT_EXIST,
+    DATABASE_GRAFFITI_UPDATE_ERROR,
+    DATABASE_RATING_UPDATE_ERROR,
     DATABASE_RETRIEVE_ERROR,
     DATABASE_SAVE_ERROR,
     DATABASE_USER_DOES_NOT_EXIST_ERROR,
     DATABASE_USER_IDENTIFIER_TAKEN_ERROR,
     DATABASE_USER_INVALID_PASSWORD_ERROR,
+    DATABASE_USER_RATING_ERROR,
     DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR,
     HTTP_SEND_ERROR,
     PBKDF2_HASH_ERROR,
     RECAPTCHA_RESPONSE_FAILURE,
     SALT_GENERATION_ERROR,
     SESSION_CREATE_FAILURE,
+    USER_DOUBLE_RATE_ERROR,
 }
 
 export class CoSServerConstants {
@@ -94,4 +100,18 @@ export class CoSServerConstants {
         "An error occured retrieving element from the database.",
         ErrrorCodes.DATABASE_RETRIEVE_ERROR);
 
+    public static readonly USER_DOUBLE_RATE_ERROR = new CoSError(
+        "UserDoubleRateError",
+        "Tried to assign a rating on a graffiti more than once.",
+        ErrrorCodes.USER_DOUBLE_RATE_ERROR);
+
+    public static readonly DATABASE_GRAFFITI_UPDATE_ERROR = new CoSError(
+        "DatabaseGraffitiUpdateError",
+        "An error occured trying to update graffiti data.",
+        ErrrorCodes.DATABASE_GRAFFITI_UPDATE_ERROR);
+    
+    public static readonly DATABASE_RATING_UPDATE_ERROR = new CoSError(
+        "DatabaseRatingUpdateError",
+        "An error occured trying to update user rating data.",
+        ErrrorCodes.DATABASE_RATING_UPDATE_ERROR);
 }

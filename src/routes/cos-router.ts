@@ -2,7 +2,9 @@ import { Request, RequestHandler, Response, Router } from "express";
 import { resolve } from "path";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
 import { CoSRouteConstants, RequestPathTupleIndices } from "./cos-route-constants";
+import { GraffitiGetRouter } from "./graffiti/graffiti-get/graffiti-get-router";
 import { SessionRouter } from "./session/session-router";
+import { UserRateRouter } from "./user/user-rate/user-rate-router";
 import { UserRegisterRouter } from "./user/user-register/user-register-router";
 
 /**
@@ -40,6 +42,8 @@ export class CoSRouter {
      public intializeRouteHandlers(): void {
          this.routeHandlers.push(new SessionRouter(this.router));
          this.routeHandlers.push(new UserRegisterRouter(this.router));
+         this.routeHandlers.push(new UserRateRouter(this.router));
+         this.routeHandlers.push(new GraffitiGetRouter(this.router));
      }
 
     /**

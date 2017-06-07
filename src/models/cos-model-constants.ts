@@ -1,4 +1,5 @@
 import { Document, Schema } from "mongoose";
+import { CrimeOrSublimeRaitng } from "../cos-server-constants";
 
 export const CRIME: number = -1;
 export const SUBLIME: number = 1;
@@ -68,22 +69,25 @@ export const GraffitiModelSchema = new Schema({
  * Use this to contain all schemas and document interfaces for needed models.
  */
 export interface IUserGraffitiRatingDocument extends Document {
-    graffiti: IGraffitiDocument;
-    rating: number;
+    email: string;
+    graffitiUrl: string;
+    rating: CrimeOrSublimeRaitng;
 }
 
 export const UserGraffitiRatingModelSchema = new Schema({
-    graffiti: GraffitiModelSchema,
+    email: String,
+    graffitiUrl: String,
     rating: {
-        default: 0,
         required: true,
-        type: Number,
+        type: Boolean,
     },
 });
 
 export interface IUserDocument extends Document {
     email: string;
+    favourites?: Schema.Types.ObjectId[];
     password: string;
+    ratings?: IUserGraffitiRatingDocument[];
     salt: string;
     username: string;
 }
@@ -99,12 +103,13 @@ export const UserModelSchema: Schema = new Schema(
             type: String,
             unique: true,
         },
-        favourites: [Schema.Types.ObjectId],
+        favourites: [new Schema({url: String})],
         password: {
             required: true,
             select: false,
             type: String,
         },
+        ratings: [UserGraffitiRatingModelSchema],
         salt: {
             required: true,
             select: false,

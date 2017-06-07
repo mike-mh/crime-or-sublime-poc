@@ -1,10 +1,12 @@
 import { Component, OnDestroy } from "@angular/core";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
-import { ISessionDetails, SessionService } from "../shared/session/session.service";
+import { Subscription } from "rxjs/Subscription";
+import { ISessionDetails, SessionService } from "./../shared/session/session.service";
+import { RateService } from "./rate.service";
 
 @Component({
-    providers: [SessionService],
+    providers: [RateService, SessionService],
     selector: "rate",
     styleUrls: ["./rate.component.css"],
     templateUrl: "./rate.component.html",
@@ -15,7 +17,9 @@ import { ISessionDetails, SessionService } from "../shared/session/session.servi
  */
 export class RateComponent implements OnDestroy {
     public isLoggedIn: boolean = false;
+    public displayedGraffiti: string;
     private sessionStatus: SubjectSubscription<ISessionDetails>;
+    private getRandomGraffitiSubscription: Subscription;
 
     private sessionUpdateCallback: Observer<ISessionDetails> = {
         complete: null,
@@ -29,10 +33,44 @@ export class RateComponent implements OnDestroy {
         },
     };
 
-    constructor(private sessionService: SessionService) {
+    constructor(private rateService: RateService, private sessionService: SessionService) {
         this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
         SessionService.sessionStatusEmitter.subscribe(this.sessionUpdateCallback);
         this.isLoggedIn = SessionService.isSessionActive();
+
+        this.rateService.getRandomGraffiti().subscribe(
+            (graffiti: any) => {
+                this.displayedGraffiti = graffiti.url;
+            });
+    }
+
+    /**
+     * Use this to generate a new random graffiti image.
+     */
+    public getRandomGraffiti(): void {
+        this.rateService.getRandomGraffiti().subscribe(
+            (graffiti: any) => {
+                this.displayedGraffiti = graffiti.url;
+            });
+    }
+
+    /**
+     * Use this to rate a graffiti.
+     *
+     * @param rating - The rating assigned to a graffiti
+     */
+    public rateGraffiti(rating: boolean) {
+        this.rateService.rateGraffiti(this.displayedGraffiti, rating).subscribe(
+            (response: any) => {
+                this.rateService.getRandomGraffiti().subscribe(
+                    (graffiti: any) => {
+                        this.displayedGraffiti = graffiti.url;
+                    });
+            },
+            (error: any) => {
+                return;
+            },
+        );
     }
 
     /**
