@@ -329,6 +329,51 @@ export const cosAPI: any = {
                 ]
             }
         },
+        "/user-rate-add-favourite": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "User adds a graffiti to his favourites list.",
+                "responses": {
+                    "200": {
+                        "description": "The user has added the graffiti to his favourites list.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseString"
+                        }
+                    },
+                    "AlreadyFavouritedGraffitiError": {
+                        "$ref": "#/responses/AlreadyFavouritedGraffiti"
+                    },
+                    "GraffitiDoesNotExistError": {
+                        "$ref": "#/responses/GraffitiDoesNotExist"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSession": {
+                        "$ref": "#/responses/NoActiveSession"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the rated graffiti.",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    }                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
         "/user-register-confirm/:id/:key": {
             "get": {
                 "consumes": [
@@ -401,6 +446,9 @@ export const cosAPI: any = {
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
+                    },
+                    "UsernameOrEmailTakenError": {
+                        "$ref": "#/definitions/UsernameOrEmailTaken"
                     }
                 },
                 "parameters": [
@@ -463,6 +511,12 @@ export const cosAPI: any = {
                 "$ref": "#/definitions/errorResponse"
             }
         },
+        "AlreadyFavouritedGraffiti": {
+            "description": "Someone tried to favourtie a graffiti more than once.",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
         "AlreadyRatedGraffiti": {
             "description": "Someone tried to reassign the same rating to a graffiti.",
             "schema": {
@@ -513,6 +567,12 @@ export const cosAPI: any = {
         },
         "SessionLockout": {
             "description": "A user has been locked out for attempting to login to many times. This should only be triggered after a client fails to sign on over 1000 times",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "UsernameOrEmailTaken": {
+            "description": "Someone tried to register with a taken username or email",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }

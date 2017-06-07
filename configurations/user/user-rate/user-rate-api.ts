@@ -2,8 +2,15 @@ import { CoSAPI } from "../../cos-api";
 
 export class UserRateAPI extends CoSAPI {
     public readonly USER_RATE: string = "/user-rate";
+    public readonly USER_RATE_ADD_FAVOURITE: string = "/user-rate-add-favourite";
 
     public readonly responses = {
+        AlreadyFavouritedGraffitiError: {
+            error: {
+                message: "User already favourited this graffiti",
+                name: "AlreadyFavouritedGraffitiError",
+            },
+        },
         AlreadyRatedGraffitiError: {
             error: {
                 message: "User already rated this graffiti",
@@ -40,6 +47,7 @@ export class UserRateAPI extends CoSAPI {
         super();
         this.associatePathsWithMethodsAndParams([
             this.USER_RATE,
+            this.USER_RATE_ADD_FAVOURITE,
         ]);
     }
 }

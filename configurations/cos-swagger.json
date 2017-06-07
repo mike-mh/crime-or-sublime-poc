@@ -300,6 +300,51 @@
                 ]
             }
         },
+        "/user-rate-add-favourite": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "User adds a graffiti to his favourites list.",
+                "responses": {
+                    "200": {
+                        "description": "The user has added the graffiti to his favourites list.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseString"
+                        }
+                    },
+                    "AlreadyFavouritedGraffitiError": {
+                        "$ref": "#/responses/AlreadyFavouritedGraffiti"
+                    },
+                    "GraffitiDoesNotExistError": {
+                        "$ref": "#/responses/GraffitiDoesNotExist"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSession": {
+                        "$ref": "#/responses/NoActiveSession"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the rated graffiti.",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    }                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
         "/user-register-confirm/:id/:key": {
             "get": {
                 "consumes": [
@@ -433,6 +478,12 @@
     "responses": {
         "AlreadyActiveSession": {
             "description": "Someone attempted to create a session over an already active sesison",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "AlreadyFavouritedGraffiti": {
+            "description": "Someone tried to favourtie a graffiti more than once.",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }
