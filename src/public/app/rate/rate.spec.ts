@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { DebugElement, EventEmitter, NgZone } from "@angular/core";
-import { async, ComponentFixture, inject, TestBed } from "@angular/core/testing";
+import { async, ComponentFixture, inject, TestBed, tick } from "@angular/core/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { HttpModule, Response, ResponseOptions, XHRBackend } from "@angular/http";
 import { MockBackend } from "@angular/http/testing";
@@ -20,6 +20,7 @@ describe("RateComponent", () => {
 
     const htmlElements: {} = {};
     const buttonIDs: string[] = [
+        "#cos-rate",
         "#cos-rate-graffiti-image",
         "#cos-rate-favourite-button",
         "#cos-rate-random-button",
@@ -27,24 +28,27 @@ describe("RateComponent", () => {
         "#cos-rate-sublime-button",
     ];
 
-    const rateServiceStub = {
-        getRandomGraffiti: () => {
+    const getRandomGraffiti = () => {
             return Observable.create((observer: any) => {
                 const random = Math.floor(2 * Math.random());
                 const options = [
                     "xHrnW91",
                     "Nmu4brX",
                 ];
-                observer.next({ url: options[random] });
+                observer.next({ url: "Nmu4brX" });
             });
-        },
-        rateGraffiti: (rating: boolean) => {
+        };
+
+    const rateGraffiti = (graffitiUrl: string, rating: boolean) => {
             return Observable.create((observer: any) => {
                 expect(rating).toBe(expectedRating);
                 observer.next(expectedRating);
             });
+        };
 
-        }
+    const rateServiceStub = {
+        getRandomGraffiti,
+        rateGraffiti,
     };
 
     /**
@@ -133,11 +137,20 @@ describe("RateComponent", () => {
 
     it("should have a sublime button", () => {
         expect(isElementRendered("#cos-rate-sublime-button")).toBe(true);
+
+        isLoggedIn = false;
+    });
+
+    it("should not display when user is logged off", () => {
+        expect(isElementRendered("#cos-rate")).toBe(false);
+
+        isLoggedIn = true;
     });
 
     it("should get a random graffiti image when the user clicks the random button", async(() => {
         const service = fixture.debugElement.injector.get(RateService);
         const randomSpy = spyOn(service, "getRandomGraffiti");
+        randomSpy.and.returnValue(getRandomGraffiti());
         const randomButton = htmlElements["#cos-rate-random-button"];
         randomButton.click();
         fixture.whenStable().then(() => {
@@ -145,34 +158,56 @@ describe("RateComponent", () => {
         });
     }));
 
-
     it("should get a random graffiti image and set a CRIME rating when the user clicks the crime button", async(
-            () => {
-                expectedRating = false;
-                const service = fixture.debugElement.injector.get(RateService);
-                const randomSpy = spyOn(service, "getRandomGraffiti");
-                const crimeSpy = spyOn(service, "rateGraffiti");
-                const randomButton = htmlElements["#cos-rate-crime-button"];
-                randomButton.click();
-                fixture.whenStable().then(() => {
-                    expect(crimeSpy).toHaveBeenCalledTimes(1);
-                    crimeSpy.and.stub();
+        () => {
+            expectedRating = false;
+            const service = fixture.debugElement.injector.get(RateService);
+            const randomSpy = spyOn(service, "getRandomGraffiti");
+            randomSpy.and.returnValue(getRandomGraffiti());
+
+            const crimeSpy = spyOn(service, "rateGraffiti");
+            // Check proper parameter is passed.
+            crimeSpy.and.callFake((url: string, rating: boolean) => {
+                expect(rating).toBe(expectedRating);
+
+                return Observable.create((observer: any) => {
+                    observer.next();
                 });
-            }));
-    
-        it("should get a random graffiti image and set a SUBLIME rating when the user clicks the sublime button", async(
-            () => {
-                expectedRating = true;
-                const service = fixture.debugElement.injector.get(RateService);
-                const randomSpy = spyOn(service, "getRandomGraffiti");
-                const sublimeSpy = spyOn(service, "rateGraffiti");
-                const randomButton = htmlElements["#cos-rate-sublime-button"];
-                randomButton.click();
-                fixture.whenStable().then(() => {
-                    expect(sublimeSpy).toHaveBeenCalledTimes(1);
-                    sublimeSpy.and.stub();
+            });
+
+            const randomButton = htmlElements["#cos-rate-crime-button"];
+            randomButton.click();
+            fixture.whenStable().then(() => {
+                expect(crimeSpy).toHaveBeenCalledTimes(1);
+                crimeSpy.and.stub();
+            });
+        }));
+
+    it("should get a random graffiti image and set a SUBLIME rating when the user clicks the sublime button", async(
+        () => {
+            expectedRating = true;
+            const service = fixture.debugElement.injector.get(RateService);
+            const randomSpy = spyOn(service, "getRandomGraffiti");
+            randomSpy.and.returnValue(getRandomGraffiti());
+
+            const sublimeSpy = spyOn(service, "rateGraffiti");
+
+            // Check proper parameter is passed.
+            sublimeSpy.and.callFake((url: string, rating: boolean) => {
+                expect(rating).toBe(expectedRating);
+
+                return Observable.create((observer: any) => {
+                    observer.next();
                 });
-            }));
+            });
+
+            const randomButton = htmlElements["#cos-rate-sublime-button"];
+            randomButton.click();
+            fixture.whenStable().then(() => {
+                expect(sublimeSpy).toHaveBeenCalledTimes(1);
+                sublimeSpy.and.stub();
+            });
+        }));
 
     // TO-DO: Need to add tests for adding to favourites when implemented.
 
