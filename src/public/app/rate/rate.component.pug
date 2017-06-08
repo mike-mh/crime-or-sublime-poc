@@ -1,14 +1,14 @@
 #cos-rate(*ngIf="isLoggedIn")
   #cos-rate-graffiti-image-random-and-favourite-button
-    #cos-rate-graffiti-image
-      img([src]="'http://i.imgur.com/' + displayedGraffiti + 'l.jpg'")
+    #cos-rate-graffiti-image-div
+      img#cos-rate-graffiti-image([src]="'http://i.imgur.com/' + displayedGraffiti + 'l.jpg'")
     #cos-rate-favourite-and-random-buttons
       button#cos-rate-favourite-button
         | Add to favourites
       button#cos-rate-random-button((click)="getRandomGraffiti()")
         | Random
-  #cos-rate-rating-button
-    button((click)="rateGraffiti(false)")
+  #cos-rate-rating-buttons
+    button#cos-rate-crime-button((click)="rateGraffiti(false)")
       | Crime
-    button((click)="rateGraffiti(true)")
+    button#cos-rate-sublime-button((click)="rateGraffiti(true)")
       | Sublime
