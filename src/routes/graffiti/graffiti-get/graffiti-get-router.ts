@@ -61,7 +61,7 @@ export class GraffitiGetRouter extends CoSAbstractRouteHandler {
     private graffitiGet(req: Request, res: Response): void {
         try {
             GraffitiGetRouter.graffitiGetAPi.validateParams(
-                GraffitiGetRouter.graffitiGetAPi.GRAFFITI_GET, req.body, req.method);
+                GraffitiGetRouter.graffitiGetAPi.GRAFFITI_GET, req.params, req.method);
         } catch (error) {
             res.json(GraffitiGetRouter.responses.InvalidParametersError);
             return;

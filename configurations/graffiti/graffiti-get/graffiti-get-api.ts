@@ -1,7 +1,7 @@
 import { CoSAPI } from "../../cos-api";
 
 export class GraffitiGetAPI extends CoSAPI {
-    public readonly GRAFFITI_GET: string = "/graffiti-get";
+    public readonly GRAFFITI_GET: string = "/graffiti-get/:id";
     public readonly GRAFFITI_GET_RANDOM: string = "/graffiti-get-random";
 
     public readonly responses = {

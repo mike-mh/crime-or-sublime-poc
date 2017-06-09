@@ -133,7 +133,4 @@ describe("UserRegisterRouter", () => {
         registerUserRouter.userRegisterConfirm(req, res);
     });
 
-    /**
-     * TO-DO: Add tests for physical insertion of documents into the data base.
-     */
 });

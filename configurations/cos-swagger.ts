@@ -81,7 +81,7 @@ export const cosAPI: any = {
     },
     "host": "https://crime-or-sublime.herokuapp.com",
     "paths": {
-        "/graffiti-get": {
+        "/graffiti-get/:id": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -107,7 +107,7 @@ export const cosAPI: any = {
                 "parameters": [
                     {
                         "description": "The URL of the graffiti to retrieve",
-                        "in": "body",
+                        "in": "path",
                         "name": "id",
                         "required": true,
                         "schema": {

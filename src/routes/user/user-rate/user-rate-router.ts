@@ -48,7 +48,7 @@ export class UserRateRouter extends CoSAbstractRouteHandler {
                 res.json({result: "success"});
             },
             (error) => {
-                if (error.code === CoSServerConstants.DATABASE_GRAFFITI_DOES_NOT_EXIST.code) {
+                if (error.code === CoSServerConstants.DATABASE_RETRIEVE_ERROR.code) {
                     res.json(UserRateRouter.responses.GraffitiDoesNotExistError);
                     return;
                 }
