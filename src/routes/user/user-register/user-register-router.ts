@@ -99,7 +99,7 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                 });
             },
             (error) => {
-                if (error.code === CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR.code) {
+                if (error.code === CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND.code) {
                     res.json(UserRegisterRouter.responses.InvalidRegistrationError);
                     return;
                 }

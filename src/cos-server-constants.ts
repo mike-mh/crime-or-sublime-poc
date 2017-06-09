@@ -18,9 +18,11 @@ enum ErrrorCodes {
     DATABASE_DELETION_ERROR = 1,
     DATABASE_GRAFFITI_DOES_NOT_EXIST,
     DATABASE_GRAFFITI_UPDATE_ERROR,
+    DATABASE_NO_DOCUMENTS_FOUND,
     DATABASE_RATING_UPDATE_ERROR,
     DATABASE_RETRIEVE_ERROR,
     DATABASE_SAVE_ERROR,
+    DATABASE_UPDATE_ERROR,
     DATABASE_USER_DOES_NOT_EXIST_ERROR,
     DATABASE_USER_IDENTIFIER_TAKEN_ERROR,
     DATABASE_USER_INVALID_PASSWORD_ERROR,
@@ -114,4 +116,15 @@ export class CoSServerConstants {
         "DatabaseRatingUpdateError",
         "An error occured trying to update user rating data.",
         ErrrorCodes.DATABASE_RATING_UPDATE_ERROR);
+
+    public static readonly DATABASE_NO_DOCUMENTS_FOUND = new CoSError(
+        "DatabaseNoDocumentsFound",
+        "Query returned no documents.",
+        ErrrorCodes.DATABASE_NO_DOCUMENTS_FOUND);
+
+    public static readonly DATABASE_UPDATE_ERROR = new CoSError(
+        "DatabaseUpdateError",
+        "Failed to update documents.",
+        ErrrorCodes.DATABASE_NO_DOCUMENTS_FOUND);
+
 }

@@ -23,6 +23,13 @@ export class TempUserModel extends CoSAbstractModel {
     }
 
     /**
+     * Getter for the model.
+     */
+    public getModel(): Model<ITempUserDocument> {
+        return this.model;
+    }
+
+    /**
      * Register new user to DB.
      *
      * @param username - New username.
@@ -40,25 +47,19 @@ export class TempUserModel extends CoSAbstractModel {
             .flatMap((key: string) => {
                 return PasswordHelper.generateSalt().flatMap((salt) => {
                     return PasswordHelper.hashPassword(password, salt).flatMap((hashedPassword: string) => {
-                        return this.commitTempUserData(
+                        return this.saveDocument({
                             email,
-                            hashedPassword,
-                            key,
+                            password: hashedPassword,
+                            registrationKey: key,
                             salt,
-                            username).flatMap(() => {
-                                return AuthenticationEmailer
-                                    .sendAuthenticationEmail(email, username, key);
-                            });
+                            username,
+                        }).flatMap(() => {
+                            return AuthenticationEmailer
+                                .sendAuthenticationEmail(email, username, key);
+                        });
                     });
                 });
             });
-    }
-
-    /**
-     * Getter for the model.
-     */
-    public getModel(): Model<ITempUserDocument> {
-        return this.model;
     }
 
     /**
@@ -72,21 +73,17 @@ export class TempUserModel extends CoSAbstractModel {
      */
     public registerUser(username: string, registrationKey: string): Observable<void> {
 
-        const registerUserObservable = this.getTempUserObservable(username, registrationKey)
-            .flatMap((tempUser) => {
-                const newUser = new UserModel();
+        return this.getDocument({ username, registrationKey })
+            .flatMap((tempUser: ITempUserDocument) => {
                 return this.commitUserData(
-                    newUser,
                     tempUser.email,
                     tempUser.password,
                     tempUser.salt,
-                    tempUser.username,
-                );
+                    tempUser.username);
+            })
+            .flatMap(() => {
+                return this.removeDocuments({ username, registrationKey });
             });
-
-        return registerUserObservable.flatMap(() => {
-            return this.removeTempUserObservable(username, registrationKey);
-        });
 
     }
 
@@ -100,99 +97,21 @@ export class TempUserModel extends CoSAbstractModel {
      *     just resolves.
      */
     private emailAndUsernameAreUnique(username: string, email: string): Observable<void> {
-        return Observable.fromPromise(
-            new UserModel().getModel()
-                .findOne({ $or: [{ email }, { username }] })
-                .then((user) => {
-                    if (user) {
-                        throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
-                    }
-                    // Need to check that another user hasn't submitted a new
-                    // account for registration with provided credentials.
-                    return this.getModel()
-                        .findOne({ $or: [{ email }, { username }] });
-                })
-                .then((user) => {
-                    if (user) {
-                        throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
-                    }
-                }));
-    }
+        const userModel = new UserModel();
 
-    /**
-     * This function removes a temp user using an observable instead of a
-     * promise
-     *
-     * @param username - Username to check.
-     * @param email - Email to check.
-     *
-     * @return - Observable that that triggers error if it occurs. Otherwise
-     *     just resolves.
-     */
-    private removeTempUserObservable(username: string, registrationKey: string): Observable<void> {
-        return Observable.fromPromise(
-            this.getModel()
-                .remove({ username, registrationKey }, (error) => {
-                    if (error) {
-                        throw CoSServerConstants.DATABASE_DELETION_ERROR;
-                    }
-                }));
-    }
+        return this.getDocuments({ $or: [{ email }, { username }] })
+            .flatMap((tempDocuments: ITempUserDocument[]) => {
+                if (tempDocuments.shift()) {
+                    throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
+                }
 
-    /**
-     * Use this function to get an observable for finding a temp-user instead
-     * of a promise.
-     *
-     * @param username - The username selected by a user.
-     * @param registrationKey - The registartion key assigned to a user.
-     *
-     * @return - Observable resolving to the intended temp-user document.
-     */
-    private getTempUserObservable(username: string, registrationKey: string): Observable<ITempUserDocument> {
-        return Observable.fromPromise(
-            this.getModel()
-                .findOne({ username, registrationKey })
-                .then((user) => {
-                    if (user) {
-                        return user;
-                    }
-
-                    throw CoSServerConstants.DATABASE_USER_REGISTRATION_CONFIRMATION_ERROR;
-
-                }));
-    }
-
-    /**
-     * Use this function to save temp user data to the database.
-     *
-     * @param email - The email of the user to save.
-     * @param hashedPassword - The hashed password of the user to save.
-     * @param registrationKey - The registration key of the user to save.
-     * @param salt - The salt of the user to save.
-     * @param username - The username of the user to save.
-     *
-     * @return - Promise that resolves to the data saved.
-     */
-    private commitTempUserData(
-        email: string,
-        password: string,
-        registrationKey: string,
-        salt: string,
-        username: string): Observable<ITempUserDocument> {
-
-        return Observable.fromPromise(
-            new (this.getModel())(
-                {
-                    email,
-                    password,
-                    registrationKey,
-                    salt,
-                    username,
-                }).save((error) => {
-                    if (error) {
-                        throw CoSServerConstants.DATABASE_SAVE_ERROR;
-                    }
-                }));
+                return userModel.getDocuments({ $or: [{ email }, { username }] })
+                    .map((userDocuments: IUserDocument[]) => {
+                        if (userDocuments.shift()) {
+                            throw CoSServerConstants.DATABASE_USER_IDENTIFIER_TAKEN_ERROR;
+                        }
+                    });
+            });
     }
 
     /**
@@ -208,25 +127,24 @@ export class TempUserModel extends CoSAbstractModel {
      * @return - Observable that resolves to the user document.
      */
     private commitUserData(
-        user: UserModel,
         email: string,
         password: string,
         salt: string,
         username: string): Observable<IUserDocument> {
+        const user = new UserModel();
 
         return Observable.fromPromise(
-            new (user.getModel())(
-                {
-                    email,
-                    lastLogin: new Date(),
-                    password,
-                    salt,
-                    username,
-                }).save((error) => {
-                    if (error) {
-                        throw CoSServerConstants.DATABASE_SAVE_ERROR;
-                    }
-                }));
+            new (user.getModel())({
+                email,
+                lastLogin: new Date(),
+                password,
+                salt,
+                username,
+            }).save((error) => {
+                if (error) {
+                    throw CoSServerConstants.DATABASE_SAVE_ERROR;
+                }
+            }));
 
     }
 }
