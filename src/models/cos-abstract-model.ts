@@ -23,15 +23,41 @@ export abstract class CoSAbstractModel {
     public abstract getModel(): Model<Document>;
 
     /**
+     * Use this to issue a query for a specific document.
+     *
+     * @param query - The document to search for.
+     * @param options - OPTIONAL. Include when options are needed for query.
+     *
+     * @return - An observable that resolves to the document queried for.
+     */
+    public getDocument(query: any, options?: any): Observable<Document> {
+        return Observable.create((observer: any) => {
+            this.getModel().findOne(query, options, (error: string, document: Document) => {
+                if (error) {
+                    observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+                }
+
+                if (!document) {
+                    observer.error(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND);
+                }
+
+                observer.next(document);
+                observer.complete();
+            });
+        });
+    }
+
+    /**
      * Use this to issue a query for an array of documents.
      *
      * @param query - The documents to search for.
+     * @param options - OPTIONAL. Include when options are needed for query.
      *
      * @return - An observable that resolves to an array of documents queried for.
      */
-    public getDocuments(query: any): Observable<Document[]> {
+    public getDocuments(query: any, options?: any): Observable<Document[]> {
         return Observable.create((observer: any) => {
-            this.getModel().find(query, (error: string, documents: Document[]) => {
+            this.getModel().find(query, options, (error: string, documents: Document[]) => {
                 if (error || !documents) {
                     observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
                 }
@@ -70,30 +96,6 @@ export abstract class CoSAbstractModel {
                 }
 
                 observer.next(retrievedDocument);
-                observer.complete();
-            });
-        });
-    }
-
-    /**
-     * Use this to issue a query for a specific document.
-     *
-     * @param query - The document to search for.
-     *
-     * @return - An observable that resolves to the document queried for.
-     */
-    protected getDocument(query: any): Observable<Document> {
-        return Observable.create((observer: any) => {
-            this.getModel().findOne(query, (error: string, document: Document) => {
-                if (error) {
-                    observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
-                }
-
-                if (!document) {
-                    observer.error(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND);
-                }
-
-                observer.next(document);
                 observer.complete();
             });
         });

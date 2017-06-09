@@ -313,7 +313,7 @@ describe("UserModel", () => {
                 done();
             },
             (error: any) => {
-                expect(error.code).toBe(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
+                expect(error.code).toBe(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND.code);
                 done();
             });
     });
@@ -347,7 +347,7 @@ describe("UserModel", () => {
                 done();
             },
             (error: any) => {
-                expect(error.code).toEqual(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR.code);
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND.code);
                 done();
             });
     });

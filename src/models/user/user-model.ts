@@ -62,21 +62,11 @@ export class UserModel extends CoSAbstractModel {
      */
     public rateGraffiti(email: string, url: string, rating: CrimeOrSublimeRaitng): Observable<void> {
         const graffitiModel = new GraffitiModel();
-        const userGraffitiRatingModel = new UserGraffitiRatingModel();
 
-        return Observable.fromPromise(
-            this.getModel().findOne({ email }))
-            .flatMap((user) => {
-                if (!user) {
-                    throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
-                }
-
-                return Observable.fromPromise(graffitiModel.getModel().findOne({ url }))
-                    .flatMap((graffiti) => {
-                        if (!graffiti) {
-                            throw CoSServerConstants.DATABASE_GRAFFITI_DOES_NOT_EXIST;
-                        }
-
+        return this.getDocument({ email })
+            .flatMap((user: IUserDocument) => {
+                return graffitiModel.getDocument({ url })
+                    .flatMap((graffiti: IGraffitiDocument) => {
                         const userRatings = user.ratings.filter((storedRating) => {
                             return (storedRating.graffitiUrl === url);
                         });
@@ -95,7 +85,6 @@ export class UserModel extends CoSAbstractModel {
                         return this.addNewRating(email, url, rating).flatMap(() => {
                             return graffitiModel.addRating(url, rating);
                         });
-
                     });
             });
     }
@@ -130,18 +119,10 @@ export class UserModel extends CoSAbstractModel {
      *
      * @param email - Email given by user.
      *
-     * @return - Void resolving promise
+     * @return - Observable that resolves to retrieved document.
      */
-    public checkUserExists(email: string): Observable<void> {
-        return Observable.fromPromise(
-            this.getModel()
-                .find({ email })
-                .then((users) => {
-                    if (users.length) {
-                        return;
-                    }
-                    throw CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR;
-                }));
+    public checkUserExists(email: string): Observable<IUserDocument> {
+        return this.getDocument({ email });
     }
 
     /**
@@ -152,20 +133,19 @@ export class UserModel extends CoSAbstractModel {
      * @return - Promise resolves to salt
      */
     private getUserSalt(email: string): Observable<string> {
-        return Observable.fromPromise(
-            new Promise((resolve, reject) => {
-                this.getModel()
-                    .find({ email }, { salt: 1 })
-                    .then((users) => {
-                        if (users.length) {
-                            resolve(users.shift().salt);
-                        }
-                        reject(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR);
-                    })
-                    .catch((error) => {
-                        reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+        return this.getDocument({ email }, { salt: 1 })
+            .flatMap((document: IUserDocument) => {
+                if (!document.salt) {
+                    return Observable.create((observer: any) => {
+                        observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
                     });
-            }));
+                }
+
+                return Observable.create((observer: any) => {
+                    observer.next(document.salt);
+                    observer.complete();
+                });
+            });
     }
 
     /**
@@ -177,20 +157,19 @@ export class UserModel extends CoSAbstractModel {
      * @return - Observable that resolves to the targeted user document.
      */
     private getUserPassword(email: string): Observable<string> {
-        return Observable.fromPromise(
-            new Promise((resolve, reject) => {
-                this.getModel()
-                    .findOne({ email }, { password: 1 })
-                    .then((user) => {
-                        if (!user) {
-                            reject(CoSServerConstants.DATABASE_USER_DOES_NOT_EXIST_ERROR);
-                        }
-                        resolve(user.password);
-                    })
-                    .catch((error) => {
-                        reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+        return this.getDocument({ email }, { password: 1 })
+            .flatMap((document: IUserDocument) => {
+                if (!document.password) {
+                    return Observable.create((observer: any) => {
+                        observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
                     });
-            }));
+                }
+
+                return Observable.create((observer: any) => {
+                    observer.next(document.password);
+                    observer.complete();
+                });
+            });
     }
 
     /**
@@ -208,21 +187,9 @@ export class UserModel extends CoSAbstractModel {
         graffitiUrl: string,
         rating: CrimeOrSublimeRaitng): Observable<void> {
 
-        return Observable.fromPromise(
-            new Promise((resolve, reject) => {
-                this.getModel().findOneAndUpdate(
-                    { email, "ratings.graffitiUrl": { $ne: graffitiUrl } },
-                    { $push: { ratings: { email, rating, graffitiUrl } } },
-                    (error, user) => {
-                        if (error || !user) {
-                            reject(CoSServerConstants.DATABASE_RATING_UPDATE_ERROR);
-                        }
-
-                        resolve();
-                    });
-            }).then(() => {
-                return;
-            }));
+        return this.findAndUpdateDocuments(
+            { email, "ratings.graffitiUrl": { $ne: graffitiUrl } },
+            { $push: { ratings: { email, rating, graffitiUrl } } });
     }
 
     /**
@@ -240,23 +207,10 @@ export class UserModel extends CoSAbstractModel {
         graffitiUrl: string,
         rating: CrimeOrSublimeRaitng): Observable<void> {
 
-        return Observable.fromPromise(
-            new Promise((resolve, reject) => {
-                this.getModel().findOneAndUpdate({ email, "ratings.graffitiUrl": graffitiUrl }, {
-                    $set: {
-                        "ratings.$.rating": rating,
-                    },
-                },
-                    (error, user) => {
-                        if (error || !user) {
-                            reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
-                        }
+        return this.findAndUpdateDocuments(
+            { email, "ratings.graffitiUrl": graffitiUrl },
+            { $set: { "ratings.$.rating": rating } });
 
-                        resolve();
-                    });
-            }).then(() => {
-                return;
-            }));
     }
 
 }
