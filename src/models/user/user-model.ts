@@ -187,7 +187,7 @@ export class UserModel extends CoSAbstractModel {
         graffitiUrl: string,
         rating: CrimeOrSublimeRaitng): Observable<void> {
 
-        return this.findAndUpdateDocuments(
+        return this.findAndUpdateDocument(
             { email, "ratings.graffitiUrl": { $ne: graffitiUrl } },
             { $push: { ratings: { email, rating, graffitiUrl } } });
     }

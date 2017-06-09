@@ -8,6 +8,7 @@ import { AuthenticationEmailer } from "./../../libs/authentication/authenticatio
 import { PasswordHelper } from "./../../libs/authentication/password-helper";
 import { RegistrationHelper } from "./../../libs/authentication/registration-helper";
 import { IUserDocument, TempUserModelSchema, UserModelSchema } from "./../cos-model-constants";
+import { GraffitiModel } from "./../graffiti/graffiti-model";
 import { TempUserModel } from "./temp-user-model";
 import { UserModel } from "./user-model";
 
@@ -298,12 +299,36 @@ describe("TempUserModel", () => {
 });
 
 describe("UserModel", () => {
-    let tempUserModel: any;
-    let userModel: any;
+    const tempUserModel: any = new TempUserModel();
+    const userModel: any = new UserModel();
+    const graffitiModel: any = new GraffitiModel();
 
-    beforeAll(() => {
-        tempUserModel = new TempUserModel();
-        userModel = new UserModel();
+    beforeAll((done) => {
+        userModel.saveDocument({
+            email: "test@test.com",
+            lastLogin: new Date(),
+            password: "password",
+            salt: "deadbeef",
+            username: "testing",
+        }).subscribe(() => {
+            graffitiModel.saveDocument({
+                latitude: 1,
+                longitude: 2,
+                url: "rabnar",
+            }).subscribe(done);
+        });
+    });
+
+    afterAll((done) => {
+        userModel.removeDocuments({
+            email: "test@test.com",
+        }).subscribe(() => {
+            graffitiModel.removeDocuments({
+                latitude: 1,
+                longitude: 2,
+                url: "rabnar",
+            }).subscribe(done);
+        });
     });
 
     it("should throw an error when fetching a salt for a non-existant user", (done) => {
@@ -320,28 +345,18 @@ describe("UserModel", () => {
 
     it("should be able to get the salt of a registered user", (done) => {
 
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.getUserSalt("test@test.com");
-            })
+        userModel.getUserSalt("test@test.com")
             .subscribe((salt: string) => {
                 expect(salt).toBe("deadbeef");
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             },
             (error: any) => {
                 expect(error).toBeFalsy();
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
             });
     });
 
     it("should throw an error when checking for a user that doesn't exist", (done) => {
-        userModel.checkUserExists("test@test.com")
+        userModel.checkUserExists("test@tink.com")
             .subscribe(() => {
                 expect(true).toBe(false);
                 done();
@@ -353,22 +368,12 @@ describe("UserModel", () => {
     });
 
     it("should be able to check an existing user exists", (done) => {
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.checkUserExists("test@test.com");
-            })
+        userModel.checkUserExists("test@test.com")
             .subscribe(() => {
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             },
             (error: any) => {
                 expect(error).toBeFalsy();
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
             });
     });
 
@@ -376,26 +381,15 @@ describe("UserModel", () => {
         const passwordSpy = spyOn(PasswordHelper, "hashPassword");
         passwordSpy.and.throwError(CoSServerConstants.PBKDF2_HASH_ERROR.message);
 
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.confirmPasswordsMatch("test@test.com", "password");
-            })
+        userModel.confirmPasswordsMatch("test@test.com", "password")
             .subscribe(() => {
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(() => {
-                        expect(true).toBe(false, "Failed password hashing didn't trigger error");
-                        done();
-                    });
+                expect(true).toBe(false, "Failed password hashing didn't trigger error");
+                done();
             },
             (error: any) => {
                 expect(error.message).toEqual(CoSServerConstants.PBKDF2_HASH_ERROR.message);
                 expect(passwordSpy).toHaveBeenCalledTimes(1);
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             });
 
     });
@@ -404,26 +398,15 @@ describe("UserModel", () => {
         const passwordSpy = spyOn(PasswordHelper, "hashPassword");
         passwordSpy.and.returnValue("passwor");
 
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.confirmPasswordsMatch("test@test.com", "passwor");
-            })
+        userModel.confirmPasswordsMatch("test@test.com", "passwor")
             .subscribe(() => {
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(() => {
-                        expect(true).toBe(false, "Did not detect mismatched passwords");
-                        done();
-                    });
+                expect(true).toBe(false, "Did not detect mismatched passwords");
+                done();
             },
             (error: any) => {
                 expect(passwordSpy).toHaveBeenCalledTimes(1);
                 expect(error.message).toEqual(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             });
     });
 
@@ -433,22 +416,13 @@ describe("UserModel", () => {
             observer.next("password");
         }));
 
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.confirmPasswordsMatch("test@test.com", "password");
-            })
+        userModel.confirmPasswordsMatch("test@test.com", "password")
             .subscribe(() => {
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             },
             (error: any) => {
                 expect(error).toBeFalsy();
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             });
 
     });
@@ -457,25 +431,14 @@ describe("UserModel", () => {
         const confirmPasswordsMatchSpy = spyOn(userModel, "confirmPasswordsMatch");
         confirmPasswordsMatchSpy.and.throwError(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
 
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.authenticate("test@test.com", "passwor");
-            })
+        userModel.authenticate("test@test.com", "passwor")
             .subscribe(() => {
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(() => {
-                        expect(true).toBe(false, "Faied to detect invalid credentials");
-                        done();
-                    });
+                expect(true).toBe(false, "Faied to detect invalid credentials");
+                done();
             },
             (error: any) => {
                 expect(error.message).toEqual(CoSServerConstants.DATABASE_USER_INVALID_PASSWORD_ERROR.message);
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             });
     });
 
@@ -484,24 +447,83 @@ describe("UserModel", () => {
         const confirmPasswordsMatchSpy = spyOn(userModel, "confirmPasswordsMatch");
         confirmPasswordsMatchSpy.and.returnValue("password");
 
-        tempUserModel.commitUserData(
-            "test@test.com",
-            "password",
-            "deadbeef",
-            "testing")
-            .flatMap(() => {
-                return userModel.authenticate("test@test.com", "password");
-            })
+        userModel.authenticate("test@test.com", "password")
             .subscribe(() => {
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             },
             (error: any) => {
                 expect(error).toBeFalsy();
-                userModel.removeDocuments({ username: "testing" })
-                    .subscribe(done);
+                done();
             });
 
     });
 
+    it("should be able to add a new rating to a graffiti", (done) => {
+        userModel.rateGraffiti("test@test.com", "rabnar", true)
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                const rating = result.ratings.shift();
+                expect(rating.graffitiUrl).toEqual("rabnar", "Stored graffiti url was incorrect");
+                expect(rating.rating).toBe(true, "Stored graffiti rating was incorrect");
+                done();
+
+            },
+            (error: any) => {
+                expect(error).toBeFalsy();
+                done();
+            });
+    });
+
+    it("should be able to add a change its rating of a graffiti", (done) => {
+        userModel.rateGraffiti("test@test.com", "rabnar", false)
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                const rating = result.ratings.shift();
+                expect(rating.graffitiUrl).toEqual("rabnar", "Stored graffiti url was incorrect");
+                expect(rating.rating).toBe(false, "Stored graffiti rating was incorrect");
+                done();
+
+            },
+            (error: any) => {
+                expect(error).toBeFalsy();
+                done();
+            });
+
+    });
+
+    it("should not be able to rate a graffiti the same way twice", (done) => {
+        userModel.rateGraffiti("test@test.com", "rabnar", false)
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                expect(true).toBe(false, "Allowed a graffiti to have the same rating entered twice.");
+                done();
+
+            },
+            (error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.USER_DOUBLE_RATE_ERROR.code);
+                done();
+            });
+    });
+
+    it("should not be rate a graffiti that doesn't exist", (done) => {
+        userModel.rateGraffiti("test@test.com", "flintstones", false)
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                expect(true).toBe(false, "Allowed a graffiti to have the same rating entered twice.");
+                done();
+
+            },
+            (error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND.code);
+                done();
+            });
+    });
 });

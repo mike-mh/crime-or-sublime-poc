@@ -142,6 +142,27 @@ export abstract class CoSAbstractModel {
     }
 
     /**
+     * Use this to find an update a single document
+     *
+     * @param query - The document to search for.
+     * @param update - The updates to be made.
+     *
+     * @return - An observable that resolves to an object containing data on
+     *     updates.
+     */
+    protected findAndUpdateDocument(query: any, update: any): Observable<any> {
+        return Observable.create((observer: any) => {
+            this.getModel().findOneAndUpdate(query, update, (error: string, result: any) => {
+                if (error) {
+                    observer.error(CoSServerConstants.DATABASE_DELETION_ERROR);
+                }
+                observer.next(result);
+                observer.complete();
+            });
+        });
+    }
+
+    /**
      * Use this to get counts from a model.
      *
      * @param query - The query of items to count.
