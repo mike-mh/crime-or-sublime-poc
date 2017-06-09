@@ -15,7 +15,8 @@ class CoSError extends Error {
 }
 
 enum ErrrorCodes {
-    DATABASE_DELETION_ERROR = 1,
+    DATABASE_COUNT_ERROR = 1,
+    DATABASE_DELETION_ERROR,
     DATABASE_GRAFFITI_DOES_NOT_EXIST,
     DATABASE_GRAFFITI_UPDATE_ERROR,
     DATABASE_NO_DOCUMENTS_FOUND,
@@ -126,5 +127,10 @@ export class CoSServerConstants {
         "DatabaseUpdateError",
         "Failed to update documents.",
         ErrrorCodes.DATABASE_NO_DOCUMENTS_FOUND);
+
+    public static readonly DATABASE_COUNT_ERROR = new CoSError(
+        "DatabaseCountError",
+        "Failed to properly count documents.",
+        ErrrorCodes.DATABASE_COUNT_ERROR);
 
 }

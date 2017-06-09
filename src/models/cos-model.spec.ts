@@ -161,6 +161,19 @@ describe("CoSAbstractModel", () => {
             });
     });
 
+    it("should be able to count document", (done) => {
+        sampleModel.getCount({
+            sampleString: "stringDude",
+        }).subscribe(
+            (total: number) => {
+                expect(total).toEqual(1, "Returned an incorrect count");
+                done();
+            },
+            (error: any) => {
+                throw error;
+            });
+    });
+
     it("should be able to find and update documents", (done) => {
         sampleModel.findAndUpdateDocuments({
             sampleString: "stringDude",

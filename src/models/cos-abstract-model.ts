@@ -127,7 +127,7 @@ export abstract class CoSAbstractModel {
      * @return - An observable that resolves to an object containing data on
      *     updates.
      */
-    protected findAndUpdateDocuments(query: any, update: any): Observable<Document[]> {
+    protected findAndUpdateDocuments(query: any, update: any): Observable<any> {
         return Observable.create((observer: any) => {
             this.getModel().update(query, update, (error: string, result: any) => {
                 if (error) {
@@ -136,6 +136,27 @@ export abstract class CoSAbstractModel {
                 observer.next(result);
                 observer.complete();
             });
+        });
+    }
+
+    /**
+     * Use this to get counts from a model.
+     *
+     * @param query - The query of items to count.
+     *
+     * @return - Observable that resolves to count total.
+     */
+    protected getCount(query: any): Observable<number> {
+        return Observable.create((observer: any) => {
+            this.getModel()
+                .count(query, (error, count) => {
+                    if (error) {
+                        observer.error(CoSServerConstants.DATABASE_COUNT_ERROR);
+                    }
+
+                    observer.next(count);
+                    observer.complete();
+                });
         });
     }
 

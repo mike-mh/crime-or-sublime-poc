@@ -26,18 +26,7 @@ export class GraffitiModel extends CoSAbstractModel {
      * @return - Observable resolving to graffiti document.
      */
     public getGraffiti(url: string): Observable<IGraffitiDocument> {
-        return Observable.fromPromise(new Promise((resolve, reject) => {
-            this.getModel().findOne({ url })
-                .then((graffiti) => {
-                    if (!graffiti) {
-                        reject(CoSServerConstants.DATABASE_GRAFFITI_DOES_NOT_EXIST);
-                    }
-                    resolve(graffiti);
-                })
-                .catch((error) => {
-                    reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
-                });
-        }));
+        return this.getDocument(url);
     }
 
     /**
@@ -46,27 +35,24 @@ export class GraffitiModel extends CoSAbstractModel {
      * @return - Observable resolving to graffiti document.
      */
     public getRandomGraffiti(): Observable<IGraffitiDocument> {
-        return Observable.fromPromise(new Promise((resolve, reject) => {
-            this.getModel()
-                .count({}, (error, count) => {
-                    if (error) {
-                        reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
-                    }
-                    const random = Math.floor(Math.random() * count);
+        return this.getCount({})
+            .flatMap((count: number) => {
+                const random = Math.floor(Math.random() * count);
+
+                return Observable.create((observer: any) => {
                     this.getModel().findOne()
                         .skip(random)
                         .then((graffiti) => {
                             if (!graffiti) {
-                                reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+                                observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
                             }
-                            resolve(graffiti);
+                            observer.next(graffiti);
                         })
                         .catch(() => {
-                            reject(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+                            observer.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
                         });
-
                 });
-        }));
+            });
     }
 
     /**
@@ -75,25 +61,14 @@ export class GraffitiModel extends CoSAbstractModel {
      * @param url - The URL of the graffiti
      * @param rating - The rating to assign to the graffiti
      *
-     * @return - A void resolving Observable.
+     * @return - Observable that resolves to meta data of updated graffiti.
      */
-    public addRating(url: string, rating: CrimeOrSublimeRaitng): Observable<void> {
+    public addRating(url: string, rating: CrimeOrSublimeRaitng): Observable<any> {
         const newRating = (rating === SUBLIME) ?
             { sublime: 1 } :
             { crime: 1 };
 
-        return Observable.fromPromise(
-            new Promise((resolve, reject) => {
-                this.getModel().update({ url }, { $inc: newRating },
-                    (error, graffiti) => {
-                        if (error || !graffiti) {
-                            reject(CoSServerConstants.DATABASE_GRAFFITI_UPDATE_ERROR);
-                        }
-                        resolve();
-                    });
-            }).then(() => {
-                return;
-            }));
+        return this.findAndUpdateDocuments({ url }, { $inc: newRating });
     }
 
     /**
@@ -104,28 +79,15 @@ export class GraffitiModel extends CoSAbstractModel {
      *     decrements the 'sublime' property of a graffiti and increments the
      *     'crime' property.
      *
-     * @return - A void resolving Observable.
+     * @return - Observable that resolves to meta data of updated graffiti.
      */
-    public changeRating(url: string, rating: CrimeOrSublimeRaitng): Observable<void> {
+    public changeRating(url: string, rating: CrimeOrSublimeRaitng): Observable<any> {
 
         // Use this toggle so that both the crime and sublime values can be
         // updated simultaneously.
         const update = (rating === SUBLIME) ? 1 : -1;
 
-        return Observable.fromPromise(
-            new Promise((resolve, reject) => {
-                this.getModel().update(
-                    { url },
-                    { $inc: { crime: -1 * update, sublime: update } },
-                    (error, graffiti) => {
-                        if (error || !graffiti) {
-                            reject(CoSServerConstants.DATABASE_GRAFFITI_UPDATE_ERROR);
-                        }
-                        resolve();
-                    });
-            }).then(() => {
-                return;
-            }));
+        return this.findAndUpdateDocuments( { url }, { $inc: { crime: -1 * update, sublime: update } });
     }
 
 }
