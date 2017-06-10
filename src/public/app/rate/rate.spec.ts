@@ -240,7 +240,8 @@ describe("RateService", () => {
             });
 
             mockBackend.connections.subscribe((connection: any) => {
-                connection.mockRespond(new Response(new ResponseOptions({
+                connection.mockRespond(new Response(
+                    new ResponseOptions({
                     body: JSON.parse(mockResponse),
                 })));
             });

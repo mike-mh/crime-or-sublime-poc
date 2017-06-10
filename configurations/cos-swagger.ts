@@ -121,6 +121,61 @@ export const cosAPI: any = {
                 ]
             }
         },
+        "/graffiti-get-filter": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "This retrieves an array of graffiti that satisfy a filter. Preliminary work will be done to allow users to get graffiti based on location and popularity but more work will be required in the future. For now, making this request with empty paramters returns random graffiti.",
+                "responses": {
+                    "200": {
+                        "description": "The graffiti data that satisfied filter constraints was received.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseObject"
+                        }
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoGraffitiFoundError": {
+                        "$ref": "#/responses/NoGraffitiFound"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The latitude to search for graffiti at",
+                        "in": "body",
+                        "name": "latitude",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "The longitude to search for graffiti at",
+                        "in": "body",
+                        "name": "longitude",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Whether or not to search for the most popular",
+                        "in": "body",
+                        "name": "popularity",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+
+                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
         "/graffiti-get-random": {
             "get": {
                 "consumes": [
@@ -368,7 +423,8 @@ export const cosAPI: any = {
                             "type": "string",
                             "pattern": "^[a-zA-Z0-9]+$"
                         }
-                    }                ],
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ]
@@ -560,7 +616,13 @@ export const cosAPI: any = {
             }
         },
         "NoActiveSession": {
-            "description": "An call was made requiring an active session when none was found.",
+            "description": "A call was made requiring an active session when none was found.",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "NoGraffitiFound": {
+            "description": "A call to query graffiti returned nothing.",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }
