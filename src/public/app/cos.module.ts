@@ -4,6 +4,7 @@ import { HttpModule } from "@angular/http";
 import { BrowserModule } from "@angular/platform-browser";
 import { CoSComponent } from "./cos.component";
 import { CoSRouter } from "./cos.routing.module";
+import { LocatorModule } from "./locator/locator.module";
 import { NavbarModule } from "./navbar/navbar.module";
 import { RateModule } from "./rate/rate.module";
 import { UserManagementModule } from "./user-management/user-management.module";
@@ -16,6 +17,7 @@ import { UserManagementModule } from "./user-management/user-management.module";
     CoSRouter,
     FormsModule,
     HttpModule,
+    LocatorModule,
     NavbarModule,
     RateModule,
     UserManagementModule,

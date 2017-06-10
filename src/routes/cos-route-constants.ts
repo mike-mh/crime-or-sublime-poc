@@ -5,6 +5,7 @@ export class CoSRouteConstants {
     // to ensure that these routes are reserved exclusively for serving the
     // application. All start with 'cos'.
     public static readonly COS_CLIENT_PATHS: string[] = [
+        "/cos-locator",
         "/cos-login",
         "/cos-register",
         "/cos-rate",

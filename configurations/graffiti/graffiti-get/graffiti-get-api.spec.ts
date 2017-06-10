@@ -72,4 +72,72 @@ describe("graffitiGetAPI", () => {
         }
     });
 
+    it("should accept a call to graffiti-get-filter without parameters", () => {
+        const input = {};
+
+        try {
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_FILTER, input, "post");
+        } catch (e) {
+            expect(true).toBe(false, e.message);
+        }
+
+    });
+
+    it("should accept a call to graffiti-get-filter with only latitude and longitude", () => {
+        const input = {
+            latitude: 1,
+            longitude: 1,
+        };
+
+        try {
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_FILTER, input, "post");
+        } catch (e) {
+            expect(true).toBe(false, e.message);
+        }
+
+    });
+
+    it("should accept a call to graffiti-get-filter with only popularity", () => {
+        const input = {
+            popularity: true,
+        };
+
+        try {
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_FILTER, input, "post");
+        } catch (e) {
+            expect(true).toBe(false, e.message);
+        }
+
+    });
+
+    it("should accept a call to graffiti-get-filter with latitude, longited and popularity", () => {
+        const input = {
+            latitude: 1,
+            longitude: 1,
+            popularity: true,
+        };
+
+        try {
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_FILTER, input, "post");
+        } catch (e) {
+            expect(true).toBe(false, e.message);
+        }
+
+    });
+
+    it("should reject calls made to get-graffiti filter not made with POST", () => {
+        const input = {
+            latitude: 1,
+            longitude: 1,
+            popularity: true,
+        };
+
+        try {
+            graffitiGetAPI.validateParams(graffitiGetAPI.GRAFFITI_GET_FILTER, input, "get");
+        } catch (e) {
+            expect(e.name).toBe(graffitiGetAPI.METHOD_ERROR, "Wrong error code returned");
+        }
+
+    });
+
 });

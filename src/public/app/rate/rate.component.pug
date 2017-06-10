@@ -3,12 +3,12 @@
     #cos-rate-graffiti-image-div
       img#cos-rate-graffiti-image([src]="'http://i.imgur.com/' + displayedGraffiti + 'l.jpg'")
     #cos-rate-favourite-and-random-buttons
-      button#cos-rate-favourite-button
+      button.btn#cos-rate-favourite-button
         | Add to favourites
-      button#cos-rate-random-button((click)="getRandomGraffiti()")
+      button.btn#cos-rate-random-button((click)="getRandomGraffiti()")
         | Random
   #cos-rate-rating-buttons
-    button#cos-rate-crime-button((click)="rateGraffiti(false)")
+    button.btn.btn-danger#cos-rate-crime-button((click)="rateGraffiti(false)")
       | Crime
-    button#cos-rate-sublime-button((click)="rateGraffiti(true)")
+    button.btn.btn-primary#cos-rate-sublime-button((click)="rateGraffiti(true)")
       | Sublime

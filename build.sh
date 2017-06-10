@@ -68,6 +68,33 @@ cleanup () {
 }
 
 ###############################################################################
+# Use this to transpile HTML and CSS files only. All files transpiled here are
+# then moved to dist/src/public
+#   EXIT_OK
+#   ERROR
+# Arguments:
+#   None
+# Returns:
+#   None
+###############################################################################
+transpile_html_and_css () {
+  ./node_modules/.bin/grunt
+
+  if [ $? -ne $EXIT_OK ]; then
+    echo "Unable to build HTML and CSS files." >&2
+    cleanup
+    exit $ERROR
+  fi
+
+  echo "Extracting HTML, CSS, .pug and image files..."
+  find ./src/public -name \*.html -exec cp {} dist/public \;
+  find ./src/public -name \*.css -exec cp {} dist/public \;
+  cp ./src/views/email-templates/registration-email.pug ./dist/src/libs/authentication/
+  cp -R ./src/public/imgs/ ./dist/public/
+
+}
+
+###############################################################################
 # Use this to build the front end and rollup it into a single javascript file
 # and ensures that all necessarry libraries are included in the public
 # directory of the app.
@@ -80,13 +107,8 @@ cleanup () {
 #   None
 ###############################################################################
 build_front_end () {
-  ./node_modules/.bin/grunt
 
-  if [ $? -ne $EXIT_OK ]; then
-    echo "Unable to build HTML and CSS files." >&2
-    cleanup
-    exit $ERROR
-  fi
+  transpile_html_and_css
 
   # Unfortunately I can't make compiler flags in file with tsc so I had to make
   # two different main files to compile the Angular app. Rename them as needed
@@ -128,15 +150,20 @@ build_front_end () {
   extract_library $REFLECT_METADATA_PATH
   extract_library $ZONE_PATH
 
-  echo "Extracting HTML, CSS and .pug files..."
-  find ./src/public -name \*.html -exec cp {} dist/public \;
-  find ./src/public -name \*.css -exec cp {} dist/public \;
-  cp ./src/views/email-templates/registration-email.pug ./dist/src/libs/authentication/
-
   echo "Success. You should now be able"
 
 }
 
-build_front_end
+###############################################################################
+# MAIN SEQUENCE
+###############################################################################
+
+if [ $1 = "--html" ]; then
+  transpile_html_and_css
+fi
+
+if [ $1 = "--fe" ]; then
+  build_front_end
+fi
 
 cleanup

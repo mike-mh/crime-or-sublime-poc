@@ -2,6 +2,7 @@ import { CoSAPI } from "../../cos-api";
 
 export class GraffitiGetAPI extends CoSAPI {
     public readonly GRAFFITI_GET: string = "/graffiti-get/:id";
+    public readonly GRAFFITI_GET_FILTER: string = "/graffiti-get-filter";
     public readonly GRAFFITI_GET_RANDOM: string = "/graffiti-get-random";
 
     public readonly responses = {
@@ -23,12 +24,19 @@ export class GraffitiGetAPI extends CoSAPI {
                 name: "InvalidParametersError",
             },
         },
+        NoGraffitiFoundError: {
+            error: {
+                message: "Could not find any graffiti",
+                name: "NoGraffitiFoundError",
+            },
+        },
     };
 
     constructor() {
         super();
         this.associatePathsWithMethodsAndParams([
             this.GRAFFITI_GET,
+            this.GRAFFITI_GET_FILTER,
             this.GRAFFITI_GET_RANDOM,
         ]);
     }
