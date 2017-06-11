@@ -1,28 +1,21 @@
 import { Component, OnInit } from "@angular/core";
+import { LocatorService } from "./locator.service";
 
 @Component({
-  selector: "cos-locator",
-  styleUrls: ["./locator.component.css"],
-  templateUrl: "./locator.component.html",
+    providers: [LocatorService],
+    selector: "cos-locator",
+    styleUrls: ["./locator.component.css"],
+    templateUrl: "./locator.component.html",
 })
 
 export class LocatorComponent implements OnInit {
-    public images: any[] = [
-        "v7QrfXC",
-        "zCYYFRJ",
-        "Nmu4brX",
-        "xHrnW91",
-        "b0SrUHu",
-        "i4uoCkt",
-        "wMncSnc",
-        "yeNR3Hm",
-        "99CJlzN",
-    ];
+    public getKeys: (object: any) => string[] = Object.keys;
+    public graffitiLocations: any = {};
 
     private MAP_TYPE_ID: google.maps.MapTypeId =
     google.maps.MapTypeId.ROADMAP;
 
-    private DEFAULT_ZOOM: number = 5;
+    private DEFAULT_ZOOM: number = 16;
 
     // Temporary for a prototype. Should replace with users actual location
     private DEFAULT_LAT_LNG: google.maps.LatLng =
@@ -32,11 +25,23 @@ export class LocatorComponent implements OnInit {
     private mapConfiguration: google.maps.MapOptions;
     private graffitiMarker: google.maps.Marker;
 
+    constructor(private locatorService: LocatorService) {
+        this.locatorService.filterGraffiti().subscribe((response: any) => {
+            response.map((graffiti: any) => {
+                const latLng = new google.maps.LatLng(graffiti.latitude, graffiti.longitude);
+                this.graffitiLocations[graffiti.url] = latLng;
+            });
+        });
+    }
+
     /**
      * @desc - Center map to graffiti selected by user and creates a marker.
-     * @param graffitiLatLng {gooogle.maps.LatLng} - Location of graffiti
+     *
+     * @param url - The URL of the graffiti to center on.
      */
-    public showGraffitiLocation(graffitiLatLng: google.maps.LatLng): void {
+    public showGraffitiLocation(url: string): void {
+        const graffitiLatLng = this.graffitiLocations[url];
+
         // Remove current marker from map
         this.graffitiMarker.setMap(null);
 
@@ -48,10 +53,6 @@ export class LocatorComponent implements OnInit {
                 position: graffitiLatLng,
                 title: "VICTORY",
             });
-    }
-
-    public locateOnMap(url: string) {
-        alert("You're looking for: " + url);
     }
 
     public ngOnInit(): void {

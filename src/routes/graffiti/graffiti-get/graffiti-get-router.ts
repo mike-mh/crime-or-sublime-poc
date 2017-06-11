@@ -18,6 +18,7 @@ export class GraffitiGetRouter extends CoSAbstractRouteHandler {
         super(router);
 
         this.installRequestHandlers([
+            ["post", GraffitiGetRouter.graffitiGetAPi.GRAFFITI_GET_FILTER, this.graffitiGetFilter],
             ["get", GraffitiGetRouter.graffitiGetAPi.GRAFFITI_GET_RANDOM, this.graffitiGetRandom],
             ["get", GraffitiGetRouter.graffitiGetAPi.GRAFFITI_GET, this.graffitiGet],
         ], GraffitiGetRouter.graffitiGetAPi);
@@ -41,6 +42,34 @@ export class GraffitiGetRouter extends CoSAbstractRouteHandler {
         }
 
         new GraffitiModel().getRandomGraffiti().subscribe(
+            (graffiti) => {
+                res.json(graffiti);
+            },
+            (err) => {
+                if (!res.headersSent) {
+                    res.json(GraffitiGetRouter.responses.InternalServerError);
+                }
+            });
+    }
+
+    /**
+     * Use this method to have the server respond with graffitis based on a
+     * filter set in the request
+     *
+     * @param req - Client request
+     * @param res - Server resposne
+     */
+    private graffitiGetFilter(req: Request, res: Response): void {
+        try {
+            GraffitiGetRouter.graffitiGetAPi.validateParams(
+                GraffitiGetRouter.graffitiGetAPi.GRAFFITI_GET_FILTER, req.params, req.method);
+        } catch (error) {
+            res.json(GraffitiGetRouter.responses.InvalidParametersError);
+            return;
+        }
+
+        // This is temporary until we actually implement a filter.
+        new GraffitiModel().getTenRandomGraffitiTags().subscribe(
             (graffiti) => {
                 res.json(graffiti);
             },

@@ -11,10 +11,13 @@ export class GraffitiModel extends CoSAbstractModel {
     constructor() {
         super("Graffiti");
         this.schema = GraffitiModelSchema;
+
+        // Add this plugin temporarily just to get random graffiti
+        this.schema.plugin(require("mongoose-simple-random") as any);
         this.generateModel();
     }
 
-    public getModel(): Model<Document> {
+    public getModel(): Model<IGraffitiDocument> {
         return this.model;
     }
 
@@ -87,7 +90,23 @@ export class GraffitiModel extends CoSAbstractModel {
         // updated simultaneously.
         const update = (rating === SUBLIME) ? 1 : -1;
 
-        return this.findAndUpdateDocuments( { url }, { $inc: { crime: -1 * update, sublime: update } });
+        return this.findAndUpdateDocuments({ url }, { $inc: { crime: -1 * update, sublime: update } });
     }
 
+    /**
+     * This method is temporary. Use it to retrieve 10 random graffiti tags
+     * from the database.
+     */
+    public getTenRandomGraffitiTags(): Observable<any[]> {
+        return Observable.create((observable: any) => {
+            const model: any = this.getModel();
+            model.findRandom({}, {}, { limit: 10 }, (err: any, results: any) => {
+                if (err || !results) {
+                    observable.error(CoSServerConstants.DATABASE_RETRIEVE_ERROR);
+                }
+
+                observable.next(results);
+            });
+        });
+    }
 }
