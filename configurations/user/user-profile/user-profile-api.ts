@@ -1,9 +1,17 @@
 import { CoSAPI } from "../../cos-api";
 
-export class UserRateAPI extends CoSAPI {
-    public readonly USER_RATE: string = "/user-rate";
+export class UserProfileAPI extends CoSAPI {
+    public readonly USER_PROFILE_ADD_FAVOURITE: string = "/user-profile-add-favourite";
+    public readonly USER_PROFILE_GET_FAVOURITES: string = "/user-profile-get-favourites";
+    public readonly USER_PROFILE_REMOVE_FAVOURITE: string = "/user-profile-remove-favourite";
 
     public readonly responses = {
+        AlreadyFavouritedGraffitiError: {
+            error: {
+                message: "User already favourited this graffiti",
+                name: "AlreadyFavouritedGraffitiError",
+            },
+        },
         AlreadyRatedGraffitiError: {
             error: {
                 message: "User already rated this graffiti",
@@ -14,6 +22,12 @@ export class UserRateAPI extends CoSAPI {
             error: {
                 message: "Graffiti with given ID does not exist",
                 name: "GraffitiDoesNotExistError",
+            },
+        },
+        GraffitiNotFavouritedError: {
+            error: {
+                message: "This graffiti doesn't exist on favourites list",
+                name: "GraffitiNotFavouritedError",
             },
         },
         InternalServerError: {
@@ -39,7 +53,9 @@ export class UserRateAPI extends CoSAPI {
     constructor() {
         super();
         this.associatePathsWithMethodsAndParams([
-            this.USER_RATE,
+            this.USER_PROFILE_ADD_FAVOURITE,
+            this.USER_PROFILE_GET_FAVOURITES,
+            this.USER_PROFILE_REMOVE_FAVOURITE,
         ]);
     }
 }

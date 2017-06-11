@@ -3,6 +3,7 @@ nav#cos-navbar-nav
   a.class([routerLink]="['/']", title="home") Home
   a.class([routerLink]="['cos-locator']", title="locator") Locator
   a.class(*ngIf="!isLoggedIn", [routerLink]="['/cos-register']", id="cos-navbar-register-button", title="register") Register
-  a.class(*ngIf="!isLoggedIn", [routerLink]="['/cos-login']", id="cos-navbar-login-button", title="login") Login
   a.class(*ngIf="isLoggedIn", [routerLink]="['/cos-rate']", id="cos-navbar-rate-button", title="rate") Rate
+  a.class(*ngIf="isLoggedIn", [routerLink]="['/cos-profile']", id="cos-navbar-rate-button", title="rate") Profile
+  a.class(*ngIf="!isLoggedIn", [routerLink]="['/cos-login']", id="cos-navbar-login-button", title="login") Login
   a.class(*ngIf="isLoggedIn", (click)="endSession()", id="cos-navbar-logout-button", title="logout") Logout

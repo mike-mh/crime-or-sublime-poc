@@ -169,7 +169,6 @@ export const cosAPI: any = {
                             "type": "boolean"
                         }
                     }
-
                 ],
                 "produces": [
                     "application/json"
@@ -329,6 +328,127 @@ export const cosAPI: any = {
                 "summarry": "This is responsible for registering new users."
             }
         },
+        "/user-profile-add-favourite": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "User adds a graffiti to his favourites list.",
+                "responses": {
+                    "200": {
+                        "description": "The user has added the graffiti to his favourites list.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseString"
+                        }
+                    },
+                    "AlreadyFavouritedGraffitiError": {
+                        "$ref": "#/responses/AlreadyFavouritedGraffiti"
+                    },
+                    "GraffitiDoesNotExistError": {
+                        "$ref": "#/responses/GraffitiDoesNotExist"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSession": {
+                        "$ref": "#/responses/NoActiveSession"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the favourited graffiti.",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
+        "/user-profile-get-favourites": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "Get a list of favourites associated with a user.",
+                "responses": {
+                    "200": {
+                        "description": "The complete list of a user's favourite graffiti",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseObject"
+                        }
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSession": {
+                        "$ref": "#/responses/NoActiveSession"
+                    }
+                },
+                "parameters": [],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
+        "/user-profile-remove-favourite": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "User removes a graffiti to his favourites list.",
+                "responses": {
+                    "200": {
+                        "description": "The user has removed the graffiti from her favourites list.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseString"
+                        }
+                    },
+                    "GraffitiNotFavouritedError": {
+                        "$ref": "#/responses/GraffitiNotFavourited"
+                    },
+                    "GraffitiDoesNotExistError": {
+                        "$ref": "#/responses/GraffitiDoesNotExist"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoActiveSession": {
+                        "$ref": "#/responses/NoActiveSession"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the favourited graffiti to remove.",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
         "/user-rate": {
             "post": {
                 "consumes": [
@@ -376,52 +496,6 @@ export const cosAPI: any = {
                         "required": true,
                         "schema": {
                             "type": "boolean"
-                        }
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ]
-            }
-        },
-        "/user-rate-add-favourite": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "description": "User adds a graffiti to his favourites list.",
-                "responses": {
-                    "200": {
-                        "description": "The user has added the graffiti to his favourites list.",
-                        "schema": {
-                            "$ref": "#/definitions/successResponseString"
-                        }
-                    },
-                    "AlreadyFavouritedGraffitiError": {
-                        "$ref": "#/responses/AlreadyFavouritedGraffiti"
-                    },
-                    "GraffitiDoesNotExistError": {
-                        "$ref": "#/responses/GraffitiDoesNotExist"
-                    },
-                    "InvalidParametersError": {
-                        "$ref": "#/responses/InvalidParameters"
-                    },
-                    "InternalServerError": {
-                        "$ref": "#/responses/InternalServerError"
-                    },
-                    "NoActiveSession": {
-                        "$ref": "#/responses/NoActiveSession"
-                    }
-                },
-                "parameters": [
-                    {
-                        "description": "The URL of the rated graffiti.",
-                        "in": "body",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9]+$"
                         }
                     }
                 ],
@@ -581,6 +655,12 @@ export const cosAPI: any = {
         },
         "GraffitiDoesNotExist": {
             "description": "Someone attempted to query a graffiti tag that doesn't exist",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "GraffitiNotFavourited": {
+            "description": "Someone attempted to do something with a graffiti not found on the user's graffiti list.",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }
