@@ -20,6 +20,7 @@ enum ErrrorCodes {
     DATABASE_GRAFFITI_DOES_NOT_EXIST,
     DATABASE_GRAFFITI_UPDATE_ERROR,
     DATABASE_NO_DOCUMENTS_FOUND,
+    DATABASE_NO_DOCUMENTS_MODIFIED_ERROR,
     DATABASE_RATING_UPDATE_ERROR,
     DATABASE_RETRIEVE_ERROR,
     DATABASE_SAVE_ERROR,
@@ -132,5 +133,11 @@ export class CoSServerConstants {
         "DatabaseCountError",
         "Failed to properly count documents.",
         ErrrorCodes.DATABASE_COUNT_ERROR);
+
+    public static readonly DATABASE_NO_DOCUMENTS_MODIFIED_ERROR = new CoSError(
+        "DatabaseNoDocumentsModifiedError",
+        "No documents found that needed to be updated.",
+        ErrrorCodes.DATABASE_NO_DOCUMENTS_MODIFIED_ERROR);
+
 
 }

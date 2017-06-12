@@ -136,6 +136,10 @@ export abstract class CoSAbstractModel {
                     observer.error(CoSServerConstants.DATABASE_GRAFFITI_UPDATE_ERROR);
                 }
 
+                if (!result.nModified) {
+                    observer.error(CoSServerConstants.DATABASE_NO_DOCUMENTS_MODIFIED_ERROR);
+                }
+
                 observer.next(result);
                 observer.complete();
             });

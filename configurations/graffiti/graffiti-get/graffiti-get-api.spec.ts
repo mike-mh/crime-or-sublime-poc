@@ -1,6 +1,6 @@
 import { GraffitiGetAPI } from "./graffiti-get-api";
 
-describe("graffitiGetAPI", () => {
+describe("GraffitiGetAPI", () => {
     const graffitiGetAPI = new GraffitiGetAPI();
 
     it("should reject graffiti-get call that wasn't made with GET", () => {

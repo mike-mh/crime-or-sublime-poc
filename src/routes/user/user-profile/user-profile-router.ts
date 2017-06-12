@@ -52,8 +52,9 @@ export class UserProfileRouter extends CoSAbstractRouteHandler {
                 res.json({result: "success"});
             },
             (error) => {
-                // TO-DO: try and see if there's a way to make a specific error
-                //        when a user tries to favourite a graffiti twice.
+                if (error.code === CoSServerConstants.DATABASE_NO_DOCUMENTS_MODIFIED_ERROR.code) {
+                    res.json(UserProfileRouter.responses.AlreadyFavouritedGraffitiError);
+                }
                 res.json(UserProfileRouter.responses.InternalServerError);
             });
 
