@@ -126,6 +126,57 @@ export class UserModel extends CoSAbstractModel {
     }
 
     /**
+     * Use this method to add a graffiti URL to the user's favourites.
+     *
+     * @param email - The email of the user to have a new favourite graffiti
+     * @param graffitiID - The id of the graffiti to associate with the rating.
+     *
+     * @return - A void resolving observable.
+     */
+    public addFavourite(
+        email: string,
+        graffitiUrl: string): Observable<void> {
+
+        return this.findAndUpdateDocuments(
+            { email, "favourites.graffitiUrl": { $ne: graffitiUrl } },
+            { $push: { favourites: { graffitiUrl } } });
+
+    }
+
+    /**
+     * Use this method to remove a graffiti URL from the user's favourites.
+     *
+     * @param email - The email of the user to have a new favourite graffiti
+     * @param graffitiID - The id of the graffiti to associate with the rating.
+     *
+     * @return - A void resolving observable.
+     */
+    public removeFavourite(
+        email: string,
+        graffitiUrl: string): Observable<void> {
+
+        return this.findAndUpdateDocuments(
+            { email },
+            { $pullAll: { favourites: { graffitiUrl: [graffitiUrl] } } });
+
+    }
+
+    /**
+     * Use this method to get a user's favourite graffiti
+     *
+     * @param email - The email of the user to get favourites from
+     *
+     * @return - An observable that resolves to the user's favourite graffiti
+     *      as an array.
+     */
+    public getFavourites(email: string): Observable<any[]> {
+        return this.getDocument({ email })
+            .map((user: IUserDocument) => {
+                return user.favourites;
+            });
+    }
+
+    /**
      * Get the users password salt.
      *
      * @param email - The user's email.
@@ -196,7 +247,7 @@ export class UserModel extends CoSAbstractModel {
      * Use this method to create a new rating to insert into a user document's
      * array of ratings.
      *
-     * @param user - The user model to have new rating inserted to.
+     * @param email - The email of the user to have new rating inserted to.
      * @param graffitiID - The id of the graffiti to associate with the rating.
      * @param rating - The new rating to be associated with the graffiti.
      *

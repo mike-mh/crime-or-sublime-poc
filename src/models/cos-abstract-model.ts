@@ -133,8 +133,9 @@ export abstract class CoSAbstractModel {
         return Observable.create((observer: any) => {
             this.getModel().update(query, update, (error: string, result: any) => {
                 if (error) {
-                    observer.error(CoSServerConstants.DATABASE_DELETION_ERROR);
+                    observer.error(CoSServerConstants.DATABASE_GRAFFITI_UPDATE_ERROR);
                 }
+
                 observer.next(result);
                 observer.complete();
             });

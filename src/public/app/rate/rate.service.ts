@@ -3,12 +3,14 @@ import { Headers, Http, RequestOptions, Response } from "@angular/http";
 import "rxjs/add/operator/map";
 import { Observable } from "rxjs/Observable";
 import { GraffitiGetAPI } from "../../../../configurations/graffiti/graffiti-get/graffiti-get-api";
+import { UserProfileAPI } from "../../../../configurations/user/user-profile/user-profile-api";
 import { UserRateAPI } from "../../../../configurations/user/user-rate/user-rate-api";
 
 @Injectable()
 export class RateService {
   private graffitiGetAPI: GraffitiGetAPI = new GraffitiGetAPI();
   private userRateAPI: UserRateAPI = new UserRateAPI();
+  private userProfileAPI: UserProfileAPI = new UserProfileAPI();
 
   constructor(private http: Http) { }
 
@@ -52,6 +54,10 @@ export class RateService {
   public rateGraffiti(id: string, rating: boolean): Observable<JSON> {
     const headers: Headers = new Headers({ "Content-Type": "application/json" });
     const options = new RequestOptions({ headers });
+    const ratingValidator = (!rating) ?
+      true :
+      rating;
+
     const payload: {} = {
       id,
       rating,
@@ -59,7 +65,7 @@ export class RateService {
 
     try {
         this.userRateAPI.validateParams(this.userRateAPI.USER_RATE,
-                                            {id, rating: true}, "post");
+                                            { id, rating }, "post");
     } catch (error) {
       return Observable.create((observer: any) => {
         observer.error(error);
@@ -68,6 +74,36 @@ export class RateService {
 
     return this.http
       .post(this.userRateAPI.USER_RATE, payload, options)
+      .map((response) => {
+        return response.json();
+      });
+  }
+
+  /**
+   * Use this to add a graffiti to user's favourites list.
+   *
+   * @param id - The URL associated with a graffiti
+   *
+   * @return - Observable resolves to response.
+   */
+  public favouriteGraffiti(id: string): Observable<JSON> {
+    const headers: Headers = new Headers({ "Content-Type": "application/json" });
+    const options = new RequestOptions({ headers });
+    const payload: {} = {
+      id,
+    };
+
+    try {
+        this.userProfileAPI.validateParams(this.userProfileAPI.USER_PROFILE_ADD_FAVOURITE,
+                                            { id }, "post");
+    } catch (error) {
+      return Observable.create((observer: any) => {
+        observer.error(error);
+      });
+    }
+
+    return this.http
+      .post(this.userProfileAPI.USER_PROFILE_ADD_FAVOURITE, payload, options)
       .map((response) => {
         return response.json();
       });

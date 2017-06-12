@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
@@ -8,6 +8,7 @@ import { ProfileService } from "./profile.service";
 
 @Component({
   providers: [ProfileService, SessionService],
+  styleUrls: ["./profile.component.css"],
   templateUrl: "./profile.component.html",
 })
 
@@ -15,7 +16,7 @@ import { ProfileService } from "./profile.service";
  * Class controls users logging in. Hope to add social media login options
  * as well soon.
  */
-export class ProfileComponent implements OnDestroy {
+export class ProfileComponent implements OnDestroy, OnInit {
   public isLoggedIn: boolean = false;
 
   public sessionStatus: SubjectSubscription<ISessionDetails>;
@@ -30,8 +31,7 @@ export class ProfileComponent implements OnDestroy {
     },
   };
 
-//  private sessionAPI: SessionAPI = new SessionAPI();
-//  private responses = this.sessionAPI.responses;
+  public userFavourites: any = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -41,6 +41,20 @@ export class ProfileComponent implements OnDestroy {
     this.sessionStatus = new SubjectSubscription(SessionService.sessionStatusEmitter, this.sessionUpdateCallback);
     SessionService.sessionStatusEmitter.subscribe(this.sessionUpdateCallback);
     this.isLoggedIn = SessionService.isSessionActive();
+  }
+
+  /**
+   * Fetch the user's favourites.
+   */
+  public ngOnInit(): void {
+    this.profileService.getUserFavouriteGraffiti()
+      .subscribe(
+        (response: any) => {
+          response.result.map((document: any) => {
+            // IDs are exposed with response. Look into if this is a security risk.
+            this.userFavourites.push(document.graffitiUrl);
+          });
+        });
   }
 
   /**

@@ -103,7 +103,7 @@ export const UserModelSchema: Schema = new Schema(
             type: String,
             unique: true,
         },
-        favourites: [new Schema({url: String})],
+        favourites: [new Schema({graffitiUrl: String})],
         password: {
             required: true,
             select: false,

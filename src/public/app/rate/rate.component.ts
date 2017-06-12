@@ -74,6 +74,20 @@ export class RateComponent implements OnDestroy {
     }
 
     /**
+     * Use this to add a graffiti to a user's favourites.
+     */
+    public addFavourite(): void {
+        this.rateService.favouriteGraffiti(this.displayedGraffiti).subscribe(
+            (response: any) => {
+                // TO-DO: Figure out what to do on success or error.
+            },
+            (error: any) => {
+                return;
+            },
+        );
+    }
+
+    /**
      * Need to unsubscribe from the session emitter.
      */
     public ngOnDestroy(): void {

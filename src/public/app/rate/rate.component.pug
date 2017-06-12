@@ -3,8 +3,8 @@
     #cos-rate-graffiti-image-div
       img#cos-rate-graffiti-image([src]="'http://i.imgur.com/' + displayedGraffiti + 'l.jpg'")
     #cos-rate-favourite-and-random-buttons
-      button.btn#cos-rate-favourite-button
-        | Add to favourites
+      button.btn#cos-rate-favourite-button((click)="addFavourite()")
+        | Add to favourites P
       button.btn#cos-rate-random-button((click)="getRandomGraffiti()")
         | Random
   #cos-rate-rating-buttons
