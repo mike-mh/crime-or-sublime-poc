@@ -32,15 +32,15 @@ export class CoSServer {
      * middleware and database.
      */
     public initializeServer(): void {
-        mongoose.connect("mongodb://localhost/cos")
+        mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/cos")
             .then(() => {
                 this.configureExpressApp();
                 this.intializeMiddleware();
                 this.app.use("/", this.router.getRouter());
-                this.listenToSocket(8000);
+                this.listenToSocket(process.env.PORT || 8000);
 
             }, (error) => {
-                process.stderr.write("MongoDB connection error. Please make sure MongoDB is running.\n");
+                process.stderr.write("MongoDB connection error.\n");
             });
     }
 
