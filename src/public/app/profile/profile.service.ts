@@ -40,4 +40,35 @@ export class ProfileService {
         return response.json();
       });
   }
+
+  /**
+   * Use this method to remove a graffiti from the user's favourite list.
+   *
+   * @param id - The url of the graffiti to remove.
+   *
+   * @return - Observable resolves to the server's response.
+   */
+  public removeGraffitiFromFavourites(id: string): Observable<JSON> {
+    const headers: Headers = new Headers({ "Content-Type": "application/json" });
+    const options = new RequestOptions({ headers });
+    const payload: {} = {
+      id,
+    };
+
+    try {
+        this.userProfileAPI.validateParams(this.userProfileAPI.USER_PROFILE_REMOVE_FAVOURITE,
+                                            payload, "post");
+    } catch (error) {
+      return Observable.create((observer: any) => {
+          observer.error(error);
+      });
+    }
+
+    return this.http
+      .post(this.userProfileAPI.USER_PROFILE_REMOVE_FAVOURITE, payload, options)
+      .map((response) => {
+        return response.json();
+      });
+  }
+
 }

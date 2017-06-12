@@ -44,6 +44,21 @@ export class ProfileComponent implements OnDestroy, OnInit {
   }
 
   /**
+   * Use this to remove a graffiti from the user's favourites.
+   *
+   * @param id - The id of the graffiti to remove
+   */
+   public removeGraffiti(id: string): void {
+    this.profileService.removeGraffitiFromFavourites(id)
+      .subscribe(
+        () => {
+          this.userFavourites = this.userFavourites.filter((graffiti: string) => {
+            return graffiti !== id;
+          });
+        });
+   }
+
+  /**
    * Fetch the user's favourites.
    */
   public ngOnInit(): void {

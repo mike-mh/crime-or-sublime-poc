@@ -18,6 +18,7 @@ export class UserProfileRouter extends CoSAbstractRouteHandler {
 
         this.installRequestHandlers([
            ["post", UserProfileRouter.userProfileAPI.USER_PROFILE_ADD_FAVOURITE, this.userProfileAddFavourite],
+           ["post", UserProfileRouter.userProfileAPI.USER_PROFILE_REMOVE_FAVOURITE, this.userProfileRemoveFavourite],
            ["get", UserProfileRouter.userProfileAPI.USER_PROFILE_GET_FAVOURITES, this.userProfileGetFavourites],
         ], UserProfileRouter.userProfileAPI);
 

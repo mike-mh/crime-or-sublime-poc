@@ -157,7 +157,7 @@ export class UserModel extends CoSAbstractModel {
 
         return this.findAndUpdateDocuments(
             { email },
-            { $pullAll: { favourites: { graffitiUrl: [graffitiUrl] } } });
+            { $pull: { favourites: { graffitiUrl } } });
 
     }
 
