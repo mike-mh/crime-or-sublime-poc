@@ -29,7 +29,7 @@ export class GraffitiModel extends CoSAbstractModel {
      * @return - Observable resolving to graffiti document.
      */
     public getGraffiti(url: string): Observable<IGraffitiDocument> {
-        return this.getDocument(url);
+        return this.getDocument({ url });
     }
 
     /**

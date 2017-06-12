@@ -1,6 +1,7 @@
 import mongoose = require("mongoose");
 import { Document } from "mongoose";
 import { Observable } from "rxjs/Observable";
+import { CoSServerConstants } from "../../cos-server-constants";
 import { GraffitiModel } from "./graffiti-model";
 
 describe("GraffitiModel", () => {
@@ -20,6 +21,32 @@ describe("GraffitiModel", () => {
             longitude: 2,
             url: "raboogs",
         }).subscribe(done);
+    });
+
+    it("should not be able to get a graffiti that doesn't exist", (done) => {
+        graffitiModel.getGraffiti("raboozz")
+            .subscribe(
+            (document: any) => {
+                expect(true).toBe(false, "Was able to retrieve non-existant graffiti");
+                done();
+            },
+            (error: any) => {
+                expect(error.code).toBe(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND.code, "Wrong error code.");
+                done();
+            });
+    });
+
+    it("should not be able to get a graffiti", (done) => {
+        graffitiModel.getGraffiti("raboogs")
+            .subscribe(
+            (document: any) => {
+                expect(document.url).toBe("raboogs", "Wrong graffiti was retrieved");
+                done();
+            },
+            (error: any) => {
+                expect(true).toBe(false, "Error occured retrieving graffiti");
+                done();
+            });
     });
 
     it("should be able to add a crime rating to a graffiti", (done) => {

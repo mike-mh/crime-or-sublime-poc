@@ -137,10 +137,17 @@ export class UserModel extends CoSAbstractModel {
         email: string,
         graffitiUrl: string): Observable<void> {
 
-        return this.findAndUpdateDocuments(
-            { email, "favourites.graffitiUrl": { $ne: graffitiUrl } },
-            { $push: { favourites: { graffitiUrl } } });
+        const graffitiModel = new GraffitiModel();
 
+        // Use the first method to confirm the graffiti exists. If not it will
+        // throw an error.
+        return graffitiModel.getGraffiti(graffitiUrl)
+            .flatMap(() => {
+
+                return this.findAndUpdateDocuments(
+                    { email, "favourites.graffitiUrl": { $ne: graffitiUrl } },
+                    { $push: { favourites: { graffitiUrl } } });
+            });
     }
 
     /**
@@ -227,7 +234,7 @@ export class UserModel extends CoSAbstractModel {
      * Use this method to create a new rating to insert into a user document's
      * array of ratings
      *
-     * @param user - The user model to have new rating inserted to.
+     * @param email - The email of the user to have new rating associated with.
      * @param graffitiUrl - The url of the graffiti to associate with the rating.
      * @param rating - The rating assoicated with the document.
      *
@@ -238,9 +245,17 @@ export class UserModel extends CoSAbstractModel {
         graffitiUrl: string,
         rating: CrimeOrSublimeRaitng): Observable<void> {
 
-        return this.findAndUpdateDocument(
-            { email, "ratings.graffitiUrl": { $ne: graffitiUrl } },
-            { $push: { ratings: { email, rating, graffitiUrl } } });
+        const graffitiModel = new GraffitiModel();
+
+        // Use the first method to confirm the graffiti exists. If not it will
+        // throw an error.
+        return graffitiModel.getGraffiti(graffitiUrl)
+            .flatMap(() => {
+                return this.findAndUpdateDocument(
+                    { email, "ratings.graffitiUrl": { $ne: graffitiUrl } },
+                    { $push: { ratings: { email, rating, graffitiUrl } } });
+            });
+
     }
 
     /**
@@ -258,9 +273,16 @@ export class UserModel extends CoSAbstractModel {
         graffitiUrl: string,
         rating: CrimeOrSublimeRaitng): Observable<void> {
 
-        return this.findAndUpdateDocuments(
-            { email, "ratings.graffitiUrl": graffitiUrl },
-            { $set: { "ratings.$.rating": rating } });
+        const graffitiModel = new GraffitiModel();
+
+        // Use the first method to confirm the graffiti exists. If not it will
+        // throw an error.
+        return graffitiModel.getGraffiti(graffitiUrl)
+            .flatMap(() => {
+                return this.findAndUpdateDocuments(
+                    { email, "ratings.graffitiUrl": graffitiUrl },
+                    { $set: { "ratings.$.rating": rating } });
+            });
 
     }
 

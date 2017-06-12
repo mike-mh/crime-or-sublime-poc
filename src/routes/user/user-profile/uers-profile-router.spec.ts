@@ -5,6 +5,7 @@ import { CoSServer } from "../../../cos-server";
 import { CoSServerConstants } from "../../../cos-server-constants";
 import { PasswordHelper } from "../../../libs/authentication/password-helper";
 import { ReCaptchaHelper } from "../../../libs/authentication/recaptcha-helper";
+import { GraffitiModel } from "../../../models/graffiti/graffiti-model";
 import { UserModel } from "../../../models/user/user-model";
 import { UserProfileRouter } from "./user-profile-router";
 
@@ -17,6 +18,13 @@ describe("UserProfileRouter", () => {
     const responses = userProfileAPI.responses;
 
     const userModel: UserModel = new UserModel();
+    const graffitiModel: GraffitiModel = new GraffitiModel();
+
+    const graffitiUrls = [
+        "funcakes",
+        "madcakes",
+        "buncakes",
+    ];
 
     // Use spoofed res and req objects to make calls to the backend instead of
     // launching HTTP calls at the server itself. It's a cool idea for later
@@ -42,6 +50,28 @@ describe("UserProfileRouter", () => {
             salt: "deadbeef",
             username: "beh",
         })
+            .then(() => {
+                return graffitiModel.getModel().create({
+                    latitude: 1,
+                    longitude: 1,
+                    url: "funcakes",
+                });
+
+            })
+            .then(() => {
+                return graffitiModel.getModel().create({
+                    latitude: 1,
+                    longitude: 1,
+                    url: "madcakes",
+                });
+            })
+            .then(() => {
+                return graffitiModel.getModel().create({
+                    latitude: 1,
+                    longitude: 1,
+                    url: "buncakes",
+                });
+            })
             .then(done)
             .catch((error: Error) => {
                 process.stderr.write(error.message);
@@ -54,6 +84,9 @@ describe("UserProfileRouter", () => {
         userModel.getModel().remove({
             email: "beh@beh.com",
         })
+            .then(() => {
+                return graffitiModel.getModel().remove({url: { $in: graffitiUrls }});
+            })
             .then(done)
             .catch((error) => {
                 process.stderr.write(error.message);

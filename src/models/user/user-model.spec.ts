@@ -511,7 +511,7 @@ describe("UserModel", () => {
             });
     });
 
-    it("should not be rate a graffiti that doesn't exist", (done) => {
+    it("should not rate a graffiti that doesn't exist", (done) => {
         userModel.rateGraffiti("test@test.com", "flintstones", false)
             .flatMap(() => {
                 return userModel.getDocument({ username: "testing" });
@@ -526,4 +526,62 @@ describe("UserModel", () => {
                 done();
             });
     });
+
+    it("should not add a non-existant graffiti to the favourites array", (done) => {
+        userModel.addFavourite("test@test.com", "flintstones", false)
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                expect(true).toBe(false, "Allowed a graffiti to have the same rating entered twice.");
+                done();
+
+            },
+            (error: any) => {
+                expect(error.code).toEqual(CoSServerConstants.DATABASE_NO_DOCUMENTS_FOUND.code);
+                done();
+            });
+    });
+
+    it("should be able to add a graffiti to the favourites array", (done) => {
+        userModel.addFavourite("test@test.com", "rabnar")
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                expect(result.favourites.reduce((acc: boolean, curr: any) => {
+                    const favouriteExists = acc ?
+                        acc :
+                        curr.graffitiUrl === "rabnar";
+
+                    return favouriteExists;
+                }, false)).toBe(true);
+
+                done();
+            },
+            (error: any) => {
+                expect(true).toBe(false, "Graffiti was not added to favourites array");
+                done();
+            });
+    });
+
+    it("should be able to remove a graffiti from the favourites array", (done) => {
+        userModel.removeFavourite("test@test.com", "rabnar", false)
+            .flatMap(() => {
+                return userModel.getDocument({ username: "testing" });
+            })
+            .subscribe((result: any) => {
+                expect(result.favourites.reduce((acc: boolean, curr: any) => {
+                    const favouriteExists = acc ?
+                        acc :
+                        curr.graffitiUrl === "rabnar";
+                }, false)).toBe(false, "Graffiti was not removed from favourites array");
+                done();
+            },
+            (error: any) => {
+                expect(true).toBe(false, "Graffiti was not removed from favourites array");
+                done();
+            });
+    });
+
 });
