@@ -3,3 +3,5 @@
 
 # API
 ![Alt text](/CoSAPI.png?raw=true "CoS API")
+
+* Image powered by Swagger Viewer: https://github.com/arjun-g/vs-swagger-viewer.git
