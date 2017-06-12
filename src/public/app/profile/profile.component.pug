@@ -1,9 +1,8 @@
-#cos-profile
-//- This should be '*ngIf' but some weird bug triggers. Need to fix this later.
-.container(*ngIf="isLoggedIn")
-  h1
-    | Your Favourites
-  #cos-profile-favourites-gallery
-    .cos-profile-favourites-gallery-container(*ngFor="let imgUrl of userFavourites")
-      cos-gallery-widget([imgUrl]="imgUrl")
-      button.btn.btn-info.cos-profile-remove-button((click)="removeGraffiti(imgUrl)") X
+#cos-profile(*ngIf="isLoggedIn")
+  .container
+    h1
+      | Your Favourites
+    #cos-profile-favourites-gallery
+      .cos-profile-favourites-gallery-container(*ngFor="let imgUrl of userFavourites")
+        cos-gallery-widget([imgUrl]="imgUrl")
+        button.btn.btn-info.cos-profile-remove-button((click)="removeGraffiti(imgUrl)") X

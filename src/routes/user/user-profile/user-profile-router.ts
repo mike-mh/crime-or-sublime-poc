@@ -54,6 +54,7 @@ export class UserProfileRouter extends CoSAbstractRouteHandler {
             (error) => {
                 if (error.code === CoSServerConstants.DATABASE_NO_DOCUMENTS_MODIFIED_ERROR.code) {
                     res.json(UserProfileRouter.responses.AlreadyFavouritedGraffitiError);
+                    return;
                 }
                 res.json(UserProfileRouter.responses.InternalServerError);
             });

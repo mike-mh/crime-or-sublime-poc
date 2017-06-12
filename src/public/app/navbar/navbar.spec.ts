@@ -19,7 +19,9 @@ describe("NavbarComponent", () => {
     "#cos-navbar-nav",
     "#cos-navbar-login-button",
     "#cos-navbar-logout-button",
+    "#cos-navbar-rate-button",
     "#cos-navbar-register-button",
+    "#cos-navbar-profile-button",
   ];
 
   let spy: jasmine.Spy;
@@ -93,6 +95,16 @@ describe("NavbarComponent", () => {
     expect(htmlElements["#cos-navbar-register-button"]).toBeTruthy();
   });
 
+  it("when the user is logged off the rate button is invisible", () => {
+    fixture.detectChanges();
+    expect(htmlElements["#cos-navbar-rate-button"]).toBeFalsy();
+  });
+
+  it("when the user is logged off the profile button is invisible", () => {
+    fixture.detectChanges();
+    expect(htmlElements["#cos-navbar-profile-button"]).toBeFalsy();
+  });
+
   it("when the user is logged off the logout button is invisible", () => {
     fixture.detectChanges();
     expect(htmlElements["#cos-navbar-logout-button"]).toBeFalsy();
@@ -103,6 +115,16 @@ describe("NavbarComponent", () => {
 
   it("should know when the user is logged in", () => {
     expect(component.isLoggedIn).toBe(true);
+  });
+
+  it("when the user is logged in the rate button is visible", () => {
+    fixture.detectChanges();
+    expect(htmlElements["#cos-navbar-rate-button"]).toBeTruthy();
+  });
+
+  it("when the user is logged in the profile button is visible", () => {
+    fixture.detectChanges();
+    expect(htmlElements["#cos-navbar-profile-button"]).toBeTruthy();
   });
 
   it("when the user is logged in the login button is invisible", () => {

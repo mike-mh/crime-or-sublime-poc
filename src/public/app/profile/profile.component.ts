@@ -1,8 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";
-// import { SessionAPI } from "../../../../configurations/session/session-api";
 import { ISessionDetails, SessionService } from "./../shared/session/session.service";
 import { ProfileService } from "./profile.service";
 
@@ -34,7 +32,6 @@ export class ProfileComponent implements OnDestroy, OnInit {
   public userFavourites: any = [];
 
   constructor(
-    private formBuilder: FormBuilder,
     private profileService: ProfileService,
     private sessionService: SessionService) {
 
