@@ -94,20 +94,20 @@ export const cosAPI: any = {
                             "$ref": "#/definitions/successResponseObject"
                         }
                     },
-                    "GraffitiDoesNotExistError": {
-                        "$ref": "#/responses/GraffitiDoesNotExist"
-                    },
                     "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
+                    },
+                    "NoGraffitiFoundError": {
+                        "$ref": "#/responses/NoGraffitiFound"
                     }
                 },
                 "parameters": [
                     {
-                        "description": "The URL of the graffiti to retrieve",
-                        "in": "path",
+                        "description": "The URL of the graffiti from imgur",
+                        "in": "url",
                         "name": "id",
                         "required": true,
                         "schema": {
@@ -196,6 +196,78 @@ export const cosAPI: any = {
                     }
                 },
                 "parameters": [],
+                "produces": [
+                    "application/json"
+                ]
+            }
+        },
+        "/graffiti-submit-new-submission": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "This make a new graffiti submission to be reviewed before it is posted to the site.",
+                "responses": {
+                    "200": {
+                        "description": "The new submission was received and stored.",
+                        "schema": {
+                            "$ref": "#/definitions/successResponseString"
+                        }
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
+                    "MaxSubmissionsExceededError": {
+                        "$ref": "#/responses/MaxSubmissionsExceeded"
+                    }
+                },
+                "parameters": [
+                    {
+                        "description": "The URL of the graffiti from imgur",
+                        "in": "body",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    },
+                    {
+                        "description": "The latitude where the picture was taken at",
+                        "in": "body",
+                        "name": "latitude",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "maximum": 180,
+                            "minimum": -180
+                        }
+                    },
+                    
+                    {
+                        "description": "The longitude where the picture was taken at",
+                        "in": "body",
+                        "name": "longitude",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "maximum": 180,
+                            "minimum": -180
+                        }
+                    },
+                    {
+                        "description": "The captcha response",
+                        "in": "body",
+                        "name": "recaptcha",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ]
@@ -685,6 +757,12 @@ export const cosAPI: any = {
         },
         "InvalidParameters": {
             "description": "A request is made with invalid parameters",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "MaxSubmissionsExceeded": {
+            "description": "A user has made too many submissions in a day",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }
