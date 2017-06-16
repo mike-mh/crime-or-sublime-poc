@@ -17,6 +17,7 @@ class CoSError extends Error {
 enum ErrrorCodes {
     DATABASE_COUNT_ERROR = 1,
     DATABASE_DELETION_ERROR,
+    DATABASE_GRAFFITI_ALREADY_REGISTERED,
     DATABASE_GRAFFITI_DOES_NOT_EXIST,
     DATABASE_GRAFFITI_UPDATE_ERROR,
     DATABASE_NO_DOCUMENTS_FOUND,
@@ -139,5 +140,9 @@ export class CoSServerConstants {
         "No documents found that needed to be updated.",
         ErrrorCodes.DATABASE_NO_DOCUMENTS_MODIFIED_ERROR);
 
+    public static readonly DATABASE_GRAFFITI_ALREADY_REGISTERED_ERROR = new CoSError(
+        "DatabaseGraffitiAlreadyRegisteredError",
+        "A graffiti with this ID has already been registered.",
+        ErrrorCodes.DATABASE_GRAFFITI_ALREADY_REGISTERED);
 
 }

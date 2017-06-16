@@ -65,6 +65,39 @@ export const GraffitiModelSchema = new Schema({
         minimize: false,
     });
 
+export interface ITempGraffitiDocument extends Document {
+    artist?: string;
+    latitude: number;
+    longitude: number;
+    uploadedBy?: string;
+    url: string;
+}
+
+export const TempGraffitiModelSchema = new Schema({
+    artist: {
+        type: String,
+    },
+    latitude: {
+        required: true,
+        type: Number,
+    },
+    longitude: {
+        required: true,
+        type: Number,
+    },
+    uploadedBy: {
+        type: String,
+    },
+    url: {
+        required: true,
+        type: String,
+        unique: true,
+    },
+},
+    {
+        minimize: false,
+    });
+
 /**
  * Use this to contain all schemas and document interfaces for needed models.
  */

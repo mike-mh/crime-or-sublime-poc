@@ -185,6 +185,9 @@
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
+                    "GraffitiAlreadyRegisteredError": {
+                        "$ref": "#/responses/GraffitiAlreadyRegistered"
+                    },
                     "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
@@ -217,7 +220,6 @@
                             "minimum": -180
                         }
                     },
-                    
                     {
                         "description": "The longitude where the picture was taken at",
                         "in": "body",
@@ -692,6 +694,12 @@
         },
         "AlreadyRatedGraffiti": {
             "description": "Someone tried to reassign the same rating to a graffiti.",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "GraffitiAlreadyRegistered": {
+            "description": "Someone attempted to resubmit a graffiti",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }

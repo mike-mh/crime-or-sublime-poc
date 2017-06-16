@@ -4,6 +4,13 @@ export class GraffitiSubmitAPI extends CoSAPI {
     public readonly GRAFFIT_SUBMIT_NEW_SUBMISSION: string = "/graffiti-submit-new-submission";
 
     public readonly responses = {
+        GraffitiAlreadyRegisteredError: {
+            error: {
+                message: "You attempted to re-register a graffiti",
+                name: "GraffitiAlreadyRegisteredError",
+            },
+
+        },
         InternalServerError: {
             error: {
                 message: "Internal server error occured",
