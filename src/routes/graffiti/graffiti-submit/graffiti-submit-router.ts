@@ -21,6 +21,7 @@ export class GraffitiSubmitRouter extends CoSAbstractRouteHandler {
     }
 
     private graffitiSubmitNewSubmission(req: Request, res: Response): void {
+
         try {
             GraffitiSubmitRouter.graffitiSubmitAPI.validateParams(
                 GraffitiSubmitRouter.graffitiSubmitAPI.GRAFFIT_SUBMIT_NEW_SUBMISSION, req.body, req.method);
@@ -29,7 +30,7 @@ export class GraffitiSubmitRouter extends CoSAbstractRouteHandler {
             return;
         }
 
-        new TempGraffitiModel().commitTempGraffitiData(req.body.url, req.body.latitude, req.body.longitude)
+        new TempGraffitiModel().commitTempGraffitiData(req.body.id, req.body.latitude, req.body.longitude)
             .subscribe(() => {
                 res.json({result: "success"});
             },

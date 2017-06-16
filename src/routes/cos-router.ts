@@ -3,6 +3,7 @@ import { resolve } from "path";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";
 import { CoSRouteConstants, RequestPathTupleIndices } from "./cos-route-constants";
 import { GraffitiGetRouter } from "./graffiti/graffiti-get/graffiti-get-router";
+import { GraffitiSubmitRouter } from "./graffiti/graffiti-submit/graffiti-submit-router";
 import { SessionRouter } from "./session/session-router";
 import { UserProfileRouter } from "./user/user-profile/user-profile-router";
 import { UserRateRouter } from "./user/user-rate/user-rate-router";
@@ -42,6 +43,7 @@ export class CoSRouter {
      */
      public intializeRouteHandlers(): void {
          this.routeHandlers.push(new GraffitiGetRouter(this.router));
+         this.routeHandlers.push(new GraffitiSubmitRouter(this.router));
          this.routeHandlers.push(new SessionRouter(this.router));
          this.routeHandlers.push(new UserProfileRouter(this.router));
          this.routeHandlers.push(new UserRegisterRouter(this.router));
