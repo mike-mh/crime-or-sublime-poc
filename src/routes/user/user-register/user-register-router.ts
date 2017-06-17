@@ -95,7 +95,7 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
                         res.json(UserRegisterRouter.responses.InternalServerError);
                         return;
                     }
-                    res.json({ result: username });
+                    res.redirect("http://crime-or-sublime.herokuapp.com");
                 });
             },
             (error) => {

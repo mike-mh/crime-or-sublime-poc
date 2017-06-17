@@ -64,10 +64,10 @@ export class CoSServer {
     /**
      * Listens to specified socket.
      *
-     * @param socket - The socket to listen to.
+     * @param port - The port to listen to.
      */
-    private listenToSocket(socket: (string | number)): Server {
-        return this.app.listen(8000, () => {
+    private listenToSocket(port: (string | number)): Server {
+        return this.app.listen(port, () => {
             process.stdout.write("Server initialized\n");
         });
     }
