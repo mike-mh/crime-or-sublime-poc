@@ -8,18 +8,43 @@ import { CoSServerConstants } from "./../../cos-server-constants";
  * Basic helper class for dealing with reCaptcha payloads.
  */
 export class ReCaptchaHelper {
+
     /**
-     * Verifies payload includes a correct reCaptcha response.
+     * Verifies payload includes a correct reCaptcha response typically from a
+     * new user registering.
      *
      * @param recaptchaResponse - Response from reCaptcha server.
      *
      * @return - Observable that either resolves or triggers an error.
      */
     public static verifyRecaptchaSuccess(recaptchaResponse: string): Observable<void> {
+        return ReCaptchaHelper.makeValidationRequest(recaptchaResponse, process.env.RECAPTCHA_SECRET);
+    }
+
+    /**
+     * Verifies payload from Android device includes a correct reCaptcha response.
+     *
+     * @param recaptchaResponse - Response from reCaptcha server.
+     *
+     * @return - Observable that either resolves or triggers an error.
+     */
+    public static verifyAndroidRecaptchaSuccess(recaptchaResponse: string): Observable<void> {
+        return ReCaptchaHelper.makeValidationRequest(recaptchaResponse, process.env.ANDROID_RECAPTCHA_SECRET);
+    }
+
+    /**
+     * Use this method to issue a validation request for a given reCaptcha.
+     * 
+     * @param recaptchaResponse - The reCaptcha response to validate
+     * @param key - The key to validate the reCaptcha with.
+     * 
+     * @returns - Void resolving observable
+     */
+    private static makeValidationRequest(recaptchaResponse: string, key: string): Observable<void> {
         let responseData = "";
         const requestParams = stringify({
             response: recaptchaResponse,
-            secret: process.env.RECAPTCHA_SECRET,
+            secret: key,
         });
 
         const options = {
@@ -59,7 +84,6 @@ export class ReCaptchaHelper {
             }).then(() => {
                 return;
             }));
-
     }
 
     private static readonly RECAPTCHA_VERIFY_URL: string = "www.google.com";

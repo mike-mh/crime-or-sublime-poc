@@ -214,11 +214,17 @@ export const cosAPI: any = {
                             "$ref": "#/definitions/successResponseString"
                         }
                     },
-                    "InvalidParametersError": {
-                        "$ref": "#/responses/InvalidParameters"
+                    "GraffitiAlreadyRegisteredError": {
+                        "$ref": "#/responses/GraffitiAlreadyRegistered"
                     },
                     "InternalServerError": {
                         "$ref": "#/responses/InternalServerError"
+                    },
+                    "InvalidParametersError": {
+                        "$ref": "#/responses/InvalidParameters"
+                    },
+                    "InvalidSubmissionError": {
+                        "$ref": "#/responses/InvalidSubmission"
                     },
                     "MaxSubmissionsExceededError": {
                         "$ref": "#/responses/MaxSubmissionsExceeded"
@@ -246,7 +252,6 @@ export const cosAPI: any = {
                             "minimum": -180
                         }
                     },
-                    
                     {
                         "description": "The longitude where the picture was taken at",
                         "in": "body",
@@ -725,6 +730,12 @@ export const cosAPI: any = {
                 "$ref": "#/definitions/errorResponse"
             }
         },
+        "GraffitiAlreadyRegistered": {
+            "description": "Someone attempted to resubmit a graffiti",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
         "GraffitiDoesNotExist": {
             "description": "Someone attempted to query a graffiti tag that doesn't exist",
             "schema": {
@@ -757,6 +768,12 @@ export const cosAPI: any = {
         },
         "InvalidParameters": {
             "description": "A request is made with invalid parameters",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "InvalidSubmission": {
+            "description": "Someone attempted to make an invalid new Graffiti submission",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }

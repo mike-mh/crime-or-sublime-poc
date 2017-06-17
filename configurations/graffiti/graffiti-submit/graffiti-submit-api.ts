@@ -23,6 +23,12 @@ export class GraffitiSubmitAPI extends CoSAPI {
                 name: "InvalidParametersError",
             },
         },
+        InvalidSubmissionError: {
+            error: {
+                message: "Submission made to server is invalid",
+                name: "InvalidSubmissionError",
+            },
+        },
         MaxSubmissionsExceededError: {
             error: {
                 message: "You already maxed out your submissions for today",

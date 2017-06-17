@@ -188,11 +188,14 @@
                     "GraffitiAlreadyRegisteredError": {
                         "$ref": "#/responses/GraffitiAlreadyRegistered"
                     },
+                    "InternalServerError": {
+                        "$ref": "#/responses/InternalServerError"
+                    },
                     "InvalidParametersError": {
                         "$ref": "#/responses/InvalidParameters"
                     },
-                    "InternalServerError": {
-                        "$ref": "#/responses/InternalServerError"
+                    "InvalidSubmissionError": {
+                        "$ref": "#/responses/InvalidSubmission"
                     },
                     "MaxSubmissionsExceededError": {
                         "$ref": "#/responses/MaxSubmissionsExceeded"
@@ -736,6 +739,12 @@
         },
         "InvalidParameters": {
             "description": "A request is made with invalid parameters",
+            "schema": {
+                "$ref": "#/definitions/errorResponse"
+            }
+        },
+        "InvalidSubmission": {
+            "description": "Someone attempted to make an invalid new Graffiti submission",
             "schema": {
                 "$ref": "#/definitions/errorResponse"
             }

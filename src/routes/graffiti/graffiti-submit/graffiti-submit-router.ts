@@ -30,17 +30,28 @@ export class GraffitiSubmitRouter extends CoSAbstractRouteHandler {
             return;
         }
 
-        new TempGraffitiModel().commitTempGraffitiData(req.body.id, req.body.latitude, req.body.longitude)
+        ReCaptchaHelper.verifyAndroidRecaptchaSuccess(req.body.recaptcha)
             .subscribe(() => {
-                res.json({result: "success"});
+                new TempGraffitiModel().commitTempGraffitiData(req.body.id, req.body.latitude, req.body.longitude)
+                    .subscribe(() => {
+                        res.json({ result: "success" });
+                    },
+                    (error: any) => {
+                        if (error.code === CoSServerConstants.DATABASE_GRAFFITI_ALREADY_REGISTERED_ERROR.code) {
+                            res.json(GraffitiSubmitRouter.responses.GraffitiAlreadyRegisteredError);
+                        }
+
+                        res.json(GraffitiSubmitRouter.responses.InternalServerError);
+                    });
             },
-            (error: any) => {
-                if (error.code === CoSServerConstants.DATABASE_GRAFFITI_ALREADY_REGISTERED_ERROR.code) {
-                    res.json(GraffitiSubmitRouter.responses.GraffitiAlreadyRegisteredError);
+            (error) => {
+                if (!res.headersSent) {
+                    if (error.code === CoSServerConstants.RECAPTCHA_RESPONSE_FAILURE.code) {
+                        res.json(GraffitiSubmitRouter.responses.InvalidSubmissionError);
+                        return;
+                    }
+                    res.json(GraffitiSubmitRouter.responses.InternalServerError);
                 }
-
-                res.json(GraffitiSubmitRouter.responses.InternalServerError);
             });
-
     }
 }
