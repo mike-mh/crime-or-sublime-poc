@@ -49,7 +49,7 @@ describe("GraffitiSubmitRouter", () => {
             latitude: 100,
             longitude: 100,
             recaptcha: "deadbeef",
-        }
+        };
 
         res.json = (response: any) => {
             expect(response.error.name).toEqual(graffitiSubmitAPI.responses.InvalidParametersError.error.name);
@@ -67,7 +67,7 @@ describe("GraffitiSubmitRouter", () => {
             id: "deadbeef",
             longitude: 100,
             recaptcha: "deadbeef",
-        }
+        };
 
         res.json = (response: any) => {
             expect(response.error.name).toEqual(graffitiSubmitAPI.responses.InvalidParametersError.error.name);
@@ -85,7 +85,7 @@ describe("GraffitiSubmitRouter", () => {
             id: "deadbeef",
             latitude: 100,
             recaptcha: "deadbeef",
-        }
+        };
 
         res.json = (response: any) => {
             expect(response.error.name).toEqual(graffitiSubmitAPI.responses.InvalidParametersError.error.name);
@@ -103,7 +103,7 @@ describe("GraffitiSubmitRouter", () => {
             id: "deadbeef",
             latitude: 100,
             longitude: 100,
-        }
+        };
 
         res.json = (response: any) => {
             expect(response.error.name).toEqual(graffitiSubmitAPI.responses.InvalidParametersError.error.name);
@@ -122,7 +122,7 @@ describe("GraffitiSubmitRouter", () => {
             latitude: 100,
             longitude: 100,
             recaptcha: "deadbeef",
-        }
+        };
 
         res.json = (response: any) => {
             expect(response.error.name).toEqual(graffitiSubmitAPI.responses.InvalidParametersError.error.name);

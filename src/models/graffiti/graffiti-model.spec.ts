@@ -141,7 +141,7 @@ describe("GraffitiTempModel", () => {
     afterAll((done) => {
         graffitiModel.removeDocuments({})
             .flatMap(() => {
-                return tempGraffitiModel.removeDocuments({})
+                return tempGraffitiModel.removeDocuments({});
             })
             .subscribe(done);
     });

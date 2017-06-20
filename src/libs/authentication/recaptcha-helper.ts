@@ -32,12 +32,15 @@ export class ReCaptchaHelper {
         return ReCaptchaHelper.makeValidationRequest(recaptchaResponse, process.env.ANDROID_RECAPTCHA_SECRET);
     }
 
+    private static readonly RECAPTCHA_VERIFY_URL: string = "www.google.com";
+    private static readonly RECAPTCHA_VERIFY_PATH: string = "/recaptcha/api/siteverify";
+
     /**
      * Use this method to issue a validation request for a given reCaptcha.
-     * 
+     *
      * @param recaptchaResponse - The reCaptcha response to validate
      * @param key - The key to validate the reCaptcha with.
-     * 
+     *
      * @returns - Void resolving observable
      */
     private static makeValidationRequest(recaptchaResponse: string, key: string): Observable<void> {
@@ -85,8 +88,5 @@ export class ReCaptchaHelper {
                 return;
             }));
     }
-
-    private static readonly RECAPTCHA_VERIFY_URL: string = "www.google.com";
-    private static readonly RECAPTCHA_VERIFY_PATH: string = "/recaptcha/api/siteverify";
 
 }
