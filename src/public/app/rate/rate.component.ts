@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Component, OnDestroy } from "@angular/core";
 import { Observer } from "rxjs/Observer";
 import { SubjectSubscription } from "rxjs/SubjectSubscription";

@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { SessionAPI } from "./session-api";
 
 describe("SessionAPI", () => {

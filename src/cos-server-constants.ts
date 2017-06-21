@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 /* tslint:disable */
 
 export const CRIME: boolean = false;

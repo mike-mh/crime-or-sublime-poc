@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { LocatorComponent } from "./locator/locator.component";

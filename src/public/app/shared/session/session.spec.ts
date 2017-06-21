@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { async, inject, TestBed } from "@angular/core/testing";
 import { HttpModule, Response, ResponseOptions, XHRBackend } from "@angular/http";
 import { MockBackend } from "@angular/http/testing";

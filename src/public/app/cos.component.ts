@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Component } from "@angular/core";
 import { SessionService } from "./shared/session/session.service";
 

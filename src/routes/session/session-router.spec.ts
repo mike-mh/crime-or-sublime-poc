@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Router } from "express";
 import { request } from "https";
 import { SessionAPI } from "../../../configurations/session/session-api";

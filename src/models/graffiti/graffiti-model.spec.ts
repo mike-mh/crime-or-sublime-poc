@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import mongoose = require("mongoose");
 import { Document } from "mongoose";
 import { Observable } from "rxjs/Observable";

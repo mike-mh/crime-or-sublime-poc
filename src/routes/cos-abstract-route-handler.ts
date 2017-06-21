@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { json } from "body-parser";
 import { IRouterMatcher, Request, RequestHandler, RequestParamHandler, Response, Router } from "express";
 import { CoSAPI } from "../../configurations/cos-api";

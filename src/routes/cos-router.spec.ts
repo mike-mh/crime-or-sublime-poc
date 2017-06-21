@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { RequestHandler, Router } from "express";
 import { CoSAPI } from "../../configurations/cos-api";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";

@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { UserRegsiterAPI } from "./user-register-api";
 
 describe("UserRegsiterAPI", () => {

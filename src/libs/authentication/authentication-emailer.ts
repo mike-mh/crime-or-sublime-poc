@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { request } from "https";
 import { compileFile } from "pug";
 import "rxjs/add/observable/fromPromise";

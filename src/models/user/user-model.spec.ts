@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { connect, Document, model, Model, Schema } from "mongoose";
 import mongoose = require("mongoose");
 import "rxjs/add/operator/map";

@@ -1,4 +1,8 @@
 /**
+ * @author Michael Mitchell-Halter
+ */
+
+/**
  * This file is a temporary fix for the problems with building the front end
  * using rollup and some incompatabilities importing a JSON file as a module
  * using TSC. This file is renamed during a build run with build.sh. Hopefully

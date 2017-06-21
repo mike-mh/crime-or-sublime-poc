@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { CoSServer } from "./cos-server";
 import mongoose = require("mongoose");
 import { SessionManager } from "./libs/session/session-manager";

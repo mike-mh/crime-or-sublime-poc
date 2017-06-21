@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { CoSAPI } from "../cos-api";
 
 /**

@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { GraffitiSubmitAPI } from "./graffiti-submit-api";
 
 describe("GraffitiSubmitAPI", () => {

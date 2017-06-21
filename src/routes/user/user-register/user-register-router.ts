@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { validate } from "email-validator";
 import { Request, Response, Router } from "express";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";

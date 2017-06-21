@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Component, OnInit } from "@angular/core";
 import { LocatorService } from "./locator.service";
 

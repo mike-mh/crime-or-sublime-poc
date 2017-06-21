@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { request } from "https";
 import { stringify } from "query-string";
 import "rxjs/add/observable/fromPromise";

@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter 
+ */
+
 import { pbkdf2, randomBytes } from "crypto";
 import { ClientRequest, request } from "http";
 import * as https from "https";

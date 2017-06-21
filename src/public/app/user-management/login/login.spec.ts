@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { CommonModule } from "@angular/common";
 import { DebugElement, EventEmitter } from "@angular/core";
 import { async, ComponentFixture, inject, TestBed } from "@angular/core/testing";

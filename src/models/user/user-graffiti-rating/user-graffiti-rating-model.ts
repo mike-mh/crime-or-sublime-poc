@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Document, model, Model, Schema } from "mongoose";
 import { CoSServerConstants } from "./../../../cos-server-constants";
 import { CoSAbstractModel } from "./../../cos-abstract-model";

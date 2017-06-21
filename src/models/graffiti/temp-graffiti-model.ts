@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Document, model, Model, Schema } from "mongoose";
 import "rxjs/add/observable/fromPromise";
 import "rxjs/add/operator/map";

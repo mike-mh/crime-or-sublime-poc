@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 // import { validate } from "@types/email-validator";
 import { CoSAPI } from "./cos-api";
 

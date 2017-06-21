@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Router } from "express";
 import { request } from "https";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";

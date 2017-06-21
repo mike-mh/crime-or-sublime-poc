@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import * as express from "express";
 import { Express, Response, Router } from "express";
 import { Server } from "http";

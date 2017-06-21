@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { GraffitiGetAPI } from "./graffiti-get-api";
 
 describe("GraffitiGetAPI", () => {

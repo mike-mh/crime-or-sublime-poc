@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { RequestHandler } from "express";
 
 export class CoSRouteConstants {

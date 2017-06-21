@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { NextFunction, Request, RequestHandler, Response, Router } from "express";
 import { model } from "mongoose";
 import { SessionAPI } from "./../../../configurations/session/session-api";

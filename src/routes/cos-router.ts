@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { Request, RequestHandler, Response, Router } from "express";
 import { resolve } from "path";
 import { CoSAbstractRouteHandler } from "./cos-abstract-route-handler";

@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { platformBrowser } from "@angular/platform-browser";
 import { CoSModuleNgFactory } from "../../aot/src/public/app/cos.module.ngfactory";
 

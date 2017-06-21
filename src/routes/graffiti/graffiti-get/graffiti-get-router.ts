@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { NextFunction, Request, RequestHandler, Response, Router } from "express";
 import { model } from "mongoose";
 import { GraffitiGetAPI } from "./../../../../configurations/graffiti/graffiti-get/graffiti-get-api";

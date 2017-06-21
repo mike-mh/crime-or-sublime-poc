@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { UserRateAPI } from "./user-rate-api";
 
 describe("UserRateAPI", () => {

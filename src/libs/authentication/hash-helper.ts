@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { pbkdf2, randomBytes } from "crypto";
 import "rxjs/add/observable/fromPromise";
 import { Observable } from "rxjs/Observable";

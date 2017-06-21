@@ -1,3 +1,11 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { RequestHandler } from "express";
 import * as session from "express-session";
 import { SessionOptions } from "express-session";

@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { UserProfileAPI } from "./user-profile-api";
 
 describe("userProfileAPI", () => {

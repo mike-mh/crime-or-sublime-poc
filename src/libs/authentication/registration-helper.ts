@@ -1,3 +1,7 @@
+/**
+ * @author Michael Mitchell-Halter
+ */
+
 import { pbkdf2 } from "crypto";
 import "rxjs/add/observable/fromPromise";
 import "rxjs/add/operator/mergeMap";
