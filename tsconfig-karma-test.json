@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig-aot.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+  "include": [
+    "./src/public/**/*.ts",
+    "./configurations/**/*.ts"
+  ],
+  "exclude": [
+    "./src/public/app/main.post.ts"
+  ],
+  "files": [
+    "./src/public/app/main.pre.ts",
+    "./src/public/app/cos.module.ts"
+  ]
+}
