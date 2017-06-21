@@ -1,0 +1,8 @@
+#cos-locator
+  #cos-locator-gallery-and-map
+    #cos-locator-map
+      cos-map
+    #cos-locator-gallery
+      .cos-gallery-widget-container(*ngFor="let image of getKeys(graffitiLocations)")
+        cos-gallery-widget([imgUrl]="image")
+        button.cos-locator-gallery-widget-button.btn.btn-warning((click)="showGraffitiLocation(image)") Find on Map

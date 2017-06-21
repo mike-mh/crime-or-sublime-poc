@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "baseUrl": ".",
+    "paths": {
+      "compiled_app": [
+        "compiled_app/app"
+      ]
+    },
+    "module": "es2015",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "noImplicitAny": true,
+    "outDir": "compiled_app",
+    "suppressImplicitAnyIndexErrors": true
+  },
+  "exclude": [
+    "src/models",
+    "src/libs",
+    "src/models",
+    "src/routes",
+    "node_modules"
+  ],
+  "files": [
+    "src/public/app/cos.module.ts",
+    "src/public/app/main.ts"
+  ],
+  "angularCompilerOptions": {
+    "genDir": "src/aot",
+    "skipMetadataEmit": true
+  }
+}

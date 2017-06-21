@@ -1,0 +1,22 @@
+#cos-login
+.container(*ngIf="!isLoggedIn")
+  //- Should probably get rid of this
+  h1
+    | Login Here:
+  form#cos-login-form([formGroup]="form", (ngSubmit)="onSubmit(form.value)")
+    .form-group
+      label(for="email")
+        | Email
+      input#cos-login-name-field.form-control([formControl]="form.controls['email']",
+                                              type="text",
+                                              name="email")
+    .form-group
+      label(for="password")
+        | Password
+      input#cos-login-password-field.form-control([formControl]="form.controls['password']",
+                                                  type="password",
+                                                  name="password")
+      .alert.alert-danger#cos-login-lockout-message(*ngIf="isLocked")
+          | You tried to log in too many times. Wait for a few minutes then try again.
+    button.btn.btn-default#cos-login-submit-button([disabled]="!form.valid || isLocked")
+      | Submit

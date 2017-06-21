@@ -1,0 +1,10 @@
+#!/bin/bash
+
+export TOTAL_PBKDF2_ITERATIONS=9342
+export PBKDF2_KEY_LENGTH=256
+export PBKDF2_HMAC=sha256
+export SALT_LENGTH=32
+export PEPPER_KEY="ILikeBreadAndButter"
+export COOKIE_SECRET="ILikeToastAndJam"
+export RECAPTCHA_SECRET="6LcWJSYUAAAAAAsN9LsYBlpeCV0OzVVDh9QMmMd2"
+export POSTMARK_KEY="FillThisInLater"

@@ -1,0 +1,42 @@
+sudo: required
+
+dist: trusty
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+language: node_js
+node_js:
+    - "7"
+
+# Run MongoDB
+services:
+    - mongodb
+
+before_script:
+    - export CHROME_BIN=chromium-browser
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+before_install:
+    - sudo gem install sass
+install:
+    - npm install
+    - ./node_modules/.bin/webdriver-manager update
+
+# Run the tests
+script:
+    - tslint -c ./tslint.json "configurations/**/*.ts"
+    - tslint -c ./tslint.json "src/**/*.ts"
+    - ./node_modules/.bin/karma start --single-run
+    - cp ./src/views/email-templates/registration-email.pug ./src/libs/authentication
+    - ./node_modules/.bin/jasmine-ts
+    - ./node_modules/.bin/tsc
+    - cp ./src/views/email-templates/registration-email.pug ./dist/src/libs/authentication
+    - ./build.sh --fe
+    - node ./dist/src/main.js &
+    - ./node_modules/.bin/webdriver-manager start --standalone & > /dev/null
+    - ./node_modules/.bin/protractor
