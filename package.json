@@ -1,11 +1,15 @@
 {
-  "name": "angular2-dogfood",
+  "name": "crime-or-sublime",
   "version": "1.0.0",
-  "description": "Test to make a NodeJS server entirely out of Typescript",
+  "description": "This is the official setup for Crime or Sublime version 1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./build.sh"
+    "test-front-end": "node node_modules/.bin/karma start --stand-alone",
+    "test-back-end": "node node_modules/.bin/jasmine-ts",
+    "build": "./build.sh",
+    "build-front-end": "./build.sh --fe",
+    "build-back-end": "./build.sh --be"
   },
   "author": "Michael Mitchell-Halter",
   "devDependencies": {
