@@ -15,7 +15,7 @@
 #       * Heroku Toolbelt
 #   - Check to ensure user is logged into Heroku and crime-or-sublime app is
 #     added.
-
+#   - Find a way to add the date and proper commit message to when committing
 
 
 ###############################################################################
@@ -42,7 +42,7 @@ GIT_CREATE_AND_CHECKOUT_DEPLOY_BRANCH="git checkout -b $DEPLOY_BRANCH"
 GIT_DELETE_DEPLOY_BRANCH="git branch -D $DEPLOY_BRANCH"
 GIT_ADD_COMPILED_FILES="git add -f $COMPILED_COS_FILES \
 $COS_SYSTEMJS_CONFIG $COS_CLIENT_LIBRARIES"
-GIT_COMMIT_COMPILED_APP="git commit -m $GIT_DEPLOY_COMMIT_MESSAGE"
+GIT_COMMIT_COMPILED_APP="git commit -m 'CoS deployed'"
 GIT_RESTORE_BRANCH_FILES="git checkout ."
 
 COMPILE_COS="npm run build"
