@@ -203,7 +203,22 @@ build_back_end () {
     exit $ERROR
   fi
   extract_server_views
-  printf "\033[1;92m\nCoS back end built successfully.\n\n"
+  printf "\n\033[1;93mCompressing CoS back end files...\n\n"
+
+  shopt -s globstar
+  for file in dist/src/**/*.js
+  do
+    printf "\033[0;95mCompressing $file\n"
+    node_modules/.bin/uglifyjs "$file" -co "$file"
+  done
+
+  if [ $? -ne $EXIT_OK ]; then
+    printf "\033[1;91mError compiling CoS back end.\n\nExiting...\n\n" >&2
+    printf "\033[0;37m"
+    cleanup
+    exit $ERROR
+  fi
+  printf "\033[1;92m\n\nCoS back end built successfully.\n\n"
 }
 
 
