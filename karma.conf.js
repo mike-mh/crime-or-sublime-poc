@@ -52,7 +52,7 @@ module.exports = function (config) {
         entrypoints: /\.spec\.ts$/,
         transforms: [require("karma-typescript-angular2-transform")],
       },
-      tsconfig: "./src/public/app/tsconfig.fe.cos.test.json",
+      tsconfig: "./tsconfig-karma-test.json",
     },
 
     // preprocess matching files before serving them to the browser
