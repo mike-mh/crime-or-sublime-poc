@@ -9,7 +9,9 @@
     "test-back-end": "node node_modules/.bin/jasmine-ts",
     "build": "./build.sh",
     "build-front-end": "./build.sh --fe",
-    "build-back-end": "./build.sh --be"
+    "build-back-end": "./build.sh --be",
+    "lint-project": "tslint -c tslint.json 'src/**/*.ts'",
+    "lint-configurations": "tslint -c tslint.json 'configurations/**/*.ts'"
   },
   "author": "Michael Mitchell-Halter",
   "devDependencies": {

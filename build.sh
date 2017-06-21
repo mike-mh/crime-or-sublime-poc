@@ -214,6 +214,7 @@ build_back_end () {
 if [ -z $1 ]; then
   build_front_end
   printf "\033[1;92m\nFront end application built successfully\n\n"
+  cleanup
   build_back_end
   printf "\033[1;36m\nRun server with 'node dist/src/main.js'\n"
   printf "\033[1;36mBe sure MongoDB is also running.\n\n"
@@ -228,7 +229,6 @@ else
     build_front_end
     printf "\033[1;92m\nFront end application built successfully\n\n"
     printf "\033[0;37m\n"
+    cleanup
   fi
 fi
-
-cleanup

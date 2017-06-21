@@ -47,9 +47,9 @@ export class TempGraffitiModel extends CoSAbstractModel {
         return this.ensureGraffitiIsUnique(url)
             .flatMap(() => {
                 return this.saveDocument({
-                    url,
                     latitude,
                     longitude,
+                    url,
                 });
 
             });
@@ -73,9 +73,9 @@ export class TempGraffitiModel extends CoSAbstractModel {
 
         return Observable.fromPromise(
             new (graffitiModel.getModel())({
-                url,
                 latitude,
                 longitude,
+                url,
             }).save((error) => {
                 if (error) {
                     throw CoSServerConstants.DATABASE_SAVE_ERROR;

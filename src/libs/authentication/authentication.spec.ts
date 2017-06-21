@@ -1,5 +1,5 @@
 /**
- * @author Michael Mitchell-Halter 
+ * @author Michael Mitchell-Halter
  */
 
 import { pbkdf2, randomBytes } from "crypto";
