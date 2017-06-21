@@ -1,0 +1,33 @@
+//-
+  This is the entry point for the entire application. This should be the .pug
+  file that is not with another component in the app directories (aside from
+  email templates).
+doctype html
+html(lang="en")
+  head
+    title
+      | Crime or Sublime
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    meta(content="1111086175633223" property="fb:app_id")
+    meta(content="www.something.com" property="og:url")
+    meta(content="CRIME OR SUBLIME!" property="og:title")
+    meta(content="http://crime-or-sublime.herokuapp.com/imgs/best-head.png" property="og:image")
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous")
+    script(src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous")
+    base(href="/")
+    //- Include google maps API
+    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVnOaPHXlVaFvM-wZr1xpiFUcfVTrpjss" async defer)
+    //- Include necessary libraries
+    script(src="/shim.min.js")
+    script(src="/zone.min.js")
+    script(src="/Reflect.js")
+    //- Use this to deal with [hidden] bug for now.
+    style
+      | [hidden] { display: none !important;}
+    cos(id="cos-index-main")
+      | Loading...
+  //- Import the condensed CoS Angular app.
+  script(src="/build.js")
