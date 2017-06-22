@@ -195,7 +195,7 @@ build_front_end () {
 ###############################################################################
 build_back_end () {
   printf "\n\033[1;93mBuilding CoS back end...\n"
-  tsc
+  node_modules/.bin/tsc
   if [ $? -ne $EXIT_OK ]; then
     printf "\033[1;91mError compiling CoS back end.\n\nExiting...\n\n" >&2
     printf "\033[0;37m"
