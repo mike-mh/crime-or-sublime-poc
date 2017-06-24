@@ -20,6 +20,8 @@ function sessionStatus(state: ISessionState = initialSessionState, action: Sessi
             return action.email;
         case COS_END_SESSION:
             return initialSessionState.email;
+        default:
+            return state;
     }
 }
 

@@ -7,8 +7,10 @@ import Test from "../test/test";
 
 const a = elements.a;
 const div = elements.div;
+const h1 = elements.h1;
 const nav = elements.nav;
 
+const header = h1(null, "Welcome to CoS!");
 const test = e(Test, null, null);
 
 
@@ -34,6 +36,7 @@ class Navbar extends Component<{}, {}> {
     private readonly container = div(
         null,
         [
+            header,
             this.navbar,
             this.outlet
         ]);
