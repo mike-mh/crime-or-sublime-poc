@@ -1,9 +1,9 @@
 import { Component, createElement } from "react";
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 import { elements } from "../libs/elements";
+import { sessionReducer } from "../reducers/session-management/session.reducer";
 import Navbar from "./navbar/navbar";
-import { sessionReducer } from "../reducers/session-management/session.reducer"
 
 const div = elements.div;
 const h1 = elements.h1;
@@ -16,11 +16,10 @@ const entryPoint = createElement(Provider,
     { store },
     div({id: "cos"}, [
         header,
-        createElement(Navbar, null, null)
-        ]));
+        createElement(Navbar, null, null)]));
 
 class Index extends Component<{}, {}> {
-    render() {
+    public render() {
         return entryPoint;
     }
 }

@@ -7,14 +7,10 @@ const p = elements.p;
 
 const header = h1(null, "Yo Bro!");
 
-const container = div(
-    null,
-    [
-        header
-    ]);
+const container = div(null, header);
 
 class Test extends Component<{}, {}> {
-    render() {
+    public render() {
         return container;
     }
 }

@@ -1,8 +1,8 @@
 import { Component, createElement as e, DOMElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect } from "react-redux";
-import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { elements } from "../../libs/elements";
+import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import Login from "../login/login";
 import Test from "../test/test";
 
@@ -15,19 +15,19 @@ class Navbar extends Component<{}, {}> {
     private readonly VIEW_MAP: any = {
         login: e(Login, null, null),
         test: e(Test, null, null),
-    }
+    };
 
     private readonly connectedLogoutButton = connect()(({ dispatch }) => {
-        return a({ onClick: () => { dispatch(endSession()) } }, "Logout")
+        return a({ onClick: () => { dispatch(endSession()); } }, "Logout");
     });
 
     private readonly links = [
-        a({ onClick: () => { this.renderView("test") } }, "Home"),
-        a({ onClick: () => { this.renderView("test") } }, "Locator"),
-        a({ onClick: () => { this.renderView("view") } }, "Rate"),
-        a({ onClick: () => { this.renderView("view") } }, "Register"),
-        a({ onClick: () => { this.renderView("test") } }, "Profile"),
-        a({ onClick: () => { this.renderView("login") } }, "Login"),
+        a({ onClick: () => { this.renderView("test"); } }, "Home"),
+        a({ onClick: () => { this.renderView("test"); } }, "Locator"),
+        a({ onClick: () => { this.renderView("view"); } }, "Rate"),
+        a({ onClick: () => { this.renderView("view"); } }, "Register"),
+        a({ onClick: () => { this.renderView("test"); } }, "Profile"),
+        a({ onClick: () => { this.renderView("login"); } }, "Login"),
         e(this.connectedLogoutButton),
     ];
 
@@ -38,7 +38,7 @@ class Navbar extends Component<{}, {}> {
         null,
         [
             this.navbar,
-            this.outlet
+            this.outlet,
         ]);
 
     public renderView(view: string): void {
@@ -52,13 +52,6 @@ class Navbar extends Component<{}, {}> {
         return this.container;
     }
 
-    public getEmailInput(): void {
-
-    }
-
-    public getPasswordInput(): void {
-
-    }
 }
 
 export default Navbar;

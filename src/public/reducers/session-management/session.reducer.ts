@@ -1,4 +1,4 @@
-import { combineReducers, Action } from "redux";
+import { Action, combineReducers } from "redux";
 import { COS_BEGIN_SESSION, COS_END_SESSION, SessionAction } from "./session.actions";
 
 // TO-DO: Include username with sessions from sever
@@ -12,7 +12,7 @@ const initialSessionState: ISessionState = {
     email: null,
     isActive: false,
     username: null,
-}
+};
 
 function sessionStatus(state: ISessionState = initialSessionState, action: SessionAction) {
     switch (action.type) {

@@ -1,10 +1,9 @@
 import * as $ from "jquery";
-import { Component, createElement as e, ChangeEvent } from "react";
+import { ChangeEvent, Component, createElement as e } from "react";
 import { connect } from "react-redux";
-import { beginSession, endSession } from "../../reducers/session-management/session.actions";
-import { elements } from "../../libs/elements";
-import Test from "../test/test";
 import { SessionAPI } from "../../../../configurations/session/session-api";
+import { elements } from "../../libs/elements";
+import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 
 const a = elements.a;
 const button = elements.button;
@@ -19,14 +18,13 @@ interface IFormState {
     password: string;
 }
 
-
 class Login extends Component<{}, IFormState> {
     public readonly sessionAPI: SessionAPI = new SessionAPI();
 
     public state: IFormState = {
         email: "",
         password: "",
-    }
+    };
 
     private readonly emailInput = e("input",
         {
@@ -49,8 +47,8 @@ class Login extends Component<{}, IFormState> {
 
     private readonly submitButton = button(
         {
-            type: "submit",
             className: "btn btn-primary",
+            type: "submit",
         }, "Submit");
 
     private readonly formLayout = [
@@ -88,7 +86,6 @@ class Login extends Component<{}, IFormState> {
 
     public submitCredentials(event: Event): void {
         event.preventDefault();
-        console.log(this.state)
         try {
             this.sessionAPI.validateParams(
                 this.sessionAPI.SESSION_CREATE_USER_PATH,
@@ -98,8 +95,7 @@ class Login extends Component<{}, IFormState> {
                 },
                 "post");
         } catch (error) {
-            console.log(error);
-            console.log("exitting...");
+            // Should update DOM here.
             return;
         }
 
@@ -112,11 +108,12 @@ class Login extends Component<{}, IFormState> {
             }),
             dataType: "json",
             error: (xhr: any, status: any, err: any) => {
-                console.log(err.toString());
+                // Should change the DOM here
+                return;
             },
             method: "POST",
             success: (data: JSON) => {
-                console.log(data);
+                return;
             },
             url: this.sessionAPI.SESSION_CREATE_USER_PATH,
         });
