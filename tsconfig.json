@@ -15,9 +15,6 @@
             ]
         }
     },
-    "exclude": [
-        "configurations/session/*"
-    ],
     "include": [
         "src/main.ts"
     ]
