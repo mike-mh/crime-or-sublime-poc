@@ -17,7 +17,7 @@ class Navbar extends Component<{}, {}> {
         test: e(Test, null, null),
     }
 
-    private readonly ConnectedLogoutButton = connect()(({ dispatch }) => {
+    private readonly connectedLogoutButton = connect()(({ dispatch }) => {
         return a({ onClick: () => { dispatch(endSession()) } }, "Logout")
     });
 
@@ -28,7 +28,7 @@ class Navbar extends Component<{}, {}> {
         a({ onClick: () => { this.renderView("view") } }, "Register"),
         a({ onClick: () => { this.renderView("test") } }, "Profile"),
         a({ onClick: () => { this.renderView("login") } }, "Login"),
-        e(this.ConnectedLogoutButton),
+        e(this.connectedLogoutButton),
     ];
 
     private readonly navbar = nav(null, this.links);
@@ -50,6 +50,14 @@ class Navbar extends Component<{}, {}> {
 
     public render() {
         return this.container;
+    }
+
+    public getEmailInput(): void {
+
+    }
+
+    public getPasswordInput(): void {
+
     }
 }
 

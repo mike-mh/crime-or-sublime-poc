@@ -29,15 +29,16 @@ export default {
       include: [
         'node_modules/**'
       ],
-      exclude: [
-        'node_modules/process-es6/**'
-      ],
+//      exclude: [
+//        'node_modules/process-es6/**'
+//      ],
       namedExports: {
         'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
         'node_modules/react-dom/index.js': ['render'],
         'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
         'node_modules/react-dom/index.js': ['render', 'unmountComponentAtNode'],
-        'node_modules/react-hyperscript-helpers/lib/index.js': ['connect']
+        'node_modules/react-hyperscript-helpers/lib/index.js': ['connect'],
+        'node_modules/jQuery/lib/node-jquery.js': ['ajax'],
       }
     }),
     replace({
