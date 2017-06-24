@@ -1,21 +1,22 @@
-import { Component, createElement as e } from "react";
+import { Component, createElement as e, DOMElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect } from "react-redux";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { elements } from "../../libs/elements";
+import Login from "../login/login";
 import Test from "../test/test";
 
 const a = elements.a;
 const div = elements.div;
-const h1 = elements.h1;
 const nav = elements.nav;
-
-const header = h1(null, "Welcome to CoS!");
-const test = e(Test, null, null);
-
 
 class Navbar extends Component<{}, {}> {
     private readonly VIEW_ID: string = "cos-view";
+    private readonly VIEW_MAP: any = {
+        login: e(Login, null, null),
+        test: e(Test, null, null),
+    }
+
     private readonly ConnectedLogoutButton = connect()(({ dispatch }) => {
         return a({ onClick: () => { dispatch(endSession()) } }, "Logout")
     });
@@ -26,7 +27,7 @@ class Navbar extends Component<{}, {}> {
         a({ onClick: () => { this.renderView("view") } }, "Rate"),
         a({ onClick: () => { this.renderView("view") } }, "Register"),
         a({ onClick: () => { this.renderView("test") } }, "Profile"),
-        a({ onClick: () => { this.renderView("view") } }, "Login"),
+        a({ onClick: () => { this.renderView("login") } }, "Login"),
         e(this.ConnectedLogoutButton),
     ];
 
@@ -36,15 +37,14 @@ class Navbar extends Component<{}, {}> {
     private readonly container = div(
         null,
         [
-            header,
             this.navbar,
             this.outlet
         ]);
 
     public renderView(view: string): void {
         unmountComponentAtNode(document.getElementById(this.VIEW_ID));
-        if (view === "test") {
-            render(test, document.getElementById("cos-view"));
+        if (this.VIEW_MAP[view]) {
+            render(this.VIEW_MAP[view], document.getElementById("cos-view"));
         }
     }
 

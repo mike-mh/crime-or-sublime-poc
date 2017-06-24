@@ -12,13 +12,16 @@ const p = elements.p;
 const header = h1(null, "Welcome to CoS!");
 const store = createStore(sessionReducer);
 
-const container = createElement(Provider,
+const entryPoint = createElement(Provider,
     { store },
-    createElement(Navbar, null, null));
+    div({id: "cos"}, [
+        header,
+        createElement(Navbar, null, null)
+        ]));
 
 class Index extends Component<{}, {}> {
     render() {
-        return container;
+        return entryPoint;
     }
 }
 
