@@ -93,8 +93,6 @@ class Index extends Component<{}, {}> {
      * be rendered correctly.
      */
     private handleSessionChange(): void {
-        console.log(this);
-        console.log((store.getState() as any).sessionStatus);
         this.renderNavbar((store.getState() as any).sessionStatus);
     }
 }

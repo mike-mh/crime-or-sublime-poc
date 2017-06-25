@@ -1,4 +1,5 @@
 import { ChangeEvent, Component, createElement as e } from "react";
+import { render, unmountComponentAtNode } from "react-dom";
 import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements } from "../../libs/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";

@@ -1,6 +1,6 @@
 import { Component, createElement as e, DOMElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
-import { connect } from "react-redux";
+import { connect, Provider } from "react-redux";
 import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements } from "../../libs/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
@@ -19,7 +19,6 @@ interface INavbarProps {
 class Navbar extends Component<INavbarProps, {}> {
     private readonly sessionAPI: SessionAPI = new SessionAPI();
     private readonly VIEW_ID: string = "cos-view";
-    private readonly LOGIN_VIEW_ID = "cos-login"
     private readonly VIEW_MAP: any = {
         login: e(Login, null, null),
         test: e(Test, null, null),
@@ -38,8 +37,10 @@ class Navbar extends Component<INavbarProps, {}> {
         "cos-login",
     ];
 
+    // Need to connect the logout button so that it can send redux signals to
+    // have the Navbar re-rendered correctly.
     private readonly connectedLogoutButton = connect()(({ dispatch }) => {
-        return a({ id:"cos-logout", onClick: () => { dispatch(endSession()); } }, "Logout");
+        return a({ id: "cos-logout", onClick: () => { dispatch(endSession()); } }, "Logout");
     });
 
     private readonly links = [
@@ -82,13 +83,18 @@ class Navbar extends Component<INavbarProps, {}> {
 
     constructor(props: any) {
         super(props);
+        store.subscribe(this.handleSessionChange.bind(this));
     }
 
     public renderView(view: string): void {
         unmountComponentAtNode(document.getElementById(this.VIEW_ID));
         if (this.VIEW_MAP[view]) {
-            render(this.VIEW_MAP[view], document.getElementById("cos-view"));
+            console.log("RENDERING: " + view);
+            render(
+                e(Provider, { store }, this.VIEW_MAP[view]),
+                document.getElementById("cos-view"));
         }
+            console.log("FINISHED RENDERING: " + view);
     }
 
     /**
@@ -133,6 +139,17 @@ class Navbar extends Component<INavbarProps, {}> {
             this.outlet,
         ]);
     }
+
+    /**
+     * Use this to handle changes to the session state so that the Navbar can
+     * be rendered correctly.
+     */
+    private handleSessionChange(): void {
+        if ((store.getState() as any).sessionStatus) {
+            this.renderView("test");
+        }
+    }
+
 }
 
 export default Navbar;
