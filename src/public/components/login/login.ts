@@ -1,9 +1,8 @@
-import * as $ from "jquery";
 import { ChangeEvent, Component, createElement as e } from "react";
-import { connect } from "react-redux";
 import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements } from "../../libs/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
+import { store } from "../../reducers/session-management/session.store";
 
 const a = elements.a;
 const button = elements.button;
@@ -58,10 +57,10 @@ class Login extends Component<{}, IFormState> {
         div({ className: "form-group" }, [
             this.passwordLabel,
             this.passwordInput]),
-            this.submitButton,
+        this.submitButton,
     ];
 
-    private readonly loginForm = form({onSubmit: this.submitCredentials.bind(this)}, [
+    private readonly loginForm = form({ onSubmit: this.submitCredentials.bind(this) }, [
         this.formLayout,
     ]);
 
@@ -109,11 +108,15 @@ class Login extends Component<{}, IFormState> {
             dataType: "json",
             error: (xhr: any, status: any, err: any) => {
                 // Should change the DOM here
-                return;
+                store.dispatch(endSession());
             },
             method: "POST",
-            success: (data: JSON) => {
-                return;
+            success: (data: any) => {
+                if (data.result) {
+                    store.dispatch(beginSession(data.result));
+                    return;
+                }
+                store.dispatch(endSession());
             },
             url: this.sessionAPI.SESSION_CREATE_USER_PATH,
         });

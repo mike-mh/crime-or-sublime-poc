@@ -20,6 +20,9 @@ export default {
     // console.warn everything else
     console.warn(warning.message);
   },
+  globals: {
+    jquery: '$'
+  },
   plugins: [
     typescript({
       tsconfig: "tsconfig-react.json"
@@ -29,9 +32,6 @@ export default {
       include: [
         'node_modules/**'
       ],
-//      exclude: [
-//        'node_modules/process-es6/**'
-//      ],
       namedExports: {
         'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
         'node_modules/react-dom/index.js': ['render'],

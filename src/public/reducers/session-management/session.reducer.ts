@@ -10,18 +10,18 @@ interface ISessionState {
 
 const initialSessionState: ISessionState = {
     email: null,
-    isActive: false,
+    isActive: true,
     username: null,
 };
 
 function sessionStatus(state: ISessionState = initialSessionState, action: SessionAction) {
     switch (action.type) {
         case COS_BEGIN_SESSION:
-            return action.email;
+            return true;
         case COS_END_SESSION:
-            return initialSessionState.email;
+            return false;
         default:
-            return state;
+            return false;
     }
 }
 
