@@ -21,6 +21,8 @@ const TAG_NAMES = [
 ];
 
 type ElementCurryFunction = (props?: any, ...children: ReactNode[]) => DOMElement<any, Element>;
+type SetElementChildrenCurryFunction = (...children: ReactNode[]) => DOMElement<any, Element>;
+
 
 /**
  * Use this to map elements to their correct curry function.
@@ -59,10 +61,10 @@ interface IElementCurryFunctionMap {
  * @returns - A new curry function for crearing a React element.
  */
 const createElementCurry: (selector: string) => ElementCurryFunction = (selector: string) => {
-        return (props?: any, ...children: ReactNode[]): DOMElement<any, Element> => {
-            return e(selector, props, children);
-        };
+    return (props?: any, ...children: ReactNode[]): DOMElement<any, Element> => {
+        return e(selector, props, children);
     };
+};
 
 
 /**
@@ -80,5 +82,20 @@ const generateElements: () => IElementCurryFunctionMap = () => {
         return elementsObject;
     }, {});
 };
+
+/**
+ * Use this to generate a curry function to set the children of the element
+ * produced by a given ElementCurryFunction.
+ * 
+ * @param elemCurry - The ElementCurryFunction used to create the element with
+ *      the children and props appended.
+ * @param props - The props to pass on to the generated element.
+ */
+export const setElemChildrenCurry =
+    (elemCurry: ElementCurryFunction, props?: any): SetElementChildrenCurryFunction => {
+        return (...children: ReactNode[]) => {
+            return elemCurry(props, children);
+        }
+    }
 
 export const elements = generateElements();

@@ -1,7 +1,7 @@
 import { Component, ComponentElement, createElement as e, DOMElement, SFC } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
-import { elements } from "../../libs/elements";
+import { setElemChildrenCurry, elements } from "../../libs/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 import Login from "../login/login";
@@ -9,9 +9,12 @@ import Register from "../register/register";
 import Test from "../test/test";
 
 const a = elements.a;
+const button = elements.button;
 const div = elements.div;
+const li = elements.li;
 const nav = elements.nav;
-
+const span = elements.span;
+const ul = elements.ul;
 
 interface INavbarProps {
     sessionActive: boolean;
@@ -26,98 +29,155 @@ interface INavbarLinkData {
     viewLink: DOMElement<any, Element> | ComponentElement<any, any>,
 }
 
+const NAVBAR_BOOTSTRAP_CLASSES = "navbar navbar-inverse bg-primary navbar-toggleable-md navbar-light bg-faded";
+const NAVBAR_ATTRIBUTES = {
+    id: "cos-navbar",
+    className: NAVBAR_BOOTSTRAP_CLASSES
+};
+const NAVBAR = setElemChildrenCurry(nav, NAVBAR_ATTRIBUTES);
+
+const NAVBAR_COLLAPSE_BUTTON_ATTRIBUTES = {
+    "aria-controls": "navbarSupportedContent",
+    "aria-expanded": "false",
+    "aria-label": "Toggle navigation",
+    className: "navbar-toggler navbar-toggler-right",
+    "data-target": "#cos-navbar-links",
+    "data-toggle": "collapse",
+    type: "button",
+}
+
+const NAVBAR_COLLAPSE_BUTTON_LEAF = button(NAVBAR_COLLAPSE_BUTTON_ATTRIBUTES,
+    span({ className: "navbar-toggler-icon" }));
+
+const NAVBAR_BRAND_BUTTON_LEAF = a({ className: "navbar-brand", href: "#" }, "CoS");
+
+const NAVBAR_COLLAPSING_DIV = setElemChildrenCurry(div, { className: "collapse navbar-collapse", id: "cos-navbar-links" });
+
+const NAVBAR_LINKS_UL = setElemChildrenCurry(ul, { className: "navbar-nav mr-auto" });
+
+const NAVBAR_LINK_LIST_ITEM = setElemChildrenCurry(li, { className: "nav-item active" });
+
 // Need to connect the logout button so that it can send redux signals to
 // have the Navbar re-rendered correctly.
-const connectedLogoutButton = e(connect()(({ dispatch }) => {
-    return a({ id: "cos-logout", onClick: () => { dispatch(endSession()); } }, "Logout");
-}), { id: "cos-logout" } as any);
+const CONNECTED_LOGOUT_LINK = e(connect()(({ dispatch }) => {
+    return NAVBAR_LINK_LIST_ITEM(
+        a({
+            className: "nav-link",
+            href: "#",
+            id: "cos-logout",
+            onClick: () => { dispatch(endSession()); }
+        }, "Logout"))
+}));
 
-const links: INavbarLinkData[] = [
+const createLinkElement: (id: string, displayName: string) => DOMElement<any, Element> =
+    (id: string, displayName: string) => {
+        return NAVBAR_LINK_LIST_ITEM(
+            a({
+                className: "nav-link",
+                href: "#",
+                id,
+                onClick: () => { renderView(id); },
+            }, displayName)
+        );
+    }
+
+const LINKS: INavbarLinkData[] = [
     {
         alwaysShow: true,
         linkId: "cos-navbar-home",
         requiresSession: false,
         view: e(Test, null, null),
-        viewLink: a({
-            onClick: () => { renderView("cos-navbar-home"); },
-            id: "cos-navbar-home",
-        }, "Home"),
+        viewLink: createLinkElement("cos-navbar-home", "Home"),
     },
     {
         alwaysShow: true,
         linkId: "cos-navbar-locator",
         requiresSession: false,
         view: e(Test, null, null),
-        viewLink: a({
-            onClick: () => { renderView("cos-navbar-locator"); },
-            id: "cos-navbar-locator",
-        }, "Locator"),
+        viewLink: createLinkElement("cos-navbar-locator", "Locator"),
     },
     {
         alwaysShow: false,
         linkId: "cos-navbar-rate",
         requiresSession: true,
         view: e(Test, null, null),
-        viewLink: a({
-            onClick: () => { renderView("cos-navbar-rate"); },
-            id: "cos-navbar-rate",
-        }, "Rate"),
+        viewLink: createLinkElement("cos-navbar-rate", "Rate"),
     },
     {
         alwaysShow: false,
         linkId: "cos-navbar-profile",
         requiresSession: true,
         view: e(Test, null, null),
-        viewLink: a({
-            onClick: () => { renderView("cos-navbar-profile"); },
-            id: "cos-navbar-profile",
-        }, "Profile"),
+        viewLink: createLinkElement("cos-navbar-profile", "Profile"),
     },
     {
         alwaysShow: false,
         linkId: "cos-navbar-register",
         requiresSession: false,
         view: e(Register, null, null),
-        viewLink: a({
-            onClick: () => { renderView("cos-navbar-register"); },
-            id: "cos-navbar-register",
-        }, "Register"),
+        viewLink: createLinkElement("cos-navbar-register", "Register"),
     },
     {
         alwaysShow: false,
         linkId: "cos-navbar-login",
         requiresSession: false,
         view: e(Login, null, null),
-        viewLink: a({
-            onClick: () => { renderView("cos-navbar-login"); },
-            id: "cos-navbar-login",
-        }, "Login"),
+        viewLink: createLinkElement("cos-navbar-login", "Login"),
     },
     {
         alwaysShow: false,
         linkId: "cos-navbar-logout",
         requiresSession: true,
-        viewLink: connectedLogoutButton,
+        viewLink: CONNECTED_LOGOUT_LINK,
     },
 ];
 
-const Navbar: SFC<INavbarProps> = ({ sessionActive }) => {
-    return nav({ id: "cos-navbar" }, [
-        links.filter((link: INavbarLinkData) => {
-            return link.requiresSession === sessionActive || link.alwaysShow;
-        }).reduce((acc: (DOMElement<any, Element> | ComponentElement<any, any>)[], val: INavbarLinkData) => {
-            return acc.concat(val.viewLink);
-        }, [])]);
-}
-
 const renderView = (linkId: string) => {
-    links.map((link: INavbarLinkData) => {
+    LINKS.map((link: INavbarLinkData) => {
         if (linkId === link.linkId) {
             unmountComponentAtNode(document.getElementById("cos-outlet"));
             render(e(Provider, { store }, link.view),
                 document.getElementById("cos-outlet"));
         }
     });
+}
+
+/**
+ * Renders standard collapsing Navbar. Includes jQuery to collapse the Navbar
+ * after a link is selected.
+ * 
+ * @prop sessionActive - Holds boolean for whether or not a user session is
+ *     currently active.
+ */
+const Navbar: SFC<INavbarProps> = ({ sessionActive }) => {
+    /**
+     * Unfortunately Bootstrap doesn"t support recollapsing the navbar after an
+     * option is selcted. This will trigger a click event on the Navbar button to
+     * have the Navbar re-collapse after a link is selected.
+     *
+     * TO-DO: If anyone can figure out how to collapse the Navbar without jQuery,
+     *        please do!
+     *
+     */
+    jQuery(document).ready(function ($) {
+        $(".nav-link").on("click", function () {
+            $(".navbar-toggler").click();
+        });
+    });
+
+    return NAVBAR([
+        NAVBAR_COLLAPSE_BUTTON_LEAF,
+        NAVBAR_BRAND_BUTTON_LEAF,
+        NAVBAR_COLLAPSING_DIV([
+            NAVBAR_LINKS_UL(
+                LINKS.reduce(
+                    (acc: (DOMElement<any, Element> | ComponentElement<any, any>)[], val: INavbarLinkData) => {
+                        return val.requiresSession === sessionActive || val.alwaysShow ?
+                            acc.concat(val.viewLink) :
+                            acc;
+                    }, []))
+        ])
+    ]);
 }
 
 export default Navbar;
