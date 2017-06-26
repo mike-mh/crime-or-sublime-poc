@@ -1,155 +1,123 @@
-import { Component, createElement as e, DOMElement } from "react";
+import { Component, ComponentElement, createElement as e, DOMElement, SFC } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
-import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements } from "../../libs/elements";
-import { beginSession, endSession } from "../../reducers/session-management/session.actions";
+import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 import Login from "../login/login";
+import Register from "../register/register";
 import Test from "../test/test";
 
 const a = elements.a;
 const div = elements.div;
 const nav = elements.nav;
 
+
 interface INavbarProps {
     sessionActive: boolean;
 }
 
-class Navbar extends Component<INavbarProps, {}> {
-    private readonly sessionAPI: SessionAPI = new SessionAPI();
-    private readonly VIEW_ID: string = "cos-view";
-    private readonly VIEW_MAP: any = {
-        login: e(Login, null, null),
-        test: e(Test, null, null),
-    };
+interface INavbarLinkData {
+    alwaysShow: boolean,
+    linkId: string,
+    requiresSession: boolean,
+    // Some links don't have a view.
+    view?: ComponentElement<any, any>,
+    viewLink: DOMElement<any, Element> | ComponentElement<any, any>,
+}
 
-    // These views should only appear when a user is logged in
-    private readonly VIEWS_REQUIRE_SESSION = [
-        "cos-rate",
-        "cos-profile",
-        "cos-logout",
-    ];
+// Need to connect the logout button so that it can send redux signals to
+// have the Navbar re-rendered correctly.
+const connectedLogoutButton = e(connect()(({ dispatch }) => {
+    return a({ id: "cos-logout", onClick: () => { dispatch(endSession()); } }, "Logout");
+}), { id: "cos-logout" } as any);
 
-    // These views should only appear when a user isn't logged in
-    private readonly VIEWS_WITHOUT_SESSION = [
-        "cos-register",
-        "cos-login",
-    ];
-
-    // Need to connect the logout button so that it can send redux signals to
-    // have the Navbar re-rendered correctly.
-    private readonly connectedLogoutButton = connect()(({ dispatch }) => {
-        return a({ id: "cos-logout", onClick: () => { dispatch(endSession()); } }, "Logout");
-    });
-
-    private readonly links = [
-        a({
-            onClick: () => { this.renderView("test"); },
-            id: "cos-home",
+const links: INavbarLinkData[] = [
+    {
+        alwaysShow: true,
+        linkId: "cos-navbar-home",
+        requiresSession: false,
+        view: e(Test, null, null),
+        viewLink: a({
+            onClick: () => { renderView("cos-navbar-home"); },
+            id: "cos-navbar-home",
         }, "Home"),
-        a({
-            onClick: () => { this.renderView("test"); },
-            id: "cos-locator",
+    },
+    {
+        alwaysShow: true,
+        linkId: "cos-navbar-locator",
+        requiresSession: false,
+        view: e(Test, null, null),
+        viewLink: a({
+            onClick: () => { renderView("cos-navbar-locator"); },
+            id: "cos-navbar-locator",
         }, "Locator"),
-        a({
-            onClick: () => { this.renderView("view"); },
-            id: "cos-rate",
+    },
+    {
+        alwaysShow: false,
+        linkId: "cos-navbar-rate",
+        requiresSession: true,
+        view: e(Test, null, null),
+        viewLink: a({
+            onClick: () => { renderView("cos-navbar-rate"); },
+            id: "cos-navbar-rate",
         }, "Rate"),
-        a({
-            onClick: () => { this.renderView("view"); },
-            id: "cos-register",
-        }, "Register"),
-        a({
-            onClick: () => { this.renderView("test"); },
-            id: "cos-profile",
+    },
+    {
+        alwaysShow: false,
+        linkId: "cos-navbar-profile",
+        requiresSession: true,
+        view: e(Test, null, null),
+        viewLink: a({
+            onClick: () => { renderView("cos-navbar-profile"); },
+            id: "cos-navbar-profile",
         }, "Profile"),
-        a({
-            onClick: () => { this.renderView("login"); },
-            id: "cos-login",
+    },
+    {
+        alwaysShow: false,
+        linkId: "cos-navbar-register",
+        requiresSession: false,
+        view: e(Register, null, null),
+        viewLink: a({
+            onClick: () => { renderView("cos-navbar-register"); },
+            id: "cos-navbar-register",
+        }, "Register"),
+    },
+    {
+        alwaysShow: false,
+        linkId: "cos-navbar-login",
+        requiresSession: false,
+        view: e(Login, null, null),
+        viewLink: a({
+            onClick: () => { renderView("cos-navbar-login"); },
+            id: "cos-navbar-login",
         }, "Login"),
-        e(this.connectedLogoutButton),
-    ];
+    },
+    {
+        alwaysShow: false,
+        linkId: "cos-navbar-logout",
+        requiresSession: true,
+        viewLink: connectedLogoutButton,
+    },
+];
 
-    private readonly navbar = nav({ id: "cos-navbar" }, this.links);
-    private readonly outlet = div({ id: "cos-view" }, null);
+const Navbar: SFC<INavbarProps> = ({ sessionActive }) => {
+    return nav({ id: "cos-navbar" }, [
+        links.filter((link: INavbarLinkData) => {
+            return link.requiresSession === sessionActive || link.alwaysShow;
+        }).reduce((acc: (DOMElement<any, Element> | ComponentElement<any, any>)[], val: INavbarLinkData) => {
+            return acc.concat(val.viewLink);
+        }, [])]);
+}
 
-    private readonly container = div(
-        null,
-        [
-            this.navbar,
-            this.outlet,
-        ]);
-
-    constructor(props: any) {
-        super(props);
-        store.subscribe(this.handleSessionChange.bind(this));
-    }
-
-    public renderView(view: string): void {
-        unmountComponentAtNode(document.getElementById(this.VIEW_ID));
-        if (this.VIEW_MAP[view]) {
-            console.log("RENDERING: " + view);
-            render(
-                e(Provider, { store }, this.VIEW_MAP[view]),
-                document.getElementById("cos-view"));
+const renderView = (linkId: string) => {
+    links.map((link: INavbarLinkData) => {
+        if (linkId === link.linkId) {
+            unmountComponentAtNode(document.getElementById("cos-outlet"));
+            render(e(Provider, { store }, link.view),
+                document.getElementById("cos-outlet"));
         }
-            console.log("FINISHED RENDERING: " + view);
-    }
-
-    /**
-     * Use this function to generate the Navbar. If a Navbar is already
-     * rendered it is removed from the DOM.
-     *
-     * @param sessionIsActive - Configures the Navbar based on whether or not the
-     *      session is active.
-     *
-     * @return - React Navbar element configure as per session status 
-     */
-    public generateNavabar(sessionIsActive: boolean): void {
-
-        // Render links based on whether or not there is an active session
-        const linksToRender = sessionIsActive ?
-            this.links.map((link: any) => {
-                if (this.VIEWS_WITHOUT_SESSION.indexOf(link.props.id) < 0) {
-                    console.log(link);
-                    return link;
-                }
-            }) :
-            this.links.map((link: any) => {
-                // Added the or conditional for the logout button. I'm not
-                // sure how to pass original props to the new element 'connect'
-                // makes but if someone figures that out, definately come back
-                // and fix this!
-                if (this.VIEWS_REQUIRE_SESSION.indexOf(link.props.id) < 0 && link.props.id) {
-                    return link;
-                }
-            });
-
-        if (document.getElementById("cos-navbar")) {
-            unmountComponentAtNode(document.getElementById("cos-navbar"));
-        }
-
-        return nav({ id: "cos-navbar" }, linksToRender);
-    }
-
-    public render() {
-        return div({ id: "cos-main-view" }, [
-            this.generateNavabar(this.props.sessionActive),
-            this.outlet,
-        ]);
-    }
-
-    /**
-     * Use this to handle changes to the session state so that the Navbar can
-     * be rendered correctly.
-     */
-    private handleSessionChange(): void {
-        if ((store.getState() as any).sessionStatus) {
-            this.renderView("test");
-        }
-    }
-
+    });
 }
 
 export default Navbar;

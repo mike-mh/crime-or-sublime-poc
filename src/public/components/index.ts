@@ -8,6 +8,7 @@ import { beginSession, endSession } from "../reducers/session-management/session
 import { sessionReducer } from "../reducers/session-management/session.reducer";
 import { store } from "../reducers/session-management/session.store";
 import Navbar from "./navbar/navbar";
+import Test from "./test/test";
 
 const div = elements.div;
 const h1 = elements.h1;
@@ -33,8 +34,8 @@ class Index extends Component<{}, {}> {
             { store },
             div({ id: "cos" }, [
                 h1(null, "Welcome to CoS!"),
-                div({ id: "cos-navbar-container" },
-                    e(Navbar, { id: "cos-navbar-entry", sessionActive: false }, null))]));
+                e(Navbar as any, { id: "cos-navbar", sessionActive: false }, null),
+                div({ id: "cos-outlet" })]));
     }
 
     /**
@@ -45,19 +46,38 @@ class Index extends Component<{}, {}> {
      *      active session.
      */
     public renderNavbar(sessionActive: boolean): void {
-        if (document.getElementById("cos-navbar-entry")) {
-            unmountComponentAtNode(document.getElementById("cos-navbar-entry"));
+        console.log("rendering....");
+        if (document.getElementById("cos-navbar")) {
+            unmountComponentAtNode(document.getElementById("cos-navbar"));
         }
 
-        console.log("rendering...");
+        console.log("looking for entry....");
+        // Need to be sure to pass the store back into the rendered element
+        render(
+            e(Provider, { store },
+                e(Navbar as any, { id: "cos-navbar", sessionActive }, null)),
+            document.getElementById("cos-navbar"));
+        console.log("done");
+    }
+
+    /**
+     * Use this to render the screen the user sees after they logout.
+     *
+     * @param sessionActive - Boolean that holds whether or not there is an
+     *      active session.
+     */
+    public renderSessionEndScreen(): void {
+        if (document.getElementById("cos-outlet")) {
+            unmountComponentAtNode(document.getElementById("cos-outlet"));
+        }
 
         // Need to be sure to pass the store back into the rendered element
         render(
             e(Provider, { store },
-                e(Navbar, { id: "cos-navbar-entry", sessionActive }, null)),
-            document.getElementById("cos-navbar-container"));
-        console.log("done");
+                e(Test, { id: "cos-logout-screen" } as any, null)),
+            document.getElementById("cos-outlet"));
     }
+
 
     /**
      * Use this method to get the current session status from the server to
@@ -94,6 +114,7 @@ class Index extends Component<{}, {}> {
      */
     private handleSessionChange(): void {
         this.renderNavbar((store.getState() as any).sessionStatus);
+        this.renderSessionEndScreen();
     }
 }
 
