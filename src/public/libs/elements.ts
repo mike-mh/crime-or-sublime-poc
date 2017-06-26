@@ -60,7 +60,7 @@ interface IElementCurryFunctionMap {
  * 
  * @returns - A new curry function for crearing a React element.
  */
-const createElementCurry: (selector: string) => ElementCurryFunction = (selector: string) => {
+const createElementCurry = (selector: string): ElementCurryFunction  => {
     return (props?: any, ...children: ReactNode[]): DOMElement<any, Element> => {
         return e(selector, props, children);
     };
@@ -76,7 +76,7 @@ const createElementCurry: (selector: string) => ElementCurryFunction = (selector
  * 
  * @returns - A map of curry functions for all elements contained in TAG_NAMES
  */
-const generateElements: () => IElementCurryFunctionMap = () => {
+const generateElements = (): IElementCurryFunctionMap => {
     return TAG_NAMES.reduce((elementsObject: any, tagName: string) => {
         elementsObject[tagName] = createElementCurry(tagName);
         return elementsObject;

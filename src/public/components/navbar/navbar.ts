@@ -1,6 +1,7 @@
 import { Component, ComponentElement, createElement as e, DOMElement, SFC } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
+import { SessionAPI } from "../../../../configurations/session/session-api";
 import { setElemChildrenCurry, elements } from "../../libs/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
@@ -15,6 +16,8 @@ const li = elements.li;
 const nav = elements.nav;
 const span = elements.span;
 const ul = elements.ul;
+
+const sessionAPI: SessionAPI = new SessionAPI();
 
 interface INavbarProps {
     sessionActive: boolean;
@@ -65,10 +68,19 @@ const CONNECTED_LOGOUT_LINK = e(connect()(({ dispatch }) => {
             className: "nav-link",
             href: "#",
             id: "cos-logout",
-            onClick: () => { dispatch(endSession()); }
+            onClick: () => { endCurrentSession(); }
         }, "Logout"))
 }));
 
+/**
+ * Wraps individual links in Navbar link tags.
+ * 
+ * @param id - The CSS ID to pass to the link to be insrted into the list item.
+ * @param displayName - The string to display on the link to the user.
+ * 
+ * @returns - Curry function to generate the appropriate element and append it
+ *      to the virtual DOM.
+ */
 const createLinkElement: (id: string, displayName: string) => DOMElement<any, Element> =
     (id: string, displayName: string) => {
         return NAVBAR_LINK_LIST_ITEM(
@@ -132,7 +144,12 @@ const LINKS: INavbarLinkData[] = [
     },
 ];
 
-const renderView = (linkId: string) => {
+/**
+ * Renders a view based on the link clicked by a user.
+ * 
+ * @param linkId - The CSS ID of the link clicked by a user.
+ */
+const renderView = (linkId: string): void => {
     LINKS.map((link: INavbarLinkData) => {
         if (linkId === link.linkId) {
             unmountComponentAtNode(document.getElementById("cos-outlet"));
@@ -141,6 +158,30 @@ const renderView = (linkId: string) => {
         }
     });
 }
+
+/**
+ * Use this method to get the current session status from the server to
+ * determine if the user is logged in or not. Will trigger the appropriate
+ * action based on server response.
+ */
+const endCurrentSession = (): void => {
+    $.ajax({
+        contentType: "application/json",
+        error: (xhr: any, status: any, err: any) => {
+            return;
+        },
+        method: "GET",
+        success: (data: any) => {
+            if (data.result) {
+                store.dispatch(endSession());
+                return;
+            }
+        },
+        url: sessionAPI.SESSION_END_USER_PATH,
+    });
+}
+
+
 
 /**
  * Renders standard collapsing Navbar. Includes jQuery to collapse the Navbar

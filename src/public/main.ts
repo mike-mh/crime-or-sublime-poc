@@ -3,7 +3,8 @@
 
 import { createElement } from "react";
 import { render } from "react-dom";
-import Index from "./components/index";
+import MainIndex from "./components/index";
 
-render(createElement(Index, null, null),
+// Setting MainIndex as any to bypass highlight warning. Should fix this.
+render(createElement(MainIndex as any, null, null),
   document.getElementById("react-test"));

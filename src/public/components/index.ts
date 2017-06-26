@@ -1,5 +1,5 @@
 import * as $ from "jquery";
-import { Component, ComponentElement, createElement as e, Props } from "react";
+import { Component, ComponentClass, ComponentElement, createElement as e, Props } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, MapStateToPropsParam, Provider, ProviderProps } from "react-redux";
 import { SessionAPI } from "../../../configurations/session/session-api";
@@ -14,22 +14,28 @@ const div = elements.div;
 const h1 = elements.h1;
 const p = elements.p;
 
-class Index extends Component<{}, {}> {
+/**
+ * Keep this as a stateful component for now. This doesn't actually store any
+ * states, it subscribes to changes from redux and re-renders the Navbar based
+ * on the session state.
+ */
+class MainIndex extends Component<ProviderProps, Provider> {
     private sessionAPI: SessionAPI = new SessionAPI();
 
     constructor(props: Props<{}>) {
         super(props);
         store.subscribe(this.handleSessionChange.bind(this));
-    }
 
-    public render() {
-        return this.constructEntryPoint();
+        // Check if the user has an active session then render Navbar.
+        this.getSessionStatus();
     }
 
     /**
-     * Use this to render the entry point. Is agnostic about session status.
+     * Renders the main entry point for CoS and wraps it with store provider.
+     * 
+     * @returns - Div containing the CoS Navbar and view outlet.
      */
-    private constructEntryPoint(): ComponentElement<ProviderProps, Provider> {
+    public render() {
         return e(Provider,
             { store },
             div({ id: "cos" }, [
@@ -45,33 +51,26 @@ class Index extends Component<{}, {}> {
      * @param sessionActive - Boolean that holds whether or not there is an
      *      active session.
      */
-    public renderNavbar(sessionActive: boolean): void {
-        console.log("rendering....");
+    private renderNavbar(sessionActive: boolean): void {
         if (document.getElementById("cos-navbar")) {
             unmountComponentAtNode(document.getElementById("cos-navbar"));
         }
 
-        console.log("looking for entry....");
         // Need to be sure to pass the store back into the rendered element
         render(
             e(Provider, { store },
                 e(Navbar as any, { id: "cos-navbar", sessionActive }, null)),
             document.getElementById("cos-navbar"));
-        console.log("done");
     }
 
     /**
-     * Use this to render the screen the user sees after they logout.
-     *
-     * @param sessionActive - Boolean that holds whether or not there is an
-     *      active session.
+     * Use this to render the home view.
      */
-    public renderSessionEndScreen(): void {
+    private renderHomeView(): void {
         if (document.getElementById("cos-outlet")) {
             unmountComponentAtNode(document.getElementById("cos-outlet"));
         }
 
-        // Need to be sure to pass the store back into the rendered element
         render(
             e(Provider, { store },
                 e(Test, { id: "cos-logout-screen" } as any, null)),
@@ -114,8 +113,8 @@ class Index extends Component<{}, {}> {
      */
     private handleSessionChange(): void {
         this.renderNavbar((store.getState() as any).sessionStatus);
-        this.renderSessionEndScreen();
+        this.renderHomeView();
     }
 }
 
-export default Index;
+export default MainIndex;
