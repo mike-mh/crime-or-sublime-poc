@@ -13,6 +13,8 @@ const h1 = elements.h1;
 const input = elements.input;
 const label = elements.label;
 
+type LoginFormStateProperty = ("email" | "password")
+
 interface IFormState {
     email: string;
     password: string;
@@ -30,7 +32,7 @@ class Login extends Component<{}, IFormState> {
         {
             className: "form-control",
             name: "email",
-            onChange: this.getEmailInput.bind(this),
+            onChange: this.getInput.bind(this, "email"),
             type: "text",
         });
 
@@ -38,7 +40,7 @@ class Login extends Component<{}, IFormState> {
         {
             className: "form-control",
             name: "password",
-            onChange: this.getPasswordInput.bind(this),
+            onChange: this.getInput.bind(this, "password"),
             type: "password",
         });
 
@@ -72,16 +74,11 @@ class Login extends Component<{}, IFormState> {
 
     }
 
-    public getEmailInput(event: ChangeEvent<HTMLSelectElement>): void {
-        this.setState({
-            email: event.target.value,
-        });
-    }
-
-    public getPasswordInput(event: ChangeEvent<HTMLSelectElement>): void {
-        this.setState({
-            password: event.target.value,
-        });
+    public getInput(statePropToEdit: LoginFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
+        this.setState(Object.defineProperty({}, statePropToEdit, {
+            enumerable: true,
+            value: event.target.value
+        }));
     }
 
     public submitCredentials(event: Event): void {
