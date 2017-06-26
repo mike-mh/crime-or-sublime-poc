@@ -121,14 +121,10 @@ class Register extends Component<{}, IRegisterFormState> {
     }
 
     public getInput(statePropToEdit: RegisterFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
-        this.setState((Object.keys(this.state).reduce((acc: any, stateProp: RegisterFormStateProperty) => {
-            acc[statePropToEdit] = (stateProp === statePropToEdit) ?
-                acc[statePropToEdit] = event.target.value :
-                acc[statePropToEdit];
-            return acc;
-        }, {})));
-
-        console.log(this.state);
+        this.setState(Object.defineProperty({}, statePropToEdit, {
+            enumerable: true,
+            value: event.target.value
+        }));
     }
 
     public componentDidMount(): void {
