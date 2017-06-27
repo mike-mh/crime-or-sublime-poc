@@ -12,6 +12,11 @@ const div = elements.div;
  * we'll definately need state and likely will have props as well.
  */
 class Locator extends Component<{}, {}> {
+    // This is temporary. Just use as a proof of concept for now.
+    private graffitiLocations = {
+
+    };
+
     private graffitiGetAPI: GraffitiGetAPI = new GraffitiGetAPI();
 
     private MAP_TYPE_ID: google.maps.MapTypeId =
@@ -42,12 +47,14 @@ class Locator extends Component<{}, {}> {
             document.getElementById("cos-locator-map"),
             this.mapConfiguration);
 
-        this.graffitiMarker = new google.maps.Marker(
-            {
-                map: this.graffitiMap,
-                position: this.DEFAULT_LAT_LNG,
-                title: "TESTING",
-            });
+        /*        this.graffitiMarker = new google.maps.Marker(
+                    {
+                        map: this.graffitiMap,
+                        position: this.DEFAULT_LAT_LNG,
+                        title: "TESTING",
+                    }); */
+        this.getRandomGraffiti();
+
     }
 
     public render() {
@@ -61,6 +68,55 @@ class Locator extends Component<{}, {}> {
             },
             )));
     }
+
+    /**
+     * This will be expanded in the future to include filtering for specific
+     * graffiti and a new listener function will be written to allow users to
+     * click the map to find graffiti. As of now, this function just gets 10
+     * random graffiti images from the server and stores them to an object.
+     */
+    public getRandomGraffiti(): void {
+        try {
+            this.graffitiGetAPI.validateParams(
+                this.graffitiGetAPI.GRAFFITI_GET_FILTER,
+                {},
+                "post");
+        } catch (error) {
+            // Should update DOM here.
+            return;
+        }
+
+        $.ajax({
+            contentType: "application/json",
+            data: JSON.stringify({}),
+            dataType: "json",
+            error: (xhr: any, status: any, err: any) => {
+                console.log(err);
+            },
+            method: "POST",
+            success: (data: any) => {
+                console.log(data);
+                data.map((graffiti: any) => {
+                    const testMarker = new google.maps.Marker(
+                        {
+                            map: this.graffitiMap,
+                            position: new google.maps.LatLng(graffiti.latitude,
+                                graffiti.longitude),
+                            title: "NOW IN REACT",
+                        });
+                    google.maps.event.addListener(testMarker, 'mouseover', function (event: any) {
+                        this.setIcon('https://i.imgur.com/' + graffiti.url + 's.jpg');
+                    });
+                    google.maps.event.addListener(testMarker, 'mouseout', function (event: any) {
+                        this.setIcon();
+                    });
+
+                });
+            },
+            url: this.graffitiGetAPI.GRAFFITI_GET_FILTER,
+        });
+    }
+
 
 }
 
