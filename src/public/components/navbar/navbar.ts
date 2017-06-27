@@ -1,3 +1,4 @@
+import "googlemaps";
 import { Component, ComponentElement, createElement as e, DOMElement, SFC } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
@@ -5,6 +6,7 @@ import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
+import Locator from "../locator/locator";
 import Login from "../login/login";
 import Register from "../register/register";
 import Test from "../test/test";
@@ -108,7 +110,7 @@ const LINKS: INavbarLinkData[] = [
         alwaysShow: true,
         linkId: "cos-navbar-locator",
         requiresSession: false,
-        view: e(Test, null, null),
+        view: e(Locator, null, null),
         viewLink: createLinkElement("cos-navbar-locator", "Locator"),
     },
     {
