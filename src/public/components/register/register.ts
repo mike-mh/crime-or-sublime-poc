@@ -39,6 +39,7 @@ interface IRegsterFormInputAttributes {
 
 interface IRegsiterFormInputTagData {
     id: string,
+    label: DOMElement<any, Element>,
     name: string,
     type: string,
 }
@@ -51,32 +52,29 @@ class Register extends Component<{}, IRegisterFormState> {
     private readonly INPUT_TAGS: IRegsiterFormInputTagData[] = [
         {
             id: "cos-register-username-input",
+            label: label({for: "username"}, "Username:"),
             name: "username",
             type: "text",
         },
         {
-            id: "cos-register-password-input",
+            id: "cos-register-email-input",
+            label: label({for: "email"}, "Email:"),
             name: "email",
             type: "text",
         },
         {
             id: "cos-register-password-input",
+            label: label({for: "password"}, "Password:"),
             name: "password",
             type: "password",
         },
         {
             id: "cos-register-password-confirm-input",
+            label: label({for: "password-confirm"}, "Confirm Password:"),
             name: "passwordConfirm",
             type: "password",
         },
     ];
-
-    private readonly INPUT_LABELS_MAP: {[name: string]: DOMElement<any, Element>} = {
-        "email": label({ for: "email" }, "Email:"),
-        "password": label({ for: "password" }, "Password:"),
-        "passwordConfirm": label({ for: "passwordConfirm" }, "Confirm Password:"),
-        "username": label({ for: "username" }, "Username:"),
-    }
 
     private readonly RECAPTCHA_DIV_LEAF = div({
         id: "cos-register-recaptcha",
@@ -132,10 +130,10 @@ class Register extends Component<{}, IRegisterFormState> {
             this.INPUT_TAGS.reduce((acc: DOMElement<any, Element>[], cur: IRegsiterFormInputTagData) => {
                 acc.push(
                     this.generateFormControlTag(
-                        this.INPUT_LABELS_MAP[cur.name],
+                        cur.label,
                         this.generateInputTag(cur.id, cur.name, cur.type),
-                    )
-                )
+                    ));
+
                 return acc;
             }, []).concat([
                 this.RECAPTCHA_DIV_LEAF,
@@ -144,6 +142,14 @@ class Register extends Component<{}, IRegisterFormState> {
         ])
     }
 
+    /**
+     * This function eact time a change occurs in the registration form. It
+     * registers all changes to the state at the value stored in
+     * 'statePropToEdit' index of the state.
+     *
+     * @param statePropToEdit - The state property to change
+     * @param event - The event that triggered the change.
+     */
     public getInput(statePropToEdit: RegisterFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
         this.setState(Object.defineProperty({}, statePropToEdit, {
             enumerable: true,

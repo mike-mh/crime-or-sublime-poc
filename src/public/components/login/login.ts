@@ -1,7 +1,7 @@
-import { ChangeEvent, Component, createElement as e } from "react";
+import { ChangeEvent, Component, createElement as e, DOMElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { SessionAPI } from "../../../../configurations/session/session-api";
-import { elements } from "../../libs/elements";
+import { elements, setElemChildrenCurry } from "../../libs/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 
@@ -13,68 +13,64 @@ const h1 = elements.h1;
 const input = elements.input;
 const label = elements.label;
 
-type LoginFormStateProperty = ("email" | "password")
+type LoginFormStateProperty = ("email" | "password");
 
 interface IFormState {
     email: string;
     password: string;
 }
 
+interface ILoginFormInputAttributes {
+    className: string,
+    id: string,
+    name: string,
+    onChange: () => void,
+    type: string,
+}
+
+interface ILoginFormInputTagData {
+    id: string,
+    label: DOMElement<any, Element>,
+    name: string,
+    type: string,
+}
+
 class Login extends Component<{}, IFormState> {
     public readonly sessionAPI: SessionAPI = new SessionAPI();
 
-    public state: IFormState = {
-        email: "",
-        password: "",
-    };
-
-    private readonly emailInput = e("input",
+    private readonly INPUT_TAGS: ILoginFormInputTagData[] = [
         {
-            className: "form-control",
+            id: "cos-login-email-input",
+            label: label({for: "email"}, "Email:"),
             name: "email",
-            onChange: this.getInput.bind(this, "email"),
             type: "text",
-        });
-
-    private readonly passwordInput = e("input",
+        },
         {
-            className: "form-control",
+            id: "cos-login-password-input",
+            label: label({for: "password"}, "Password:"),
             name: "password",
-            onChange: this.getInput.bind(this, "password"),
             type: "password",
-        });
+        },
+    ]
 
-    private readonly emailLabel = label({ for: "email" }, "Email:");
-    private readonly passwordLabel = label({ for: "password" }, "Password:");
+    private readonly SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
 
-    private readonly submitButton = button(
-        {
-            className: "btn btn-primary",
-            type: "submit",
-        }, "Submit");
-
-    private readonly formLayout = [
-        div({ className: "form-group" }, [
-            this.emailLabel,
-            this.emailInput]),
-        div({ className: "form-group" }, [
-            this.passwordLabel,
-            this.passwordInput]),
-        this.submitButton,
-    ];
-
-    private readonly loginForm = form({ onSubmit: this.submitCredentials.bind(this) }, [
-        this.formLayout,
-    ]);
-
-    private readonly container = div(null, this.loginForm);
+    private readonly LOGIN_FORM = setElemChildrenCurry(form, { onSubmit: this.submitCredentials.bind(this) });
 
     constructor(props: {}) {
         super(props);
 
     }
 
-    public getInput(statePropToEdit: LoginFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
+    /**
+     * This function eact time a change occurs in the registration form. It
+     * registers all changes to the state at the value stored in
+     * 'statePropToEdit' index of the state.
+     *
+     * @param statePropToEdit - The state property to change
+     * @param event - The event that triggered the change.
+     */
+    public getInput(statePropToEdit: string, event: ChangeEvent<HTMLSelectElement>): void {
         this.setState(Object.defineProperty({}, statePropToEdit, {
             enumerable: true,
             value: event.target.value
@@ -121,8 +117,59 @@ class Login extends Component<{}, IFormState> {
     }
 
     public render() {
-        return this.container;
+        return this.LOGIN_FORM([
+            this.INPUT_TAGS.reduce((acc: DOMElement<any, Element>[], cur: ILoginFormInputTagData) => {
+                acc.push(
+                    this.generateFormControlTag(
+                        cur.label,
+                        this.generateInputTag(cur.id, cur.name, cur.type),
+                    ));
+
+                return acc;
+            }, []).concat([this.SUBMIT_BUTTON_LEAF])
+        ]);
+//        return this.container;
     }
+
+    /**
+     * Helper function to generate inputs needed for this form.
+     * 
+     * @param id - The CSS id to associte with the input tag.
+     * @param name - The name to associate with the input tag.
+     * @param type - The type to associate with the input tag, e.g. 'password'
+     * 
+     * @returns - Input tag with properly configured attributes.
+     */
+    private generateInputTag(id: string, name: string, type: string):
+        DOMElement<ILoginFormInputAttributes, Element> {
+
+        return e("input", {
+            className: "form-control",
+            id,
+            name,
+            onChange: this.getInput.bind(this, name),
+            type,
+        });
+    };
+
+    /**
+     * Helper function to generate a form-control div
+     * 
+     * @param id - The CSS id to associte with the input tag.
+     * @param name - The name to associate with the input tag.
+     * @param type - The type to associate with the input tag, e.g. 'password'
+     * 
+     * @returns - Input tag with properly configured attributes.
+     */
+    private generateFormControlTag(
+        label: DOMElement<any, Element>, input: DOMElement<ILoginFormInputAttributes, Element>):
+        DOMElement<any, Element> {
+
+        return div({ className: "form-group" }, [
+            label,
+            input])
+    };
+
 }
 
 export default Login;
