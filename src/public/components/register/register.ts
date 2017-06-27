@@ -1,7 +1,7 @@
-import { ChangeEvent, Component, createElement as e } from "react";
+import { ChangeEvent, Component, createElement as e, DOMElement, EventHandler } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";
-import { elements } from "../../libs/elements";
+import { elements, setElemChildrenCurry } from "../../libs/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 
@@ -27,6 +27,20 @@ interface IRegisterFormState {
     password: string,
     passwordConfirm: string,
     username: string,
+};
+
+interface IRegsterFormInputAttributes {
+    className: string,
+    id: string,
+    name: string,
+    onChange: () => void,
+    type: string,
+}
+
+interface IRegsiterFormInputTagData {
+    id: string,
+    name: string,
+    type: string,
 }
 
 type RegisterFormStateProperty = ("captcha" | "email" | "password" | "passwordConfirm" | "username");
@@ -34,99 +48,58 @@ type RegisterFormStateProperty = ("captcha" | "email" | "password" | "passwordCo
 class Register extends Component<{}, IRegisterFormState> {
     public readonly userRegsiterAPI: UserRegsiterAPI = new UserRegsiterAPI();
 
-    public state: IRegisterFormState = {
-        username: "",
-        email: "",
-        password: "",
-        passwordConfirm: "",
-        captcha: "",
-    }
-
-    private readonly usernameInput = e("input",
+    private readonly INPUT_TAGS: IRegsiterFormInputTagData[] = [
         {
-            className: "form-control",
             id: "cos-register-username-input",
             name: "username",
-            onChange: this.getInput.bind(this, "username"),
             type: "text",
-        });
-
-    private readonly emailInput = e("input",
+        },
         {
-            className: "form-control",
-            id: "cos-register-email-input",
+            id: "cos-register-password-input",
             name: "email",
-            onChange: this.getInput.bind(this, "email"),
             type: "text",
-        });
-
-    private readonly passwordInput = e("input",
+        },
         {
-            className: "form-control",
+            id: "cos-register-password-input",
             name: "password",
-            onChange: this.getInput.bind(this, "password"),
             type: "password",
-        });
-
-    private readonly passwordConfirmInput = e("input",
+        },
         {
-            className: "form-control",
-            name: "password",
-            onChange: this.getInput.bind(this, "passwordConfirm"),
+            id: "cos-register-password-confirm-input",
+            name: "passwordConfirm",
             type: "password",
-        });
-
-    private readonly usernameLabel = label({ for: "username" }, "Username:");
-    private readonly emailLabel = label({ for: "email" }, "Email:");
-    private readonly passwordLabel = label({ for: "password" }, "Password:");
-    private readonly passwordConfirmLabel = label({ for: "passwordConfirm" }, "Confrim Password:");
-
-    private readonly submitButton = button(
-        {
-            className: "btn btn-primary",
-            type: "submit",
-        }, "Submit");
-
-    private readonly formLayout = [
-        div({ className: "form-group" }, [
-            this.usernameLabel,
-            this.usernameInput]),
-        div({ className: "form-group" }, [
-            this.emailLabel,
-            this.emailInput]),
-        div({ className: "form-group" }, [
-            this.passwordLabel,
-            this.passwordInput]),
-        div({ className: "form-group" }, [
-            this.passwordConfirmLabel,
-            this.passwordConfirmInput]),
-        div({
-            id: "cos-register-recaptcha",
-            className: "g-recaptcha",
-            "data-sitekey": "6LcWJSYUAAAAAEbsDsSvlCeB_T9TPT6kxT50ygGV",
-            "data-callback": "captchaVerifyCallback",
-            "data-expired-callback": "captchaExpiredCallback"
-        }),
-        this.submitButton,
+        },
     ];
 
-    private readonly registerForm = form({ onSubmit: this.submitRegistration.bind(this) }, [
-        this.formLayout,
-    ]);
+    private readonly INPUT_LABELS_MAP: {[name: string]: DOMElement<any, Element>} = {
+        "email": label({ for: "email" }, "Email:"),
+        "password": label({ for: "password" }, "Password:"),
+        "passwordConfirm": label({ for: "passwordConfirm" }, "Confirm Password:"),
+        "username": label({ for: "username" }, "Username:"),
+    }
 
-    private readonly container = div(null, this.registerForm);
+    private readonly RECAPTCHA_DIV_LEAF = div({
+        id: "cos-register-recaptcha",
+        className: "g-recaptcha",
+        "data-sitekey": "6LcWJSYUAAAAAEbsDsSvlCeB_T9TPT6kxT50ygGV",
+        "data-callback": "captchaVerifyCallback",
+        "data-expired-callback": "captchaExpiredCallback"
+    });
+
+    private readonly SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
+
+    private readonly REGISTER_FORM = setElemChildrenCurry(form, { onSubmit: this.submitRegistration.bind(this) });
 
     constructor(props: {}) {
         super(props);
     }
 
-    public getInput(statePropToEdit: RegisterFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
-        this.setState(Object.defineProperty({}, statePropToEdit, {
-            enumerable: true,
-            value: event.target.value
-        }));
-    }
-
+    /**
+     * Need to use this function to render the reCaptcha widget.
+     * 
+     * TO-DO: Need to remove the head tag this function inserts after the
+     *        component dismounts from the DOM.
+     */
     public componentDidMount(): void {
         // These initialize recaptcha widget in window.
         window["captchaVerifyCallback"] = ((response: string) => {
@@ -147,6 +120,98 @@ class Register extends Component<{}, IRegisterFormState> {
         document.head.appendChild(reCaptchaHeadElement);
     }
 
+    /**
+     * Should render a bootstrap registration form with all of the input fields
+     * specified in the INPUT_TAGS array. Also appends the reCaptcha widget and
+     * submit button.
+     * 
+     * @return - The registration form DOMElement.
+     */
+    public render(): DOMElement<any, Element> {
+        return this.REGISTER_FORM([
+            this.INPUT_TAGS.reduce((acc: DOMElement<any, Element>[], cur: IRegsiterFormInputTagData) => {
+                acc.push(
+                    this.generateFormControlTag(
+                        this.INPUT_LABELS_MAP[cur.name],
+                        this.generateInputTag(cur.id, cur.name, cur.type),
+                    )
+                )
+                return acc;
+            }, []).concat([
+                this.RECAPTCHA_DIV_LEAF,
+                this.SUBMIT_BUTTON_LEAF,
+            ])
+        ])
+    }
+
+    public getInput(statePropToEdit: RegisterFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
+        this.setState(Object.defineProperty({}, statePropToEdit, {
+            enumerable: true,
+            value: event.target.value
+        }));
+    }
+
+    /**
+     * Callback for reCaptcha response. Used to set the state.
+     */
+    private captchaVerifyCallback(captcha: string): void {
+        this.setState({ captcha });
+    }
+
+    /**
+     * Callback for reCaptcha response. Removes reCaptcha resposne from state.
+     */
+    private captchaExpiredCallback(): void {
+        this.setState({ captcha: "" });
+    }
+
+    /**
+     * Helper function to generate inputs needed for this form.
+     * 
+     * @param id - The CSS id to associte with the input tag.
+     * @param name - The name to associate with the input tag.
+     * @param type - The type to associate with the input tag, e.g. 'password'
+     * 
+     * @returns - Input tag with properly configured attributes.
+     */
+    private generateInputTag(id: string, name: string, type: string):
+        DOMElement<IRegsterFormInputAttributes, Element> {
+
+        return e("input", {
+            className: "form-control",
+            id,
+            name,
+            onChange: this.getInput.bind(this, name),
+            type,
+        });
+    };
+
+    /**
+     * Helper function to generate a form-control div
+     * 
+     * @param id - The CSS id to associte with the input tag.
+     * @param name - The name to associate with the input tag.
+     * @param type - The type to associate with the input tag, e.g. 'password'
+     * 
+     * @returns - Input tag with properly configured attributes.
+     */
+    private generateFormControlTag(
+        label: DOMElement<any, Element>, input: DOMElement<IRegsterFormInputAttributes, Element>):
+        DOMElement<any, Element> {
+
+        return div({ className: "form-group" }, [
+            label,
+            input])
+    };
+
+    /**
+     * Submits the registration form to the server.
+     *
+     * TO-DO: Render error messages if registration fails and redirect user to
+     *        a screen with a 'registration success' type message.
+     *
+     * @param event - The form submission event that triggers this function.
+     */
     private submitRegistration(event: Event): void {
         event.preventDefault();
         try {
@@ -182,28 +247,6 @@ class Register extends Component<{}, IRegisterFormState> {
             url: this.userRegsiterAPI.USER_REGISTER_SUBMIT_PATH,
         });
     }
-
-    public render() {
-        return this.container;
-    }
-
-    /**
-     * Callback for reCaptcha response. Used to set the state.
-     */
-    private captchaVerifyCallback(captcha: string): void {
-        this.setState({ captcha });
-
-        console.log(this.state);
-    }
-
-    /**
-     * Callback for reCaptcha response. Removes reCaptcah resposne from state.
-     */
-    private captchaExpiredCallback(): void {
-        this.setState({ captcha: "" });
-        console.log(this.state);
-    }
-
 }
 
 export default Register;
