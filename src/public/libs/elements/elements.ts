@@ -23,7 +23,6 @@ const TAG_NAMES = [
 type ElementCurryFunction = (props?: any, ...children: ReactNode[]) => DOMElement<any, Element>;
 type SetElementChildrenCurryFunction = (...children: ReactNode[]) => DOMElement<any, Element>;
 
-
 /**
  * Use this to map elements to their correct curry function.
  */
@@ -55,25 +54,24 @@ interface IElementCurryFunctionMap {
  * h1({ id: "some-header", className: "someclass"}, [
  *     "some-header",
  *     p({id: "some-paragraph"}, "This is a paragraph")]);
- * 
+ *
  * @param selector -  The selector to create a curry function for.
- * 
+ *
  * @returns - A new curry function for crearing a React element.
  */
-const createElementCurry = (selector: string): ElementCurryFunction  => {
+const createElementCurry = (selector: string): ElementCurryFunction => {
     return (props?: any, ...children: ReactNode[]): DOMElement<any, Element> => {
         return e(selector, props, children);
     };
 };
 
-
 /**
  * Generates all of the needed element currys from the 'TAG_NAMES' array.
- * 
+ *
  * TO-DO: Isn't able to generate proper function for 'input' tag since a
  *        null paramter for children is still treated as a child. Try and fix
  *        this in the future.
- * 
+ *
  * @returns - A map of curry functions for all elements contained in TAG_NAMES
  */
 const generateElements = (): IElementCurryFunctionMap => {
@@ -86,16 +84,18 @@ const generateElements = (): IElementCurryFunctionMap => {
 /**
  * Use this to generate a curry function to set the children of the element
  * produced by a given ElementCurryFunction.
- * 
+ *
  * @param elemCurry - The ElementCurryFunction used to create the element with
  *      the children and props appended.
  * @param props - The props to pass on to the generated element.
+ *
+ * @returns - Curry function which allows for an elements children to be set.
  */
 export const setElemChildrenCurry =
     (elemCurry: ElementCurryFunction, props?: any): SetElementChildrenCurryFunction => {
         return (...children: ReactNode[]) => {
             return elemCurry(props, children);
-        }
-    }
+        };
+    };
 
 export const elements = generateElements();

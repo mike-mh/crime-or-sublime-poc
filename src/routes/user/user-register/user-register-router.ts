@@ -45,8 +45,6 @@ export class UserRegisterRouter extends CoSAbstractRouteHandler {
         const password = params.password;
         const reCaptchaResponse = params.captcha;
 
-        console.log(params);
-
         try {
             UserRegisterRouter.userRegisterApi.validateParams(
                 UserRegisterRouter.userRegisterApi.USER_REGISTER_SUBMIT_PATH,

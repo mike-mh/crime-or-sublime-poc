@@ -19,7 +19,6 @@ export interface IBeginSessionAction extends Action {
 export type SessionAction = (IEndSessionAction | IBeginSessionAction);
 
 export function endSession(): IEndSessionAction {
-    console.log("GET YO ASS OUTTA HERE!");
     return {
         isActive: false,
         type: COS_END_SESSION,
@@ -27,8 +26,6 @@ export function endSession(): IEndSessionAction {
 }
 
 export function beginSession(email: string): IBeginSessionAction {
-    console.log("HELL YEAH PADRE!");
-    console.log(email);
     return {
         email,
         isActive: true,

@@ -2,7 +2,7 @@ import { Component, ComponentElement, createElement as e, DOMElement, SFC } from
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
 import { SessionAPI } from "../../../../configurations/session/session-api";
-import { setElemChildrenCurry, elements } from "../../libs/elements/elements";
+import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 import Login from "../login/login";
@@ -24,18 +24,18 @@ interface INavbarProps {
 }
 
 interface INavbarLinkData {
-    alwaysShow: boolean,
-    linkId: string,
-    requiresSession: boolean,
+    alwaysShow: boolean;
+    linkId: string;
+    requiresSession: boolean;
     // Some links don't have a view.
-    view?: ComponentElement<any, any>,
-    viewLink: DOMElement<any, Element> | ComponentElement<any, any>,
+    view?: ComponentElement<any, any>;
+    viewLink: DOMElement<any, Element> | ComponentElement<any, any>;
 }
 
 const NAVBAR_BOOTSTRAP_CLASSES = "navbar navbar-inverse bg-primary navbar-toggleable-md navbar-light bg-faded";
 const NAVBAR_ATTRIBUTES = {
+    className: NAVBAR_BOOTSTRAP_CLASSES,
     id: "cos-navbar",
-    className: NAVBAR_BOOTSTRAP_CLASSES
 };
 const NAVBAR = setElemChildrenCurry(nav, NAVBAR_ATTRIBUTES);
 
@@ -43,18 +43,21 @@ const NAVBAR_COLLAPSE_BUTTON_ATTRIBUTES = {
     "aria-controls": "navbarSupportedContent",
     "aria-expanded": "false",
     "aria-label": "Toggle navigation",
-    className: "navbar-toggler navbar-toggler-right",
+    "className": "navbar-toggler navbar-toggler-right",
     "data-target": "#cos-navbar-links",
     "data-toggle": "collapse",
-    type: "button",
-}
+    "type": "button",
+};
 
 const NAVBAR_COLLAPSE_BUTTON_LEAF = button(NAVBAR_COLLAPSE_BUTTON_ATTRIBUTES,
     span({ className: "navbar-toggler-icon" }));
 
 const NAVBAR_BRAND_BUTTON_LEAF = a({ className: "navbar-brand", href: "#" }, "CoS");
 
-const NAVBAR_COLLAPSING_DIV = setElemChildrenCurry(div, { className: "collapse navbar-collapse", id: "cos-navbar-links" });
+const NAVBAR_COLLAPSING_DIV = setElemChildrenCurry(div, {
+    className: "collapse navbar-collapse",
+    id: "cos-navbar-links",
+});
 
 const NAVBAR_LINKS_UL = setElemChildrenCurry(ul, { className: "navbar-nav mr-auto" });
 
@@ -68,16 +71,16 @@ const CONNECTED_LOGOUT_LINK = e(connect()(({ dispatch }) => {
             className: "nav-link",
             href: "#",
             id: "cos-logout",
-            onClick: () => { endCurrentSession(); }
-        }, "Logout"))
+            onClick: () => { endCurrentSession(); },
+        }, "Logout"));
 }));
 
 /**
  * Wraps individual links in Navbar link tags.
- * 
+ *
  * @param id - The CSS ID to pass to the link to be insrted into the list item.
  * @param displayName - The string to display on the link to the user.
- * 
+ *
  * @returns - Curry function to generate the appropriate element and append it
  *      to the virtual DOM.
  */
@@ -89,9 +92,9 @@ const createLinkElement: (id: string, displayName: string) => DOMElement<any, El
                 href: "#",
                 id,
                 onClick: () => { renderView(id); },
-            }, displayName)
+            }, displayName),
         );
-    }
+    };
 
 const LINKS: INavbarLinkData[] = [
     {
@@ -146,7 +149,7 @@ const LINKS: INavbarLinkData[] = [
 
 /**
  * Renders a view based on the link clicked by a user.
- * 
+ *
  * @param linkId - The CSS ID of the link clicked by a user.
  */
 const renderView = (linkId: string): void => {
@@ -157,7 +160,7 @@ const renderView = (linkId: string): void => {
                 document.getElementById("cos-outlet"));
         }
     });
-}
+};
 
 /**
  * Use this method to get the current session status from the server to
@@ -179,14 +182,12 @@ const endCurrentSession = (): void => {
         },
         url: sessionAPI.SESSION_END_USER_PATH,
     });
-}
-
-
+};
 
 /**
  * Renders standard collapsing Navbar. Includes jQuery to collapse the Navbar
  * after a link is selected.
- * 
+ *
  * @prop sessionActive - Holds boolean for whether or not a user session is
  *     currently active.
  */
@@ -200,10 +201,10 @@ const Navbar: SFC<INavbarProps> = ({ sessionActive }) => {
      *        please do!
      *
      */
-    jQuery(document).ready(function ($) {
-        $(".nav-link").on("click", function () {
+    jQuery(document).ready(($) => {
+        $(".nav-link").on("click", () => {
             // Only trigger click event when navbar is collapsed
-            if ($(window).width() < 992 ) {
+            if ($(window).width() < 992) {
                 $(".navbar-toggler").click();
             }
         });
@@ -215,13 +216,13 @@ const Navbar: SFC<INavbarProps> = ({ sessionActive }) => {
         NAVBAR_COLLAPSING_DIV([
             NAVBAR_LINKS_UL(
                 LINKS.reduce(
-                    (acc: (DOMElement<any, Element> | ComponentElement<any, any>)[], val: INavbarLinkData) => {
+                    (acc: Array<(DOMElement<any, Element> | ComponentElement<any, any>)>, val: INavbarLinkData) => {
                         return val.requiresSession === sessionActive || val.alwaysShow ?
                             acc.concat(val.viewLink) :
                             acc;
-                    }, []))
-        ])
+                    }, [])),
+        ]),
     ]);
-}
+};
 
 export default Navbar;

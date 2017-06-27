@@ -21,18 +21,18 @@ interface IFormState {
 }
 
 interface ILoginFormInputAttributes {
-    className: string,
-    id: string,
-    name: string,
-    onChange: () => void,
-    type: string,
+    className: string;
+    id: string;
+    name: string;
+    onChange: () => void;
+    type: string;
 }
 
 interface ILoginFormInputTagData {
-    id: string,
-    label: DOMElement<any, Element>,
-    name: string,
-    type: string,
+    id: string;
+    label: DOMElement<any, Element>;
+    name: string;
+    type: string;
 }
 
 class Login extends Component<{}, IFormState> {
@@ -41,17 +41,17 @@ class Login extends Component<{}, IFormState> {
     private readonly INPUT_TAGS: ILoginFormInputTagData[] = [
         {
             id: "cos-login-email-input",
-            label: label({for: "email"}, "Email:"),
+            label: label({ for: "email" }, "Email:"),
             name: "email",
             type: "text",
         },
         {
             id: "cos-login-password-input",
-            label: label({for: "password"}, "Password:"),
+            label: label({ for: "password" }, "Password:"),
             name: "password",
             type: "password",
         },
-    ]
+    ];
 
     private readonly SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
 
@@ -73,7 +73,7 @@ class Login extends Component<{}, IFormState> {
     public getInput(statePropToEdit: string, event: ChangeEvent<HTMLSelectElement>): void {
         this.setState(Object.defineProperty({}, statePropToEdit, {
             enumerable: true,
-            value: event.target.value
+            value: event.target.value,
         }));
     }
 
@@ -118,7 +118,7 @@ class Login extends Component<{}, IFormState> {
 
     public render() {
         return this.LOGIN_FORM([
-            this.INPUT_TAGS.reduce((acc: DOMElement<any, Element>[], cur: ILoginFormInputTagData) => {
+            this.INPUT_TAGS.reduce((acc: Array<DOMElement<any, Element>>, cur: ILoginFormInputTagData) => {
                 acc.push(
                     this.generateFormControlTag(
                         cur.label,
@@ -126,17 +126,17 @@ class Login extends Component<{}, IFormState> {
                     ));
 
                 return acc;
-            }, []).concat([this.SUBMIT_BUTTON_LEAF])
+            }, []).concat([this.SUBMIT_BUTTON_LEAF]),
         ]);
     }
 
     /**
      * Helper function to generate inputs needed for this form.
-     * 
+     *
      * @param id - The CSS id to associte with the input tag.
      * @param name - The name to associate with the input tag.
      * @param type - The type to associate with the input tag, e.g. 'password'
-     * 
+     *
      * @returns - Input tag with properly configured attributes.
      */
     private generateInputTag(id: string, name: string, type: string):
@@ -149,15 +149,16 @@ class Login extends Component<{}, IFormState> {
             onChange: this.getInput.bind(this, name),
             type,
         });
-    };
+    }
 
+    /* tslint:disable:no-shadowed-variable */
     /**
      * Helper function to generate a form-control div
-     * 
+     *
      * @param id - The CSS id to associte with the input tag.
      * @param name - The name to associate with the input tag.
      * @param type - The type to associate with the input tag, e.g. 'password'
-     * 
+     *
      * @returns - Input tag with properly configured attributes.
      */
     private generateFormControlTag(
@@ -166,8 +167,9 @@ class Login extends Component<{}, IFormState> {
 
         return div({ className: "form-group" }, [
             label,
-            input])
-    };
+            input]);
+    }
+    /* tslint:enable:no-shadowed-variable */
 
 }
 

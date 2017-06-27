@@ -41,7 +41,7 @@ class MainIndex extends Component<ProviderProps, Provider> {
 
     /**
      * Renders the main entry point for CoS and wraps it with store provider.
-     * 
+     *
      * @returns - Div containing the CoS Navbar and view outlet.
      */
     public render() {
@@ -85,7 +85,6 @@ class MainIndex extends Component<ProviderProps, Provider> {
                 e(Test, { id: "cos-logout-screen" } as any, null)),
             document.getElementById("cos-outlet"));
     }
-
 
     /**
      * Use this method to get the current session status from the server to

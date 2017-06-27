@@ -5,14 +5,6 @@ import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 
-// Use this to bypass type constraints on Window. Need to do this for reCaptcha
-// but definately don't want to be doing stuff like this as a habit.
-declare var window: {
-    [key: string]: any;
-    prototype: Window;
-    new (): Window;
-}
-
 const a = elements.a;
 const button = elements.button;
 const div = elements.div;
@@ -22,26 +14,26 @@ const input = elements.input;
 const label = elements.label;
 
 interface IRegisterFormState {
-    captcha: string,
-    email: string,
-    password: string,
-    passwordConfirm: string,
-    username: string,
-};
+    captcha: string;
+    email: string;
+    password: string;
+    passwordConfirm: string;
+    username: string;
+}
 
 interface IRegsterFormInputAttributes {
-    className: string,
-    id: string,
-    name: string,
-    onChange: () => void,
-    type: string,
+    className: string;
+    id: string;
+    name: string;
+    onChange: () => void;
+    type: string;
 }
 
 interface IRegsiterFormInputTagData {
-    id: string,
-    label: DOMElement<any, Element>,
-    name: string,
-    type: string,
+    id: string;
+    label: DOMElement<any, Element>;
+    name: string;
+    type: string;
 }
 
 type RegisterFormStateProperty = ("captcha" | "email" | "password" | "passwordConfirm" | "username");
@@ -52,36 +44,36 @@ class Register extends Component<{}, IRegisterFormState> {
     private readonly INPUT_TAGS: IRegsiterFormInputTagData[] = [
         {
             id: "cos-register-username-input",
-            label: label({for: "username"}, "Username:"),
+            label: label({ for: "username" }, "Username:"),
             name: "username",
             type: "text",
         },
         {
             id: "cos-register-email-input",
-            label: label({for: "email"}, "Email:"),
+            label: label({ for: "email" }, "Email:"),
             name: "email",
             type: "text",
         },
         {
             id: "cos-register-password-input",
-            label: label({for: "password"}, "Password:"),
+            label: label({ for: "password" }, "Password:"),
             name: "password",
             type: "password",
         },
         {
             id: "cos-register-password-confirm-input",
-            label: label({for: "password-confirm"}, "Confirm Password:"),
+            label: label({ for: "password-confirm" }, "Confirm Password:"),
             name: "passwordConfirm",
             type: "password",
         },
     ];
 
     private readonly RECAPTCHA_DIV_LEAF = div({
-        id: "cos-register-recaptcha",
-        className: "g-recaptcha",
-        "data-sitekey": "6LcWJSYUAAAAAEbsDsSvlCeB_T9TPT6kxT50ygGV",
+        "className": "g-recaptcha",
         "data-callback": "captchaVerifyCallback",
-        "data-expired-callback": "captchaExpiredCallback"
+        "data-expired-callback": "captchaExpiredCallback",
+        "data-sitekey": "6LcWJSYUAAAAAEbsDsSvlCeB_T9TPT6kxT50ygGV",
+        "id": "cos-register-recaptcha",
     });
 
     private readonly SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
@@ -94,22 +86,26 @@ class Register extends Component<{}, IRegisterFormState> {
 
     /**
      * Need to use this function to render the reCaptcha widget.
-     * 
+     *
      * TO-DO: Need to remove the head tag this function inserts after the
      *        component dismounts from the DOM.
      */
     public componentDidMount(): void {
         // These initialize recaptcha widget in window.
-        window["captchaVerifyCallback"] = ((response: string) => {
-            this.captchaVerifyCallback.bind(this)(response);
-        }) as any;
+        Object.defineProperty(window, "captchaVerifyCallback", {
+            value: (response: string) => {
+                this.captchaVerifyCallback.bind(this)(response);
+            },
+        });
 
-        window["captchaExpiredCallback"] = (() => {
-            this.captchaExpiredCallback.bind(this)();
-        }) as any;
+        Object.defineProperty(window, "captchaExpiredCallback", {
+            value: () => {
+                this.captchaExpiredCallback.bind(this)();
+            },
+        });
 
         // Need to manually add reCaptcha element
-        let reCaptchaHeadElement = document.createElement("script");
+        const reCaptchaHeadElement = document.createElement("script");
         reCaptchaHeadElement.innerHTML = "";
         reCaptchaHeadElement.src = "https://www.google.com/recaptcha/api.js";
         reCaptchaHeadElement.async = true;
@@ -122,12 +118,12 @@ class Register extends Component<{}, IRegisterFormState> {
      * Should render a bootstrap registration form with all of the input fields
      * specified in the INPUT_TAGS array. Also appends the reCaptcha widget and
      * submit button.
-     * 
+     *
      * @return - The registration form DOMElement.
      */
     public render(): DOMElement<any, Element> {
         return this.REGISTER_FORM([
-            this.INPUT_TAGS.reduce((acc: DOMElement<any, Element>[], cur: IRegsiterFormInputTagData) => {
+            this.INPUT_TAGS.reduce((acc: Array<DOMElement<any, Element>>, cur: IRegsiterFormInputTagData) => {
                 acc.push(
                     this.generateFormControlTag(
                         cur.label,
@@ -138,8 +134,8 @@ class Register extends Component<{}, IRegisterFormState> {
             }, []).concat([
                 this.RECAPTCHA_DIV_LEAF,
                 this.SUBMIT_BUTTON_LEAF,
-            ])
-        ])
+            ]),
+        ]);
     }
 
     /**
@@ -153,7 +149,7 @@ class Register extends Component<{}, IRegisterFormState> {
     public getInput(statePropToEdit: RegisterFormStateProperty, event: ChangeEvent<HTMLSelectElement>): void {
         this.setState(Object.defineProperty({}, statePropToEdit, {
             enumerable: true,
-            value: event.target.value
+            value: event.target.value,
         }));
     }
 
@@ -173,11 +169,11 @@ class Register extends Component<{}, IRegisterFormState> {
 
     /**
      * Helper function to generate inputs needed for this form.
-     * 
+     *
      * @param id - The CSS id to associte with the input tag.
      * @param name - The name to associate with the input tag.
      * @param type - The type to associate with the input tag, e.g. 'password'
-     * 
+     *
      * @returns - Input tag with properly configured attributes.
      */
     private generateInputTag(id: string, name: string, type: string):
@@ -190,15 +186,16 @@ class Register extends Component<{}, IRegisterFormState> {
             onChange: this.getInput.bind(this, name),
             type,
         });
-    };
+    }
 
+    /* tslint:disable:no-shadowed-variable */
     /**
      * Helper function to generate a form-control div
-     * 
+     *
      * @param id - The CSS id to associte with the input tag.
      * @param name - The name to associate with the input tag.
      * @param type - The type to associate with the input tag, e.g. 'password'
-     * 
+     *
      * @returns - Input tag with properly configured attributes.
      */
     private generateFormControlTag(
@@ -207,8 +204,9 @@ class Register extends Component<{}, IRegisterFormState> {
 
         return div({ className: "form-group" }, [
             label,
-            input])
-    };
+            input]);
+    }
+    /* tslint:enable:no-shadowed-variable */
 
     /**
      * Submits the registration form to the server.
@@ -232,7 +230,6 @@ class Register extends Component<{}, IRegisterFormState> {
                 "post");
         } catch (error) {
             // Should update DOM here.
-            console.log(error);
             return;
         }
 
@@ -247,8 +244,8 @@ class Register extends Component<{}, IRegisterFormState> {
             dataType: "json",
             method: "POST",
             success: (data: any) => {
-                // Should check for errors here.
-                console.log(data);
+                // Should render DOM here.
+                return;
             },
             url: this.userRegsiterAPI.USER_REGISTER_SUBMIT_PATH,
         });
