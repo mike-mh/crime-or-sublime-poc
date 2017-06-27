@@ -2,7 +2,7 @@ import { Component, ComponentElement, createElement as e, DOMElement, SFC } from
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
 import { SessionAPI } from "../../../../configurations/session/session-api";
-import { setElemChildrenCurry, elements } from "../../libs/elements";
+import { setElemChildrenCurry, elements } from "../../libs/elements/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 import Login from "../login/login";
@@ -153,7 +153,7 @@ const renderView = (linkId: string): void => {
     LINKS.map((link: INavbarLinkData) => {
         if (linkId === link.linkId) {
             unmountComponentAtNode(document.getElementById("cos-outlet"));
-            render(e(Provider, { store }, link.view),
+            render(link.view,
                 document.getElementById("cos-outlet"));
         }
     });
@@ -202,7 +202,10 @@ const Navbar: SFC<INavbarProps> = ({ sessionActive }) => {
      */
     jQuery(document).ready(function ($) {
         $(".nav-link").on("click", function () {
-            $(".navbar-toggler").click();
+            // Only trigger click event when navbar is collapsed
+            if ($(window).width() < 992 ) {
+                $(".navbar-toggler").click();
+            }
         });
     });
 

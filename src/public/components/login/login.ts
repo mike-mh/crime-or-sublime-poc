@@ -1,7 +1,7 @@
 import { ChangeEvent, Component, createElement as e, DOMElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { SessionAPI } from "../../../../configurations/session/session-api";
-import { elements, setElemChildrenCurry } from "../../libs/elements";
+import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 
@@ -128,7 +128,6 @@ class Login extends Component<{}, IFormState> {
                 return acc;
             }, []).concat([this.SUBMIT_BUTTON_LEAF])
         ]);
-//        return this.container;
     }
 
     /**

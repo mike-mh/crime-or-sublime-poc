@@ -3,7 +3,7 @@ import { Component, ComponentClass, ComponentElement, createElement as e, Props 
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, MapStateToPropsParam, Provider, ProviderProps } from "react-redux";
 import { SessionAPI } from "../../../configurations/session/session-api";
-import { elements } from "../libs/elements";
+import { elements, setElemChildrenCurry } from "../libs/elements/elements";
 import { beginSession, endSession } from "../reducers/session-management/session.actions";
 import { sessionReducer } from "../reducers/session-management/session.reducer";
 import { store } from "../reducers/session-management/session.store";
@@ -22,6 +22,15 @@ const p = elements.p;
 class MainIndex extends Component<ProviderProps, Provider> {
     private sessionAPI: SessionAPI = new SessionAPI();
 
+    private readonly COS_ROOT_DIV = setElemChildrenCurry(div, { id: "cos" });
+
+    // This is just a (hideous) place holder. Somone should change this.
+    private readonly COS_BANNER_H1_LEAF = h1(h1(null, "Welcome to CoS!"));
+
+    private readonly COS_NAVBAR = e(Navbar as any, { id: "cos-navbar", sessionActive: false }, null);
+
+    private readonly COS_VIEW_OUTLET_DIV = div({ id: "cos-outlet" });
+
     constructor(props: Props<{}>) {
         super(props);
         store.subscribe(this.handleSessionChange.bind(this));
@@ -38,10 +47,10 @@ class MainIndex extends Component<ProviderProps, Provider> {
     public render() {
         return e(Provider,
             { store },
-            div({ id: "cos" }, [
-                h1(null, "Welcome to CoS!"),
-                e(Navbar as any, { id: "cos-navbar", sessionActive: false }, null),
-                div({ id: "cos-outlet" })]));
+            this.COS_ROOT_DIV([
+                this.COS_BANNER_H1_LEAF,
+                this.COS_NAVBAR,
+                this.COS_VIEW_OUTLET_DIV]));
     }
 
     /**

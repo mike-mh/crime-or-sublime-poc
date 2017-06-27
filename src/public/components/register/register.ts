@@ -1,7 +1,7 @@
 import { ChangeEvent, Component, createElement as e, DOMElement, EventHandler } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { UserRegsiterAPI } from "../../../../configurations/user/user-register/user-register-api";
-import { elements, setElemChildrenCurry } from "../../libs/elements";
+import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
 

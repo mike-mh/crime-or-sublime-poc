@@ -1,5 +1,5 @@
 import { Component, createElement } from "react";
-import { elements } from "../../libs/elements";
+import { elements } from "../../libs/elements/elements";
 
 const div = elements.div;
 const h1 = elements.h1;
