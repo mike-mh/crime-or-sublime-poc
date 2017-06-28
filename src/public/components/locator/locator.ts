@@ -1,10 +1,13 @@
 import { Component, ComponentElement, createElement as e, DOMElement, SFC } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
+import "slick-carousel";
 import { GraffitiGetAPI } from "../../../../configurations/graffiti/graffiti-get/graffiti-get-api";
 import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import styles from "./locator.styles";
 
+const button = elements.button;
 const div = elements.div;
+const img = elements.img;
 
 /**
  * The locator class renders the graffiti locating map. There aren't any states
@@ -13,9 +16,7 @@ const div = elements.div;
  */
 class Locator extends Component<{}, {}> {
     // This is temporary. Just use as a proof of concept for now.
-    private graffitiLocations = {
-
-    };
+    private graffitiData: any = [];
 
     private graffitiGetAPI: GraffitiGetAPI = new GraffitiGetAPI();
 
@@ -47,14 +48,7 @@ class Locator extends Component<{}, {}> {
             document.getElementById("cos-locator-map"),
             this.mapConfiguration);
 
-        /*        this.graffitiMarker = new google.maps.Marker(
-                    {
-                        map: this.graffitiMap,
-                        position: this.DEFAULT_LAT_LNG,
-                        title: "TESTING",
-                    }); */
         this.getRandomGraffiti();
-
     }
 
     public render() {
@@ -64,9 +58,12 @@ class Locator extends Component<{}, {}> {
         },
             div({
                 id: "cos-locator-map",
-                style: styles["#cos-locator-map"]
-            },
-            )));
+                style: styles["#cos-locator-map"] as {}
+            }),
+            div({
+                id: "slicking",
+                style: styles["#slicking"]
+            }, null)));
     }
 
     /**
@@ -95,7 +92,9 @@ class Locator extends Component<{}, {}> {
             },
             method: "POST",
             success: (data: any) => {
-                console.log(data);
+                this.graffitiData = data;
+                console.log(this.graffitiData);
+                const images: any[] = [];
                 data.map((graffiti: any) => {
                     const testMarker = new google.maps.Marker(
                         {
@@ -111,10 +110,43 @@ class Locator extends Component<{}, {}> {
                         this.setIcon();
                     });
 
+
+                    images.push(div(null, [e("img", { style: { display: "block", margin: "auto" }, src: 'https://i.imgur.com/' + graffiti.url + 's.jpg' }),
+                    button({ className: "btn btn-warning", style: { display: "block", margin: "auto" } }, "Find on Map")]));
+
                 });
+
+                render(div({ className: "slick-test", style: styles[".slick-test"] }, images), document.getElementById("slicking"))
+                $(".slick-test").slick({
+                    centerMode: true,
+                    centerPadding: '60px',
+                    slidesToShow: 7,
+                    responsive: [
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                arrows: false,
+                                centerMode: true,
+                                centerPadding: '40px',
+                                slidesToShow: 4
+                            }
+                        },
+                        {
+                            breakpoint: 480,
+                            settings: {
+                                arrows: false,
+                                centerMode: true,
+                                centerPadding: '40px',
+                                slidesToShow: 1
+                            }
+                        }
+                    ]
+                });
+
             },
             url: this.graffitiGetAPI.GRAFFITI_GET_FILTER,
         });
+
     }
 
 
