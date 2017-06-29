@@ -1,11 +1,12 @@
 import "googlemaps";
-import { Component, ComponentElement, createElement as e, DOMElement, SFC } from "react";
+import { Component, ComponentElement, createElement as e, DOMElement, SFC, SFCElement, ReactElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
 import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
+import Home from "../home/home"
 import Locator from "../locator/locator";
 import Login from "../login/login";
 import Register from "../register/register";
@@ -30,7 +31,7 @@ interface INavbarLinkData {
     linkId: string;
     requiresSession: boolean;
     // Some links don't have a view.
-    view?: ComponentElement<any, any>;
+    view?: ComponentElement<any, any> | SFCElement<any>;
     viewLink: DOMElement<any, Element> | ComponentElement<any, any>;
 }
 
@@ -103,7 +104,7 @@ const LINKS: INavbarLinkData[] = [
         alwaysShow: true,
         linkId: "cos-navbar-home",
         requiresSession: false,
-        view: e(Test, null, null),
+        view: e(Home, null, null),
         viewLink: createLinkElement("cos-navbar-home", "Home"),
     },
     {
@@ -158,7 +159,7 @@ const renderView = (linkId: string): void => {
     LINKS.map((link: INavbarLinkData) => {
         if (linkId === link.linkId) {
             unmountComponentAtNode(document.getElementById("cos-outlet"));
-            render(link.view,
+            render(link.view as ReactElement<any>,
                 document.getElementById("cos-outlet"));
         }
     });

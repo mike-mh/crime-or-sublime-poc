@@ -4,6 +4,7 @@ import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
+import styles from "./login.styles";
 
 const a = elements.a;
 const button = elements.button;
@@ -38,7 +39,7 @@ interface ILoginFormInputTagData {
 class Login extends Component<{}, IFormState> {
     public readonly sessionAPI: SessionAPI = new SessionAPI();
 
-    private readonly INPUT_TAGS: ILoginFormInputTagData[] = [
+    private readonly LOGIN_INPUT_TAGS: ILoginFormInputTagData[] = [
         {
             id: "cos-login-email-input",
             label: label({ for: "email" }, "Email:"),
@@ -53,9 +54,17 @@ class Login extends Component<{}, IFormState> {
         },
     ];
 
-    private readonly SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
+    private readonly LOGIN_DIV = setElemChildrenCurry(div, { id: "cos-login" });
 
-    private readonly LOGIN_FORM = setElemChildrenCurry(form, { onSubmit: this.submitCredentials.bind(this) });
+    private readonly LOGIN_BANNER_H1_LEAF = h1({ styles: styles["#cos-login-banner"] }, "Login:");
+
+    private readonly LOGIN_SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
+
+    private readonly LOGIN_FORM = setElemChildrenCurry(form, {
+        id: "cos-login-form",
+        onSubmit: this.submitCredentials.bind(this),
+        style: styles["#cos-login-form"],
+    });
 
     constructor(props: {}) {
         super(props);
@@ -117,16 +126,19 @@ class Login extends Component<{}, IFormState> {
     }
 
     public render() {
-        return this.LOGIN_FORM([
-            this.INPUT_TAGS.reduce((acc: Array<DOMElement<any, Element>>, cur: ILoginFormInputTagData) => {
-                acc.push(
-                    this.generateFormControlTag(
-                        cur.label,
-                        this.generateInputTag(cur.id, cur.name, cur.type),
-                    ));
+        return this.LOGIN_DIV([
+            this.LOGIN_BANNER_H1_LEAF,
+            this.LOGIN_FORM([
+                this.LOGIN_INPUT_TAGS.reduce((acc: Array<DOMElement<any, Element>>, cur: ILoginFormInputTagData) => {
+                    acc.push(
+                        this.generateFormControlTag(
+                            cur.label,
+                            this.generateInputTag(cur.id, cur.name, cur.type),
+                        ));
 
-                return acc;
-            }, []).concat([this.SUBMIT_BUTTON_LEAF]),
+                    return acc;
+                }, []).concat([this.LOGIN_SUBMIT_BUTTON_LEAF]),
+            ])
         ]);
     }
 

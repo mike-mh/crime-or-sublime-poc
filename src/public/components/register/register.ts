@@ -4,6 +4,7 @@ import { UserRegsiterAPI } from "../../../../configurations/user/user-register/u
 import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { beginSession, endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
+import styles from "./register.styles";
 
 const a = elements.a;
 const button = elements.button;
@@ -41,7 +42,7 @@ type RegisterFormStateProperty = ("captcha" | "email" | "password" | "passwordCo
 class Register extends Component<{}, IRegisterFormState> {
     public readonly userRegsiterAPI: UserRegsiterAPI = new UserRegsiterAPI();
 
-    private readonly INPUT_TAGS: IRegsiterFormInputTagData[] = [
+    private readonly REGISTER_INPUT_TAGS: IRegsiterFormInputTagData[] = [
         {
             id: "cos-register-username-input",
             label: label({ for: "username" }, "Username:"),
@@ -68,7 +69,11 @@ class Register extends Component<{}, IRegisterFormState> {
         },
     ];
 
-    private readonly RECAPTCHA_DIV_LEAF = div({
+    private readonly REGISTER_DIV = setElemChildrenCurry(div, { id: "cos-login" });
+
+    private readonly REGISTER_BANNER_H1_LEAF = h1({ styles: styles["#cos-register-banner"] }, "Register:");
+
+    private readonly REGISTER_RECAPTCHA_DIV = div({
         "className": "g-recaptcha",
         "data-callback": "captchaVerifyCallback",
         "data-expired-callback": "captchaExpiredCallback",
@@ -76,9 +81,12 @@ class Register extends Component<{}, IRegisterFormState> {
         "id": "cos-register-recaptcha",
     });
 
-    private readonly SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
+    private readonly REGISTER_SUBMIT_BUTTON_LEAF = button({ className: "btn btn-primary", type: "submit" }, "Submit");
 
-    private readonly REGISTER_FORM = setElemChildrenCurry(form, { onSubmit: this.submitRegistration.bind(this) });
+    private readonly REGISTER_FORM = setElemChildrenCurry(form, {
+        onSubmit: this.submitRegistration.bind(this),
+        style: styles["#cos-register-form"],
+    });
 
     constructor(props: {}) {
         super(props);
@@ -92,17 +100,21 @@ class Register extends Component<{}, IRegisterFormState> {
      */
     public componentDidMount(): void {
         // These initialize recaptcha widget in window.
-        Object.defineProperty(window, "captchaVerifyCallback", {
-            value: (response: string) => {
-                this.captchaVerifyCallback.bind(this)(response);
-            },
-        });
+        if (!(window as any).captchaVerifyCallback) {
+            Object.defineProperty(window, "captchaVerifyCallback", {
+                value: (response: string) => {
+                    this.captchaVerifyCallback.bind(this)(response);
+                },
+            });
+        }
 
-        Object.defineProperty(window, "captchaExpiredCallback", {
-            value: () => {
-                this.captchaExpiredCallback.bind(this)();
-            },
-        });
+        if (!(window as any).captchaExpiredCallback) {
+            Object.defineProperty(window, "captchaExpiredCallback", {
+                value: () => {
+                    this.captchaExpiredCallback.bind(this)();
+                },
+            });
+        }
 
         // Need to manually add reCaptcha element
         const reCaptchaHeadElement = document.createElement("script");
@@ -122,19 +134,23 @@ class Register extends Component<{}, IRegisterFormState> {
      * @return - The registration form DOMElement.
      */
     public render(): DOMElement<any, Element> {
-        return this.REGISTER_FORM([
-            this.INPUT_TAGS.reduce((acc: Array<DOMElement<any, Element>>, cur: IRegsiterFormInputTagData) => {
-                acc.push(
-                    this.generateFormControlTag(
-                        cur.label,
-                        this.generateInputTag(cur.id, cur.name, cur.type),
-                    ));
+        return this.REGISTER_DIV([
+            this.REGISTER_BANNER_H1_LEAF,
+            this.REGISTER_FORM([
+                this.REGISTER_INPUT_TAGS.reduce(
+                    (acc: Array<DOMElement<any, Element>>, cur: IRegsiterFormInputTagData) => {
+                        acc.push(
+                            this.generateFormControlTag(
+                                cur.label,
+                                this.generateInputTag(cur.id, cur.name, cur.type),
+                            ));
 
-                return acc;
-            }, []).concat([
-                this.RECAPTCHA_DIV_LEAF,
-                this.SUBMIT_BUTTON_LEAF,
-            ]),
+                        return acc;
+                    }, []).concat([
+                        this.REGISTER_RECAPTCHA_DIV,
+                        this.REGISTER_SUBMIT_BUTTON_LEAF,
+                    ]),
+            ])
         ]);
     }
 

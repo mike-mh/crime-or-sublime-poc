@@ -8,8 +8,8 @@ import { beginSession, endSession } from "../reducers/session-management/session
 import { sessionReducer } from "../reducers/session-management/session.reducer";
 import { store } from "../reducers/session-management/session.store";
 import styles from "./index.styles";
+import Home from "./home/home";
 import Navbar from "./navbar/navbar";
-import Test from "./test/test";
 
 const div = elements.div;
 const h1 = elements.h1;
@@ -79,7 +79,7 @@ class MainIndex extends Component<ProviderProps, Provider> {
 
         render(
             e(Provider, { store },
-                e(Test, { id: "cos-logout-screen" } as any, null)),
+                e(Home, { id: "cos-home-screen" } as any, null)),
             document.getElementById("cos-outlet"));
     }
 
