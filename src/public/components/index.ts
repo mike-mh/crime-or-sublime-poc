@@ -7,9 +7,9 @@ import { elements, setElemChildrenCurry } from "../libs/elements/elements";
 import { beginSession, endSession } from "../reducers/session-management/session.actions";
 import { sessionReducer } from "../reducers/session-management/session.reducer";
 import { store } from "../reducers/session-management/session.store";
+import styles from "./index.styles";
 import Navbar from "./navbar/navbar";
 import Test from "./test/test";
-import styles from "./index.styles";
 
 const div = elements.div;
 const h1 = elements.h1;
@@ -24,9 +24,6 @@ class MainIndex extends Component<ProviderProps, Provider> {
     private sessionAPI: SessionAPI = new SessionAPI();
 
     private readonly COS_ROOT_DIV = setElemChildrenCurry(div, { id: "cos" });
-
-    // This is just a (hideous) place holder. Somone should change this.
-    private readonly COS_BANNER_H1_LEAF = h1(null, "Welcome to CoS!");
 
     private readonly COS_NAVBAR = e(Navbar as any, { id: "cos-navbar", sessionActive: false }, null);
 
@@ -49,7 +46,6 @@ class MainIndex extends Component<ProviderProps, Provider> {
         return e(Provider,
             { store },
             this.COS_ROOT_DIV([
-                this.COS_BANNER_H1_LEAF,
                 this.COS_NAVBAR,
                 this.COS_VIEW_OUTLET_DIV]));
     }

@@ -54,7 +54,7 @@ const NAVBAR_COLLAPSE_BUTTON_ATTRIBUTES = {
 const NAVBAR_COLLAPSE_BUTTON_LEAF = button(NAVBAR_COLLAPSE_BUTTON_ATTRIBUTES,
     span({ className: "navbar-toggler-icon" }));
 
-const NAVBAR_BRAND_BUTTON_LEAF = a({ className: "navbar-brand", href: "#" }, "CoS");
+const NAVBAR_BRAND_BUTTON_LEAF = a({ className: "navbar-brand", href: "#" }, "Crime or Sublime");
 
 const NAVBAR_COLLAPSING_DIV = setElemChildrenCurry(div, {
     className: "collapse navbar-collapse",

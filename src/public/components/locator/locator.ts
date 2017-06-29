@@ -7,18 +7,39 @@ import styles from "./locator.styles";
 
 const button = elements.button;
 const div = elements.div;
+const i = elements.i;
 const img = elements.img;
 
 /**
- * The locator class renders the graffiti locating map. There aren't any states
+ * The locator class renders the graffiti locating map. There aren"t any states
  * nor props set yet but after we implement a filter and the corresponding API
- * we'll definately need state and likely will have props as well.
+ * we"ll definately need state and likely will have props as well.
  */
 class Locator extends Component<{}, {}> {
     // This is temporary. Just use as a proof of concept for now.
     private graffitiData: any = [];
 
     private graffitiGetAPI: GraffitiGetAPI = new GraffitiGetAPI();
+
+    private readonly COS_LOCATOR_DIV = setElemChildrenCurry(div, {
+        id: "cos-locator",
+        style: styles["#cos-locator"],
+    });
+
+    private readonly COS_LOCATOR_MAP_DIV = div({
+        id: "cos-locator-map",
+        style: styles["#cos-locator-map"],
+    });
+
+    private readonly COS_LOCATOR_CAROUSEL_CONTAINER_DIV = div({
+        id: "cos-locator-carousel-container",
+        style: styles["#cos-locator-carousel-container"],
+    });
+
+    private readonly COS_LOCATOR_CAROUSEL_DIV = setElemChildrenCurry(div, {
+        id: "cos-locator-carousel",
+        style: styles["#cos-locator-carousel"],
+    });
 
     private MAP_TYPE_ID: google.maps.MapTypeId =
     google.maps.MapTypeId.ROADMAP;
@@ -31,7 +52,7 @@ class Locator extends Component<{}, {}> {
 
     private graffitiMap: google.maps.Map;
     private mapConfiguration: google.maps.MapOptions;
-    private graffitiMarker: google.maps.Marker;
+    private graffitiMarker: google.maps.Marker = new google.maps.Marker();
 
     /**
      * Need to use this function to set up Google maps so that it can render
@@ -52,18 +73,99 @@ class Locator extends Component<{}, {}> {
     }
 
     public render() {
-        return div(null, div({
-            id: "cos-locator",
-            style: styles["#cos-locator"]
-        },
-            div({
-                id: "cos-locator-map",
-                style: styles["#cos-locator-map"] as {}
+        return this.COS_LOCATOR_DIV([
+            this.COS_LOCATOR_MAP_DIV,
+            this.COS_LOCATOR_CAROUSEL_CONTAINER_DIV,
+        ]);
+    }
+
+    /**
+     * Use this to generate widgets within the carousel.
+     *
+     * @param url - The URL associated with a graffiti.
+     */
+    private generateCarouselItem(url: string): DOMElement<any, Element> {
+        return div({ className: "carousel-item-contianer" }, [
+            e("img", {
+                className: "carousel-item-graffiti-image",
+                src: `https://i.imgur.com/${url}s.jpg`,
+                style: styles[".carousel-item-graffiti-image"],
             }),
-            div({
-                id: "slicking",
-                style: styles["#slicking"]
-            }, null)));
+            button({
+                className: "btn btn-warning carousel-item-find-button",
+                onClick: () => { this.showGraffitiLocation(url); },
+                style: styles[".carousel-item-find-button"],
+            }, "Find on Map")]);
+
+    }
+
+    /**
+     * Use this function to configure the carousel widget for graffiti images.
+     */
+    private configureCarouselWidget(): void {
+        $("#cos-locator-carousel").slick({
+            centerPadding: "60px",
+            nextArrow: `<div class="slick-prev pull-right" style="display: flex;align-items: center;">
+                                  <i class="fa fa-arrow-circle-right fa-4x" aria-hidden="true" style="color:blue;"></i>
+                                </div>`,
+            prevArrow: `<div class="slick-prev pull-left" style="display: flex;align-items: center;">
+                                  <i class="fa fa-arrow-circle-left fa-4x" aria-hidden="true" style="color:blue;"></i>
+                                </div>`,
+            responsive: [
+                {
+                    breakpoint: 992,
+                    settings: {
+                        centerPadding: "40px",
+                        slidesToShow: 3,
+                    },
+                },
+                {
+                    breakpoint: 480,
+                    settings: {
+                        centerPadding: "40px",
+                        slidesToShow: 1,
+                    },
+                },
+            ],
+            slidesToShow: 7,
+        });
+
+    }
+
+    /**
+     * Center map to graffiti selected by user and creates a marker. Also sets
+     * icon to show the graffiit image when mouse hovers over it.
+     *
+     * TO-DO: Add more styling to the marker on hover.
+     *
+     * @param url - The URL of the graffiti to center on.
+     */
+    private showGraffitiLocation(url: string): void {
+        const graffitiLocation = this.graffitiData.reduce((acc: string, cur: any) => {
+            return (cur.url === url) ?
+                new google.maps.LatLng(cur.latitude, cur.longitude) :
+                acc;
+        }, undefined);
+
+        // Remove current marker from map
+        this.graffitiMarker.setMap(null);
+
+        // Set center and add marker
+        this.graffitiMap.setCenter(graffitiLocation);
+        this.graffitiMarker = new google.maps.Marker(
+            {
+                map: this.graffitiMap,
+                position: graffitiLocation,
+                title: "A graffiti",
+            });
+
+        google.maps.event.addListener(this.graffitiMarker, "mouseover", (event: any) => {
+            this.graffitiMarker.setIcon(`https://i.imgur.com/${url}s.jpg`);
+        });
+        google.maps.event.addListener(this.graffitiMarker, "mouseout", (event: any) => {
+            this.graffitiMarker.setIcon(null);
+        });
+
     }
 
     /**
@@ -72,7 +174,7 @@ class Locator extends Component<{}, {}> {
      * click the map to find graffiti. As of now, this function just gets 10
      * random graffiti images from the server and stores them to an object.
      */
-    public getRandomGraffiti(): void {
+    private getRandomGraffiti(): void {
         try {
             this.graffitiGetAPI.validateParams(
                 this.graffitiGetAPI.GRAFFITI_GET_FILTER,
@@ -88,67 +190,24 @@ class Locator extends Component<{}, {}> {
             data: JSON.stringify({}),
             dataType: "json",
             error: (xhr: any, status: any, err: any) => {
-                console.log(err);
+                return;
             },
             method: "POST",
             success: (data: any) => {
                 this.graffitiData = data;
-                console.log(this.graffitiData);
-                const images: any[] = [];
-                data.map((graffiti: any) => {
-                    const testMarker = new google.maps.Marker(
-                        {
-                            map: this.graffitiMap,
-                            position: new google.maps.LatLng(graffiti.latitude,
-                                graffiti.longitude),
-                            title: "NOW IN REACT",
-                        });
-                    google.maps.event.addListener(testMarker, 'mouseover', function (event: any) {
-                        this.setIcon('https://i.imgur.com/' + graffiti.url + 's.jpg');
-                    });
-                    google.maps.event.addListener(testMarker, 'mouseout', function (event: any) {
-                        this.setIcon();
-                    });
+                const images: any[] = data.reduce((acc: any[], cur: any) => {
+                    return acc.concat([this.generateCarouselItem(cur.url)]);
+                }, []);
 
+                render(this.COS_LOCATOR_CAROUSEL_DIV(images),
+                    document.getElementById("cos-locator-carousel-container"));
 
-                    images.push(div(null, [e("img", { style: { display: "block", margin: "auto" }, src: 'https://i.imgur.com/' + graffiti.url + 's.jpg' }),
-                    button({ className: "btn btn-warning", style: { display: "block", margin: "auto" } }, "Find on Map")]));
-
-                });
-
-                render(div({ className: "slick-test", style: styles[".slick-test"] }, images), document.getElementById("slicking"))
-                $(".slick-test").slick({
-                    centerMode: true,
-                    centerPadding: '60px',
-                    slidesToShow: 7,
-                    responsive: [
-                        {
-                            breakpoint: 992,
-                            settings: {
-                                arrows: false,
-                                centerMode: true,
-                                centerPadding: '40px',
-                                slidesToShow: 4
-                            }
-                        },
-                        {
-                            breakpoint: 480,
-                            settings: {
-                                arrows: false,
-                                centerMode: true,
-                                centerPadding: '40px',
-                                slidesToShow: 1
-                            }
-                        }
-                    ]
-                });
-
+                this.configureCarouselWidget();
             },
             url: this.graffitiGetAPI.GRAFFITI_GET_FILTER,
         });
 
     }
-
 
 }
 
