@@ -31,8 +31,8 @@ class MainIndex extends Component<ProviderProps, Provider> {
 
     constructor(props: Props<{}>) {
         super(props);
-        store.subscribe(this.handleSessionChange.bind(this));
 
+        store.subscribe(this.handleSessionChange.bind(this));
         // Check if the user has an active session then render Navbar.
         this.getSessionStatus();
     }
@@ -65,7 +65,10 @@ class MainIndex extends Component<ProviderProps, Provider> {
         // Need to be sure to pass the store back into the rendered element
         render(
             e(Provider, { store },
-                e(Navbar as any, { id: "cos-navbar", sessionActive }, null)),
+                e(Navbar as any, {
+                    id: "cos-navbar",
+                    pathname: window.location.pathname,
+                    sessionActive }, null)),
             document.getElementById("cos-navbar"));
     }
 

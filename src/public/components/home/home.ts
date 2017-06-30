@@ -9,7 +9,7 @@ const COS_HOME_DIV = setElemChildrenCurry(div, null);
 const COS_HOME_HEADER_LEAF = h1(null, "Welcome to CoS!");
 const COS_HOME_WELCOME_PARAGRAPH_LEAF = p(null, `This is the CoS prototype.
  You're visiting this site way before almost anybody else in the general public will.`);
-const COS_HOME_DETAILS_PARAGRAPH_LEAF = p(null, `Feel free to explore and we
+const COS_HOME_DETAILS_PARAGRAPH_LEAF = p(null, `Feel free to explore! We
  do have some actual graffiti you can look at but we don't recommend rating
  anything for a little while until we have the release polished (and that's
  probably going to take us a few months). You can register if you like but
