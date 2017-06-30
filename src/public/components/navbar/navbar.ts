@@ -9,6 +9,7 @@ import { store } from "../../reducers/session-management/session.store";
 import Home from "../home/home"
 import Locator from "../locator/locator";
 import Login from "../login/login";
+import Rate from "../rate/rate";
 import Register from "../register/register";
 import Test from "../test/test";
 
@@ -118,7 +119,7 @@ const LINKS: INavbarLinkData[] = [
         alwaysShow: false,
         linkId: "cos-navbar-rate",
         requiresSession: true,
-        view: e(Test, null, null),
+        view: e(Rate, null, null),
         viewLink: createLinkElement("cos-navbar-rate", "Rate"),
     },
     {

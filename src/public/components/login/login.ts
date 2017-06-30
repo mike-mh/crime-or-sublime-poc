@@ -102,7 +102,6 @@ class Login extends Component<{}, IFormState> {
         }
 
         $.ajax({
-            cache: false,
             contentType: "application/json",
             data: JSON.stringify({
                 identifier: this.state.email,
