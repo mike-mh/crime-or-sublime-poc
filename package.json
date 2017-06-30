@@ -7,9 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test-front-end": "node node_modules/.bin/karma start --stand-alone",
     "test-back-end": "node node_modules/.bin/jasmine-ts",
-    "build": "./build.sh",
-    "build-front-end": "./build.sh --fe",
-    "build-back-end": "./build.sh --be",
+    "build-front-end": "grunt && node node_modules/.bin/rollup -c ./rollup-config.js",
+    "build-back-end": "node node_modules/.bin/tsc",
     "lint-project": "tslint -c tslint.json 'src/**/*.ts'",
     "lint-configurations": "tslint -c tslint.json 'configurations/**/*.ts'"
   },

@@ -77,7 +77,7 @@ class Register extends Component<{}, IRegisterFormState> {
         "className": "g-recaptcha",
         "data-callback": "captchaVerifyCallback",
         "data-expired-callback": "captchaExpiredCallback",
-        "data-sitekey": "6LcWJSYUAAAAAEbsDsSvlCeB_T9TPT6kxT50ygGV",
+        "data-sitekey": "6LdhiCkTAAAAAKm0VwPm_vw-ZdzMEfUmmmmVyXZR",
         "id": "cos-register-recaptcha",
     });
 
