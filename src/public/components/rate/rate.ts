@@ -1,9 +1,9 @@
 import { Component, createElement as e, DOMElement, SFC } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
-import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { GraffitiGetAPI } from "../../../../configurations/graffiti/graffiti-get/graffiti-get-api";
 import { UserProfileAPI } from "../../../../configurations/user/user-profile/user-profile-api";
 import { UserRateAPI } from "../../../../configurations/user/user-rate/user-rate-api";
+import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import styles from "./rate.styles";
 
 const graffitiGetAPI: GraffitiGetAPI = new GraffitiGetAPI();
@@ -56,7 +56,7 @@ class Rate extends Component<{}, IRateState> {
 
     private readonly COS_RATE_IMAGE_AND_RATING_BUTTONS_DIV = setElemChildrenCurry(div, {
         id: "cos-rate-image-and-rating-buttons",
-        style: styles["#cos-rate-image-and-rating-buttons"]
+        style: styles["#cos-rate-image-and-rating-buttons"],
     });
 
     private readonly COS_RATE_IMAGE_CONTAINER_DIV = div({
@@ -66,12 +66,12 @@ class Rate extends Component<{}, IRateState> {
 
     private readonly COS_RATE_RATING_BUTTONS_CONTAINER_DIV = setElemChildrenCurry(div, {
         id: "cos-rate-rating-buttons-container",
-        style: styles["#cos-rate-rating-buttons-container"]
+        style: styles["#cos-rate-rating-buttons-container"],
     });
 
     private readonly COS_RATE_CRIME_BUTTON_LEAF = button({
-        id: "cos-rate-rating-crime-button",
         className: "btn btn-danger",
+        id: "cos-rate-rating-crime-button",
         onClick: () => {
             this.rateGraffiti(false);
         },
@@ -79,8 +79,8 @@ class Rate extends Component<{}, IRateState> {
     }, "CRIME");
 
     private readonly COS_RATE_SUBLIME_BUTTON_LEAF = button({
-        id: "cos-rate-rating-sublime-button",
         className: "btn btn-primary",
+        id: "cos-rate-rating-sublime-button",
         onClick: () => {
             this.rateGraffiti(true);
         },
@@ -91,15 +91,15 @@ class Rate extends Component<{}, IRateState> {
         { id: "cos-rate-random-and-favourite-button-container" });
 
     private readonly COS_RATE_GET_RANDOM_BUTTON_LEAF = button({
-        id: "cos-rate-random-button",
         className: "btn",
+        id: "cos-rate-random-button",
         onClick: this.getRandomGraffiti.bind(this),
         style: styles["#cos-rate-random-button"],
     }, "Random");
 
     private readonly COS_RATE_FAVOURITE_BUTTON_LEAF = button({
-        id: "cos-rate-rating-favourite-butotn",
         className: "btn",
+        id: "cos-rate-rating-favourite-butotn",
         onClick: this.addFavourite.bind(this),
         style: styles["#cos-rate-favourite-button"],
     }, "Add to Favourites");
@@ -113,7 +113,7 @@ class Rate extends Component<{}, IRateState> {
         this.setState({ formerWindowWidth: window.outerWidth });
         window.addEventListener("resize", () => {
             this.resizeImage(this.state.shownGraffitiUrl);
-        })
+        });
     }
 
     public render() {
@@ -158,7 +158,6 @@ class Rate extends Component<{}, IRateState> {
             return;
         }
 
-
         this.renderImage(graffitiUrl);
     }
 
@@ -187,7 +186,7 @@ class Rate extends Component<{}, IRateState> {
 
     /**
      * Submits a rating to the server.
-     * 
+     *
      * @param rating - The rating assigned to a graffiti
      */
     private rateGraffiti(rating: boolean): void {
@@ -214,7 +213,7 @@ class Rate extends Component<{}, IRateState> {
     /**
      * Use this to render an image with the given URL. Be sure that it is only
      * called after the DOM has been rendered.
-     * 
+     *
      * @param url - The URL of the image to render.
      */
     private renderImage = (url: string): void => {

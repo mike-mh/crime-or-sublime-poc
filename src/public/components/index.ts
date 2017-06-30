@@ -7,8 +7,8 @@ import { elements, setElemChildrenCurry } from "../libs/elements/elements";
 import { beginSession, endSession } from "../reducers/session-management/session.actions";
 import { sessionReducer } from "../reducers/session-management/session.reducer";
 import { store } from "../reducers/session-management/session.store";
-import styles from "./index.styles";
 import Home from "./home/home";
+import styles from "./index.styles";
 import Navbar from "./navbar/navbar";
 
 const div = elements.div;

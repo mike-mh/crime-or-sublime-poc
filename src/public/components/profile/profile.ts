@@ -1,7 +1,7 @@
 import { Component, createElement as e, DOMElement, SFC } from "react";
-import { render, findDOMNode, unmountComponentAtNode } from "react-dom";
-import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
+import { render, unmountComponentAtNode } from "react-dom";
 import { UserProfileAPI } from "../../../../configurations/user/user-profile/user-profile-api";
+import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import styles from "./profile.styles";
 
 const userProfileAPI: UserProfileAPI = new UserProfileAPI();
@@ -20,7 +20,7 @@ class Profile extends Component<{}, {}> {
     private readonly COS_PROFILE_DIV = setElemChildrenCurry(div, { id: "cos-profile" });
     private readonly COS_PROFILE_FARVOURITES_CONTAINTER_DIV = div({
         id: "cos-profile-favourites-container-div",
-        style: styles["#cos-profile-favourites-container-div"]
+        style: styles["#cos-profile-favourites-container-div"],
     });
     private readonly COS_PROFILE_BANNER_H1_LEAF = h1(null, "Your Favourites:");
 
@@ -44,9 +44,9 @@ class Profile extends Component<{}, {}> {
      * Use this to create a favourite graffiti div. This function is necessary
      * to render the element as a component so that it can be removed with the
      * unmountComponentAtNode funcion.
-     * 
+     *
      * @param url - The URL of the image to render.
-     * 
+     *
      * @returns - A simple stateless functional component converted into a
      *      DOMElement
      */
@@ -58,7 +58,7 @@ class Profile extends Component<{}, {}> {
             e(({ }) => {
                 return div({
                     className: "user-favourites-container",
-                    style: styles[".user-favourites-container"]
+                    style: styles[".user-favourites-container"],
                 }, [
                         e("img", {
                             className: "farvouties-image",
@@ -73,13 +73,13 @@ class Profile extends Component<{}, {}> {
                             style: styles[".remove-button"],
                         }, "X"),
                     ]);
-            })
+            }),
         ]);
     }
 
     /**
      * Use this to remove a favourite graffiti from a user's profile.
-     * 
+     *
      * @param url - The URL of the image to render.
      */
     private removeFavourite = (url: string): void => {

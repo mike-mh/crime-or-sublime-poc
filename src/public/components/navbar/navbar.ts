@@ -1,12 +1,12 @@
 import "googlemaps";
-import { Component, ComponentElement, createElement as e, DOMElement, SFC, SFCElement, ReactElement } from "react";
+import { Component, ComponentElement, createElement as e, DOMElement, ReactElement, SFC, SFCElement } from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { connect, Provider } from "react-redux";
 import { SessionAPI } from "../../../../configurations/session/session-api";
 import { elements, setElemChildrenCurry } from "../../libs/elements/elements";
 import { endSession } from "../../reducers/session-management/session.actions";
 import { store } from "../../reducers/session-management/session.store";
-import Home from "../home/home"
+import Home from "../home/home";
 import Locator from "../locator/locator";
 import Login from "../login/login";
 import Profile from "../profile/profile";

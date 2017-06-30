@@ -137,7 +137,7 @@ class Login extends Component<{}, IFormState> {
 
                     return acc;
                 }, []).concat([this.LOGIN_SUBMIT_BUTTON_LEAF]),
-            ])
+            ]),
         ]);
     }
 

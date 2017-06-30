@@ -4,13 +4,13 @@ const styles: { [identifier: string]: {} } = {
         "padding-right": "25px",
     },
     ".farvouties-image": {
-        "padding-top": "5px",
         "padding-bottom": "5px",
         "padding-left": "10px",
+        "padding-top": "5px",
     },
     ".remove-button": {
-        float: "right",
         display: "inline-block",
+        float: "right",
         height: "100%",
     },
     ".user-favourites-container": {

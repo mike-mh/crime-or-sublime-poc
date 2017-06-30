@@ -150,7 +150,7 @@ class Register extends Component<{}, IRegisterFormState> {
                         this.REGISTER_RECAPTCHA_DIV,
                         this.REGISTER_SUBMIT_BUTTON_LEAF,
                     ]),
-            ])
+            ]),
         ]);
     }
 
