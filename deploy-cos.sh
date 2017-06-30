@@ -45,7 +45,8 @@ $COS_SYSTEMJS_CONFIG $COS_CLIENT_LIBRARIES"
 GIT_COMMIT_COMPILED_APP="git commit -m 'deployed'"
 GIT_RESTORE_BRANCH_FILES="git checkout ."
 
-COMPILE_COS="npm run build"
+COMPILE_COS_FRONT_END="npm run build-front-end"
+COMPILE_COS_BACK_END="npm run build-back-end"
 
 ###############################################################################
 #                                FUNCTIONS                                    #
@@ -80,7 +81,9 @@ temporary.\n\nLeave this branch and delete it.\n\n"
    exit $ERROR
 fi
 
-run_command "$COMPILE_COS" "\nCould not compile CoS application.\n\n"
+run_command "$COMPILE_COS_BACK_END" "\nCould not compile CoS front end.\n\n"
+
+run_command "$COMPILE_COS_FRONT_END" "\nCould not compile CoS back end.\n\n"
 
 run_command "$GIT_CREATE_AND_CHECKOUT_DEPLOY_BRANCH"  "\nError occured \
 creating temporary git branch.\n\n"
